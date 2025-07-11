@@ -1,6 +1,7 @@
 package exchange.notbank.wallet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
@@ -117,5 +118,6 @@ public class WalletServiceTest {
         new CreateCryptoWithdrawParamBuilder(credentials.accountId, "BTC", "USDT_BSC", "1231213",
             new BigDecimal("0.1")))
         .get();
+    assertTrue(withdrawId.length() > 0);
   }
 }

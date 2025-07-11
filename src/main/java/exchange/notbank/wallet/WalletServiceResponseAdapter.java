@@ -48,9 +48,6 @@ public class WalletServiceResponseAdapter {
         DataResponse.class,
         StringListType);
     this.stringListJsonAdapter = moshi.adapter(StringListResponseType);
-    ParameterizedType WhitelistAddressListType = Types.newParameterizedType(
-        List.class,
-        WhitelistedAddress.class);
     ParameterizedType WhitelistAddressListResponseType = Types.newParameterizedType(
         DataResponse.class,
         StringListType);
