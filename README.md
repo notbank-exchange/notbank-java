@@ -24,22 +24,25 @@ All sdk service methods return a completable future, so remember to handle excep
 Authentication and log out from the service factory also return completable futures
 
 ## Client creation
+
 ```java
 // create a rest client
 var client = NotbankClient.Factory.createclient();
 ```
+
 ## Services
+
 The notbank client is separated by services, reflecting the separation of endpoints in the documentation
+
 ```java
 // ...
 var tradingService = client.getTradingService();
 
 var feeService = client.getFeeService();
 // ...
-  ```
+```
 
 ## Put order at the top of book example
-
 
 ```java
 import java.math.BigDecimal;
