@@ -1,77 +1,41 @@
-# Notbank Java SDK
+package exchange.notbank;
 
-[main page](https://notbank.exchange)
-
-[sign up in Notbank](https://www.cryptomkt.com/account/register).
-
-## Installation
-
-Add the Maven dependency
-
-```xml
-<dependency>
-    <groupId>exchange.notbank.api</groupId>
-    <artifactId>notbank</artifactId>
-    <version>X.X.X</version>
-</dependency>
-```
-
-## Documentation
-
-This sdk makes use of the [api](https://apidoc.notbank.exchange) of Notbank.
-
-All sdk service methods return a completable future, so remember to handle exceptions.
-Authentication and log out from the service factory also return completable futures
-
-## Client creation
-```java
-// create a rest client
-var client = NotbankClient.Factory.createclient();
-```
-## Services
-The notbank client is separated by services, reflecting the separation of endpoints in the documentation
-```java
-// ...
-var tradingService = client.getTradingService();
-
-var feeService = client.getFeeService();
-// ...
-  ```
-
-## Put order at the top of book example
-
-
-```java
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-import exchange.dysopsis.notbank.account.paramBuilders.GetAccountPositionsParamBuilder;
-import exchange.dysopsis.notbank.trading.constants.OrderSide;
-import exchange.dysopsis.notbank.trading.constants.OrderType;
-import exchange.dysopsis.notbank.trading.constants.SendOrderResponseStatus;
-import exchange.dysopsis.notbank.trading.constants.TimeInForce;
-import exchange.dysopsis.notbank.trading.paramBuilders.CancelOrderParamBuilder;
-import exchange.dysopsis.notbank.trading.paramBuilders.GetOrderBookParamBuilder;
-import exchange.dysopsis.notbank.trading.paramBuilders.SendOrderParamBuilder;
+import org.junit.jupiter.api.Test;
 
-// ...
-public class ExampleClass {
-  void exampleMethod() {
+import exchange.notbank.account.paramBuilders.GetAccountPositionsParamBuilder;
+import exchange.notbank.trading.constants.OrderSide;
+import exchange.notbank.trading.constants.OrderType;
+import exchange.notbank.trading.constants.SendOrderResponseStatus;
+import exchange.notbank.trading.constants.TimeInForce;
+import exchange.notbank.trading.paramBuilders.CancelOrderParamBuilder;
+import exchange.notbank.trading.paramBuilders.GetOrderBookParamBuilder;
+import exchange.notbank.trading.paramBuilders.SendOrderParamBuilder;
+
+public class ExampleTest {
+  @Test
+  public void runExample() {
+    putOrderAtTopOfOrderbook();
+  }
+
+  Optional<Long> putOrderAtTopOfOrderbook() {
     try {
-      var accountId = 123;
+      var credentials = TestHelper.getUserCredentials();
+      var accountId = credentials.accountId;
 
       // instantiate a client
-      var client = NotbankClient.Factory.createRestClient();
+      var client = NotbankClient.Factory.createRestClient(TestHelper.HOST);
 
       // authentication
-      var userId = 112233
       client.authenticate(
-          userId,
-          "apiPublicKey",
-          "apiSecretKey");
+          credentials.userId,
+          credentials.apiPublicKey,
+          credentials.apiSecretKey).get();
 
       // get USDT user balance (also known as position)
       var positions = client.getAccountService().getAccountPositions(new GetAccountPositionsParamBuilder(accountId))
@@ -142,30 +106,6 @@ public class ExampleClass {
       e.printStackTrace();
       return Optional.empty();
     }
+
   }
 }
-```
-
-## Using Either
-
-There is a class, CompletableFutureAdapter, that waits for the future completion as a Right, and in case of exception returns an exception class NotbankException as Left.
-
-```java
-var productId = 23;
-var transferService = serviceFactory.newTransferService();
-// make the request
-var completableFutureResponse = transferService.requestTransfer(
-    new RequestTransferParamBuilder(productId, "david.bond@email.com", new BigDecimal("13")));
-// use the adapter to wait for the response and convert the result to an either
-var responseAsEither = CompletableFutureAdapter.getToEither(completableFutureResponse);
-if (responseAsEither.isLeft()) {
-    // handle exception
-    var exception = responseAsEither.getLeft();
-    System.out.println(exception);
-} else {
-    // handle the result
-    var transferRequestResponse = responseAsEither.get();
-    System.out.println(transferRequestResponse.result);
-}
-
-```
