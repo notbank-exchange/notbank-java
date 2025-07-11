@@ -51,14 +51,14 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-import exchange.dysopsis.notbank.account.paramBuilders.GetAccountPositionsParamBuilder;
-import exchange.dysopsis.notbank.trading.constants.OrderSide;
-import exchange.dysopsis.notbank.trading.constants.OrderType;
-import exchange.dysopsis.notbank.trading.constants.SendOrderResponseStatus;
-import exchange.dysopsis.notbank.trading.constants.TimeInForce;
-import exchange.dysopsis.notbank.trading.paramBuilders.CancelOrderParamBuilder;
-import exchange.dysopsis.notbank.trading.paramBuilders.GetOrderBookParamBuilder;
-import exchange.dysopsis.notbank.trading.paramBuilders.SendOrderParamBuilder;
+import exchange.notbank.account.paramBuilders.GetAccountPositionsParamBuilder;
+import exchange.notbank.trading.constants.OrderSide;
+import exchange.notbank.trading.constants.OrderType;
+import exchange.notbank.trading.constants.SendOrderResponseStatus;
+import exchange.notbank.trading.constants.TimeInForce;
+import exchange.notbank.trading.paramBuilders.CancelOrderParamBuilder;
+import exchange.notbank.trading.paramBuilders.GetOrderBookParamBuilder;
+import exchange.notbank.trading.paramBuilders.SendOrderParamBuilder;
 
 // ...
 public class ExampleClass {
