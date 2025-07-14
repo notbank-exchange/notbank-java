@@ -21,8 +21,8 @@ public class GetOrderFeeParamBuilder implements ParamBuilder {
     this.params.put("OMSId", 1);
     this.params.put("AccountId", accountId);
     this.params.put("InstrumentId", instrumentId);
-    this.params.put("Quantity", quantity);
-    this.params.put("Price", price);
+    this.params.put("Quantity", quantity.toPlainString());
+    this.params.put("Price", price.toPlainString());
     this.params.put("OrderType", orderType.value);
     this.params.put("MakerTaker", makerTaker.value);
     this.params.put("Side", side.value);

@@ -18,7 +18,7 @@ public class ModifyOrderParamBuilder implements ParamBuilder {
     this.params.put("OMSId", 1);
     this.params.put("OrderId", orderId);
     this.params.put("InstrumentId", instrumentId);
-    this.params.put("Quantity", quantity);
+    this.params.put("Quantity", quantity.toPlainString());
     this.params.put("AccountId", accountId);
   }
 
