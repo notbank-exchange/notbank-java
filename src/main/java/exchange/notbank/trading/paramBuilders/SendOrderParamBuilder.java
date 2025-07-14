@@ -30,7 +30,7 @@ public class SendOrderParamBuilder implements ParamBuilder {
     this.params.put("Side", side);
     this.params.put("OrderType", orderType);
     var effectiveQuantity = Truncator.truncate(quantity, instrument.quantityIncrement);
-    this.params.put("Quantity", effectiveQuantity);
+    this.params.put("Quantity", effectiveQuantity.toPlainString());
   }
 
   public SendOrderParamBuilder clientOrderId(Long value) {
@@ -55,23 +55,23 @@ public class SendOrderParamBuilder implements ParamBuilder {
 
   public SendOrderParamBuilder limitPrice(BigDecimal value) {
     var effectiveQuantity = Truncator.truncate(value, instrument.priceIncrement);
-    this.params.put("LimitPrice", effectiveQuantity);
+    this.params.put("LimitPrice", effectiveQuantity.toPlainString());
     return this;
   }
 
   public SendOrderParamBuilder stopPrice(BigDecimal value) {
     var effectiveQuantity = Truncator.truncate(value, instrument.priceIncrement);
-    this.params.put("StopPrice", effectiveQuantity);
+    this.params.put("StopPrice", effectiveQuantity.toPlainString());
     return this;
   }
 
   public SendOrderParamBuilder trailingAmount(BigDecimal value) {
-    this.params.put("TrailingAmount", value);
+    this.params.put("TrailingAmount", value.toPlainString());
     return this;
   }
 
   public SendOrderParamBuilder limitOffset(BigDecimal value) {
-    this.params.put("LimitOffset", value);
+    this.params.put("LimitOffset", value.toPlainString());
     return this;
   }
 

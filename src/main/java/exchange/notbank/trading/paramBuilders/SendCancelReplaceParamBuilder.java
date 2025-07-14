@@ -26,7 +26,7 @@ public class SendCancelReplaceParamBuilder implements ParamBuilder {
     this.params.put("AccountId", accountId);
     this.params.put("InstrumentId", instrumentId);
     this.params.put("TimeInForce", timeInForce);
-    this.params.put("Quantity", quantity);
+    this.params.put("Quantity", quantity.toPlainString());
   }
 
   public SendCancelReplaceParamBuilder replaceClientOrderId(Long replaceClientOrderId) {
@@ -45,22 +45,22 @@ public class SendCancelReplaceParamBuilder implements ParamBuilder {
   }
 
   public SendCancelReplaceParamBuilder displayQuantity(BigDecimal displayQuantity) {
-    this.params.put("DisplayQuantity", displayQuantity);
+    this.params.put("DisplayQuantity", displayQuantity.toPlainString());
     return this;
   }
 
   public SendCancelReplaceParamBuilder limitPrice(BigDecimal limitPrice) {
-    this.params.put("LimitPrice", limitPrice);
+    this.params.put("LimitPrice", limitPrice.toPlainString());
     return this;
   }
 
   public SendCancelReplaceParamBuilder stopPrice(BigDecimal stopPrice) {
-    this.params.put("StopPrice", stopPrice);
+    this.params.put("StopPrice", stopPrice.toPlainString());
     return this;
   }
 
   public SendCancelReplaceParamBuilder referencePrice(BigDecimal referencePrice) {
-    this.params.put("ReferencePrice", referencePrice);
+    this.params.put("ReferencePrice", referencePrice.toPlainString());
     return this;
   }
 

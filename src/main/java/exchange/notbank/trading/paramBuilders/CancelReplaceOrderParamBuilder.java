@@ -23,7 +23,7 @@ public class CancelReplaceOrderParamBuilder implements ParamBuilder {
     this.params.put("OMSId", 1);
     this.params.put("AccountId", accountId);
     this.params.put("InstrumentId", instrumentId);
-    this.params.put("Quantity", quantity);
+    this.params.put("Quantity", quantity.toPlainString());
     this.params.put("OrderIdToReplace", orderIdToReplace);
     this.params.put("OrderType", orderType);
     this.params.put("Side", side);
@@ -41,22 +41,22 @@ public class CancelReplaceOrderParamBuilder implements ParamBuilder {
   }
 
   public CancelReplaceOrderParamBuilder displayQuantity(BigDecimal value) {
-    this.params.put("DisplayQuantity", value);
+    this.params.put("DisplayQuantity", value.toPlainString());
     return this;
   }
 
   public CancelReplaceOrderParamBuilder limitPrice(BigDecimal value) {
-    this.params.put("LimitPrice", value);
+    this.params.put("LimitPrice", value.toPlainString());
     return this;
   }
 
   public CancelReplaceOrderParamBuilder stopPrice(BigDecimal value) {
-    this.params.put("StopPrice", value);
+    this.params.put("StopPrice", value.toPlainString());
     return this;
   }
 
   public CancelReplaceOrderParamBuilder referencePrice(BigDecimal value) {
-    this.params.put("ReferencePrice", value);
+    this.params.put("ReferencePrice", value.toPlainString());
     return this;
   }
 

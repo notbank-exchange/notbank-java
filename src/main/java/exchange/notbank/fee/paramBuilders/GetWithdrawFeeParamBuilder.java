@@ -17,7 +17,7 @@ public class GetWithdrawFeeParamBuilder implements ParamBuilder {
     this.params.put("OMSId", 1);
     this.params.put("AccountId", accountId);
     this.params.put("ProductId", productId);
-    this.params.put("Amount", amount);
+    this.params.put("Amount", amount.toPlainString());
   }
 
   public GetWithdrawFeeParamBuilder accountProviderId(Integer value) {
