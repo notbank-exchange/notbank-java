@@ -69,6 +69,6 @@ public class OrderFlagAdapterTest {
         .add(new BigIntegerAdapter())
         .build();
     var orderAdapter = moshi.adapter(Order.class);
-    var data =orderAdapter.fromJson(orderJson);
+    orderAdapter.fromJson(orderJson);
   }
 }
