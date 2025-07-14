@@ -6,7 +6,7 @@
 
   <groupId>exchange.notbank.api</groupId>
   <artifactId>notbank</artifactId>
-  <version>1.0.0-alpha-1</version>
+  <version>1.0.1-alpha-1</version>
 
   <name>Notbank</name>
   <description>The Notbank in Java</description>
