@@ -47,7 +47,7 @@ public class OrderFlagAdapterTest {
       "    \"RejectReason\": \"\",\n" + //
       "    \"IsLockedIn\": false,\n" + //
       "    \"CancelReason\": \"\",\n" + //
-      "    \"OrderFlag\": \"AddedToBook, RemovedFromBook\",\n" + //
+      "    \"OrderFlag\": \"AddedToBook, RemovedFromBook, 0\",\n" + //
       "    \"UseMargin\": false,\n" + //
       "    \"StopPrice\": 0.0,\n" + //
       "    \"PegPriceType\": \"Last\",\n" + //

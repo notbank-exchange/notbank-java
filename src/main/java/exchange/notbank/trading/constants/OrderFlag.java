@@ -1,6 +1,7 @@
 package exchange.notbank.trading.constants;
 
 public enum OrderFlag {
+  OTHER("Other", 0),
   NO_ACCOUNT_RISK_CHECK("NoAccountRiskCheck", 1),
   ADDED_TO_BOOK("AddedToBook", 2),
   REMOVED_FROM_BOOK("RemovedFromBook", 4),
