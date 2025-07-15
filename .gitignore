@@ -241,3 +241,4 @@ project/**/metals.sbt
 
 local-notes.md
 key.json
+.todo.md

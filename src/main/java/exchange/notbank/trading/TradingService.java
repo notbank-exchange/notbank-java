@@ -41,7 +41,7 @@ import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
 import exchange.notbank.trading.responses.DailyTicker;
 import exchange.notbank.trading.responses.LastTrade;
-import exchange.notbank.trading.responses.Level1Ticker;
+import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Level2Snapshot;
 import exchange.notbank.trading.responses.ModifyOrderResponse;
 import exchange.notbank.trading.responses.Order;
@@ -133,14 +133,14 @@ public class TradingService {
   /**
    * https://apidoc.notbank.exchange/#getlevel1
    */
-  public CompletableFuture<Level1Ticker> getLevel1(GetLevel1ParamBuilder paramBuilder) {
+  public CompletableFuture<Level1> getLevel1(GetLevel1ParamBuilder paramBuilder) {
     return requestPost(Endpoints.GET_LEVEL1, paramBuilder, this.responseAdapter::toLevel1);
   }
 
   /**
    * https://apidoc.notbank.exchange/#getlevel1summary
    */
-  public CompletableFuture<List<Level1Ticker>> getLevel1Summary(GetLevel1SummaryParamBuilder paramBuilder) {
+  public CompletableFuture<List<Level1>> getLevel1Summary(GetLevel1SummaryParamBuilder paramBuilder) {
     return requestPost(Endpoints.GET_LEVEL1_SUMMARY, paramBuilder, this.responseAdapter::toLevel1Summary);
   }
 

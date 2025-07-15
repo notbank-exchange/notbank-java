@@ -134,7 +134,7 @@ public class TradingServiceTest {
 
   @Test
   public void getLastTrades() {
-    var params = new GetLastTradesParamBuilder(154).count(10);
+    var params = new GetLastTradesParamBuilder(75).count(500);
     var futureResponse = service.getLastTrades(params);
     TestHelper.checkNoError(futureResponse);
   }
@@ -191,6 +191,16 @@ public class TradingServiceTest {
   }
 
   @Test
+  public void getOrderStatus() throws InterruptedException, ExecutionException {
+    var orderFuture = service.getOrderStatus(new GetOrderStatusParamBuilder()
+        .accountId(13)
+        .orderId(3166211L));
+    var response = orderFuture.get();
+    System.out.println(response);
+
+  }
+
+  @Test
   public void sendOrderList() {
     var order1 = new SendOrderParamBuilder(anInstrument, 1, TimeInForce.FOK, OrderSide.BUY, OrderType.MARKET,
         new BigDecimal("10"));
@@ -203,8 +213,8 @@ public class TradingServiceTest {
 
   @Test
   public void sendCancelList() {
-    var cancelOrder1 = new SendCancelParamBuilder( 6714, 9);
-    var cancelOrder2 = new SendCancelParamBuilder( 6507, 9);
+    var cancelOrder1 = new SendCancelParamBuilder(6714, 9);
+    var cancelOrder2 = new SendCancelParamBuilder(6507, 9);
     List<SendCancelParamBuilder> params = List.of(cancelOrder1, cancelOrder2);
     var futureResponse = service.sendCancelList(new SendCancelListParamBuilder(params));
     TestHelper.checkNoError(futureResponse);
@@ -212,11 +222,11 @@ public class TradingServiceTest {
 
   @Test
   public void sendCancelReplaceList() {
-    var cancelReplaceOrder1 = new SendCancelReplaceParamBuilder( Long.parseLong("6696"), OrderType.LIMIT,
+    var cancelReplaceOrder1 = new SendCancelReplaceParamBuilder(Long.parseLong("6696"), OrderType.LIMIT,
         OrderSide.BUY,
         7, 1, TimeInForce.GTC, new BigDecimal("0.004")).clientOrderId(Long.parseLong("0"))
         .limitPrice(new BigDecimal("29500"));
-    var cancelReplaceOrder2 = new SendCancelReplaceParamBuilder( Long.parseLong("6698"), OrderType.LIMIT,
+    var cancelReplaceOrder2 = new SendCancelReplaceParamBuilder(Long.parseLong("6698"), OrderType.LIMIT,
         OrderSide.BUY,
         7, 1, TimeInForce.GTC, new BigDecimal("0.004")).clientOrderId(Long.parseLong("0"))
         .limitPrice(new BigDecimal("29900"));
@@ -227,14 +237,14 @@ public class TradingServiceTest {
 
   @Test
   public void modifyOrder() {
-    var params = new ModifyOrderParamBuilder( Long.parseLong("6507"), 9, new BigDecimal(0.1), credentials.accountId);
+    var params = new ModifyOrderParamBuilder(Long.parseLong("6507"), 9, new BigDecimal(0.1), credentials.accountId);
     var futureResponse = service.modifyOrder(params);
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void cancelAllOrders() throws Exception {
-    var params = new CancelAllOrdersParamBuilder( 9, credentials.accountId);
+    var params = new CancelAllOrdersParamBuilder(9, credentials.accountId);
     var futureResponse = service.cancelAllOrders(params);
     TestHelper.checkNoError(futureResponse);
   }

@@ -10,6 +10,7 @@ public class Endpoints {
   public static final String UNSUBSCRIBE_LEVEL_2 = "UnsubscribeLevel2";
 
   public static final String SUBSCRIBE_TRADES = "SubscribeTrades";
+  public static final String UPDATE_TRADES = "TradeDataUpdateEvent";
   public static final String UNSUBSCRIBE_TRADES = "UnsubscribeTrades";
 
   public static final String SUBSCRIBE_TICKER = "SubscribeTicker";

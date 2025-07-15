@@ -9,10 +9,10 @@ import java.util.function.Function;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.responses.MessageFrame;
 import exchange.notbank.subscription.constants.Endpoints;
-import exchange.notbank.subscription.responses.Level2Ticker;
+import exchange.notbank.subscription.responses.Level2;
 import exchange.notbank.subscription.responses.SocketTrade;
 import exchange.notbank.trading.responses.Ticker;
-import exchange.notbank.trading.responses.Level1Ticker;
+import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Order;
 import exchange.notbank.subscription.constants.AccountEventNames;
 import com.squareup.moshi.JsonAdapter;
@@ -23,14 +23,14 @@ import io.vavr.control.Either;
 
 public class SubscriptionCallbacks {
   private final CallbacksById<List<Ticker>> tickersCallbacks;
-  private final CallbacksById<Level1Ticker> level1TickerCallbacks;
-  private final CallbacksById<List<Level2Ticker>> level2TickerCallbacks;
+  private final CallbacksById<Level1> level1TickerCallbacks;
+  private final CallbacksById<List<Level2>> level2TickerCallbacks;
   private final CallbacksById<List<SocketTrade>> socketTradeCallbacks;
   private final CallbacksById<AccountEventPayload> accountCallbacks;
   private final CallbacksById<Order> orderCallbacks;
 
   public SubscriptionCallbacks(CallbacksById<List<Ticker>> tickersCallbacks,
-      CallbacksById<Level1Ticker> level1TickerCallbacks, CallbacksById<List<Level2Ticker>> level2TickerCallbacks,
+      CallbacksById<Level1> level1TickerCallbacks, CallbacksById<List<Level2>> level2TickerCallbacks,
       CallbacksById<List<SocketTrade>> socketTradeCallbacks, CallbacksById<AccountEventPayload> accountCallbacks,
       CallbacksById<Order> orderCallbacks) {
     this.tickersCallbacks = tickersCallbacks;
@@ -46,9 +46,9 @@ public class SubscriptionCallbacks {
       var payloadGetter = PayloadGetter.Factory.create(moshi);
       ParameterizedType TickerListType = Types.newParameterizedType(List.class, Ticker.class);
       JsonAdapter<List<Ticker>> tickerListAdapter = moshi.adapter(TickerListType);
-      JsonAdapter<Level1Ticker> level1TickerAdapter = moshi.adapter(Level1Ticker.class);
-      ParameterizedType Level2TickerListType = Types.newParameterizedType(List.class, Level2Ticker.class);
-      JsonAdapter<List<Level2Ticker>> level2TickerListAdapter = moshi.adapter(Level2TickerListType);
+      JsonAdapter<Level1> level1TickerAdapter = moshi.adapter(Level1.class);
+      ParameterizedType Level2TickerListType = Types.newParameterizedType(List.class, Level2.class);
+      JsonAdapter<List<Level2>> level2TickerListAdapter = moshi.adapter(Level2TickerListType);
       ParameterizedType SocketTradeListType = Types.newParameterizedType(List.class, SocketTrade.class);
       JsonAdapter<List<SocketTrade>> socketTradeListAdapter = moshi.adapter(SocketTradeListType);
       JsonAdapter<Order> orderAdapter = moshi.adapter(Order.class);
@@ -111,11 +111,11 @@ public class SubscriptionCallbacks {
     tickersCallbacks.add(callbackId, callback);
   }
 
-  public void addLevel1TickerCallback(CallbackId callbackId, Consumer<Level1Ticker> callback) {
+  public void addLevel1TickerCallback(CallbackId callbackId, Consumer<Level1> callback) {
     level1TickerCallbacks.add(callbackId, callback);
   }
 
-  public void addLevel2TickerCallback(CallbackId callbackId, Consumer<List<Level2Ticker>> callback) {
+  public void addLevel2TickerCallback(CallbackId callbackId, Consumer<List<Level2>> callback) {
     level2TickerCallbacks.add(callbackId, callback);
   }
 
@@ -171,7 +171,8 @@ public class SubscriptionCallbacks {
   }
 
   private boolean isSocketTradeEvent(MessageFrame messageFrame) {
-    return messageFrame.functionName.equals(Endpoints.SUBSCRIBE_TRADES);
+    return messageFrame.functionName.equals(Endpoints.SUBSCRIBE_TRADES)
+        || messageFrame.functionName.equals(Endpoints.UPDATE_TRADES);
   }
 
   private boolean isOrderEvent(MessageFrame messageFrame) {

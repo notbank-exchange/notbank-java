@@ -7,12 +7,12 @@ import com.squareup.moshi.ToJson;
 
 public class BigDecimalAdapter {
   @ToJson
-  float toJson(BigDecimal value) {
-    return value.floatValue();
+  String toJson(BigDecimal value) {
+    return value.toPlainString();
   }
 
   @FromJson
-  BigDecimal fromJson(float value) {
+  BigDecimal fromJson(String value) {
     return new BigDecimal(String.valueOf(value));
   }
 }
