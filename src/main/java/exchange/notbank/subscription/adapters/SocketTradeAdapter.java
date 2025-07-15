@@ -3,9 +3,10 @@ package exchange.notbank.subscription.adapters;
 import java.math.BigDecimal;
 import java.util.List;
 
-import exchange.notbank.trading.responses.SocketTrade;
 import com.squareup.moshi.FromJson;
 import com.squareup.moshi.ToJson;
+
+import exchange.notbank.subscription.responses.SocketTrade;
 
 public class SocketTradeAdapter {
   @ToJson

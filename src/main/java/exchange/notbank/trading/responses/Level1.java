@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.squareup.moshi.Json;
 
-public class Level1Ticker {
+public class Level1 {
   @Json(name = "OMSId")
   public final Integer omsId;
   @Json(name = "InstrumentId")
@@ -35,8 +35,8 @@ public class Level1Ticker {
   public final Integer currentDayNumTrades;
   @Json(name = "CurrentDayPxChange")
   public final BigDecimal currentDayPriceChange;
-  @Json(name = "CurrentNotional")
-  public final BigDecimal currentNotional;
+  @Json(name = "CurrentDayNotional")
+  public final BigDecimal currentDayNotional;
   @Json(name = "Rolling24HrNotional")
   public final BigDecimal rolling24HrNotional;
   @Json(name = "Rolling24HrVolume")
@@ -58,11 +58,11 @@ public class Level1Ticker {
   @Json(name = "Rolling24HrPxChangePercent")
   public final BigDecimal rolling24HrPriceChangePercent;
 
-  public Level1Ticker(Integer omsId, Integer instrumentId, BigDecimal bestBid, BigDecimal bestOffer,
+  public Level1(Integer omsId, Integer instrumentId, BigDecimal bestBid, BigDecimal bestOffer,
       BigDecimal lastTradedPrice, BigDecimal lastTradedQuantity, Long lastTradeTime, BigDecimal sessionOpen,
       BigDecimal sessionHigh, BigDecimal sessionLow, BigDecimal sessionClose, BigDecimal volume,
       BigDecimal currentDayVolume, Integer currentDayNumTrades, BigDecimal currentDayPriceChange,
-      BigDecimal currentNotional, BigDecimal rolling24HrNotional, BigDecimal rolling24HrVolume,
+      BigDecimal currentDayNotional, BigDecimal rolling24HrNotional, BigDecimal rolling24HrVolume,
       BigDecimal rolling24NumTrades, BigDecimal rolling24HrPriceChange, String timeStamp, BigDecimal bidQuantity,
       BigDecimal askQuantity, Integer bidOrderCount, Integer askOrderCount, BigDecimal rolling24HrPriceChangePercent) {
     this.omsId = omsId;
@@ -80,7 +80,7 @@ public class Level1Ticker {
     this.currentDayVolume = currentDayVolume;
     this.currentDayNumTrades = currentDayNumTrades;
     this.currentDayPriceChange = currentDayPriceChange;
-    this.currentNotional = currentNotional;
+    this.currentDayNotional = currentDayNotional;
     this.rolling24HrNotional = rolling24HrNotional;
     this.rolling24HrVolume = rolling24HrVolume;
     this.rolling24NumTrades = rolling24NumTrades;
@@ -100,10 +100,10 @@ public class Level1Ticker {
         + ", lastTradeTime=" + lastTradeTime + ", sessionOpen=" + sessionOpen + ", sessionHigh=" + sessionHigh
         + ", sessionLow=" + sessionLow + ", sessionClose=" + sessionClose + ", volume=" + volume + ", currentDayVolume="
         + currentDayVolume + ", currentDayNumTrades=" + currentDayNumTrades + ", currentDayPriceChange="
-        + currentDayPriceChange + ", currentNotional=" + currentNotional + ", rolling24HrNotional="
+        + currentDayPriceChange + ", currentDayNotional=" + currentDayNotional + ", rolling24HrNotional="
         + rolling24HrNotional + ", rolling24HrVolume=" + rolling24HrVolume + ", rolling24NumTrades="
         + rolling24NumTrades + ", rolling24HrPriceChange=" + rolling24HrPriceChange + ", timeStamp=" + timeStamp
         + ", bidQuantity=" + bidQuantity + ", askQuantity=" + askQuantity + ", bidOrderCount=" + bidOrderCount
-        + ", askOrderCount=" + askOrderCount + ", rolling24HrPriceChangePercent=" + rolling24HrPriceChangePercent + "]";
+        + ", askOrderCount=" + askOrderCount + ", rolling24HrPriceChangePercent=" + rolling24HrPriceChangePercent.toPlainString() + "]";
   }
 }

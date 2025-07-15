@@ -1,9 +1,7 @@
 package exchange.notbank.subscription;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,12 +19,13 @@ import exchange.notbank.subscription.paramBuilders.SubscribeOrderStateEventsPara
 import exchange.notbank.subscription.paramBuilders.SubscribeTickerParamBuilder;
 import exchange.notbank.subscription.paramBuilders.SubscribeTradesParamBuilder;
 import exchange.notbank.subscription.paramBuilders.UnsubscribeTickerParamBuilder;
-import exchange.notbank.subscription.responses.Level2Ticker;
+import exchange.notbank.subscription.paramBuilders.UnsubscribeTradesParamBuilder;
+import exchange.notbank.subscription.responses.Level2;
 import exchange.notbank.subscription.responses.SocketTrade;
-import exchange.notbank.trading.responses.Level1Ticker;
+import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Ticker;
 
-public class MarketDataServiceTest {
+public class SubscriptionServiceTest {
   private static SubscriptionService subscriptionService;
   private static WebSocketChecker webSocketChecker;
   private static NotbankClient notbankClient;
@@ -42,10 +41,10 @@ public class MarketDataServiceTest {
     subscriptionService = notbankWebsocketClient
         .getSubscriptionService();
     credentials = TestHelper.getUserCredentials();
-    notbankWebsocketClient.authenticate(
-        credentials.userId,
-        credentials.apiPublicKey,
-        credentials.apiSecretKey);
+    // notbankWebsocketClient.authenticate(
+    //     credentials.userId,
+    //     credentials.apiPublicKey,
+    //     credentials.apiSecretKey).get();
   }
 
   @AfterAll
@@ -57,33 +56,38 @@ public class MarketDataServiceTest {
   @Test
   public void subscribeLevel1() throws InterruptedException {
     var feedChecker = new WebSocketFeedChecker();
-    var futureResponse = subscriptionService.subscribeLevel1(new SubscribeLevel1ParamBuilder(1),
-        level1Ticker -> feedChecker.<Level1Ticker>checkInstrumentId(t -> t.instrumentId, 1),
-        level1Ticker -> feedChecker.<Level1Ticker>checkInstrumentId(t -> t.instrumentId, 1));
+    var hasInstrumentId = feedChecker.<Level1>getHasInstrumentIdChecker(t -> t.instrumentId);
+    int instrumentId1 = 1;
+    var futureResponse = subscriptionService.subscribeLevel1(new SubscribeLevel1ParamBuilder(instrumentId1),
+        hasInstrumentId.apply(instrumentId1),
+        hasInstrumentId.apply(instrumentId1));
     TestHelper.checkNoError(futureResponse);
-    var futureResponse2 = subscriptionService.subscribeLevel1(new SubscribeLevel1ParamBuilder(2),
-        level1Ticker -> feedChecker.<Level1Ticker>checkInstrumentId(t -> t.instrumentId, 2),
-        level1Ticker -> feedChecker.<Level1Ticker>checkInstrumentId(t -> t.instrumentId, 2));
+    int instrumentId2 = 2;
+    var futureResponse2 = subscriptionService.subscribeLevel1(new SubscribeLevel1ParamBuilder(instrumentId2),
+        hasInstrumentId.apply(instrumentId2),
+        hasInstrumentId.apply(instrumentId2));
     TestHelper.checkNoError(futureResponse2);
     TimeUnit.MINUTES.sleep(2);
     webSocketChecker.assertNoError();
     feedChecker.assertNoError();
   }
 
+
   @Test
   public void subscribeLevel2() throws InterruptedException {
     var feedChecker = new WebSocketFeedChecker();
+    var hasInstrumentId = feedChecker.<Level2>getHasInstrumentIdCheckerFromList(t -> t.productPairCode);
     int instrumentId1 = 66;
     var futureResponse = subscriptionService.subscribeLevel2(
         new SubscribeLevel2ParamBuilder(instrumentId1, 2),
-        level1Ticker -> feedChecker.<Level2Ticker>checkInstrumentId(t -> t.productPairCode, instrumentId1),
-        level1Ticker -> feedChecker.<Level2Ticker>checkInstrumentId(t -> t.productPairCode, instrumentId1));
+        hasInstrumentId.apply(instrumentId1),
+        hasInstrumentId.apply(instrumentId1));
     TestHelper.checkNoError(futureResponse);
     var instrumentId2 = 154;
     var futureResponse2 = subscriptionService.subscribeLevel2(
         new SubscribeLevel2ParamBuilder(instrumentId2, 2),
-        level1Ticker -> feedChecker.<Level2Ticker>checkInstrumentId(t -> t.productPairCode, instrumentId2),
-        level1Ticker -> feedChecker.<Level2Ticker>checkInstrumentId(t -> t.productPairCode, instrumentId2));
+        hasInstrumentId.apply(instrumentId2),
+        hasInstrumentId.apply(instrumentId2));
     TestHelper.checkNoError(futureResponse2);
     TimeUnit.MINUTES.sleep(2);
     webSocketChecker.assertNoError();
@@ -93,21 +97,18 @@ public class MarketDataServiceTest {
   @Test
   public void subscribeTicker() throws InterruptedException {
     var feedChecker = new WebSocketFeedChecker();
+    var hasInstrumentId = feedChecker.<Ticker>getHasInstrumentIdCheckerFromList(ticker -> ticker.instrumentId);
     int instrumentId1 = 66;
     var futureResponse = subscriptionService.subscribeTicker(
         new SubscribeTickerParamBuilder(instrumentId1, 60, 3),
-        level1Ticker -> feedChecker.<List<Ticker>>checkInstrumentId(getInstrumentId(ticker -> ticker.instrumentId),
-            instrumentId1),
-        level1Ticker -> feedChecker.<List<Ticker>>checkInstrumentId(getInstrumentId(ticker -> ticker.instrumentId),
-            instrumentId1));
+        hasInstrumentId.apply(instrumentId1),
+        hasInstrumentId.apply(instrumentId1));
     TestHelper.checkNoError(futureResponse);
     var instrumentId2 = 154;
     var futureResponse2 = subscriptionService.subscribeTicker(
         new SubscribeTickerParamBuilder(instrumentId2, 60, 3),
-        level1Ticker -> feedChecker.<List<Ticker>>checkInstrumentId(getInstrumentId(ticker -> ticker.instrumentId),
-            instrumentId2),
-        level1Ticker -> feedChecker.<List<Ticker>>checkInstrumentId(getInstrumentId(ticker -> ticker.instrumentId),
-            instrumentId2));
+        hasInstrumentId.apply(instrumentId2),
+        hasInstrumentId.apply(instrumentId2));
     TestHelper.checkNoError(futureResponse2);
     TimeUnit.MINUTES.sleep(1);
     var unsubscribeFuture = subscriptionService
@@ -118,28 +119,27 @@ public class MarketDataServiceTest {
     feedChecker.assertNoError();
   }
 
-  private <T> Function<List<T>, Integer> getInstrumentId(Function<T, Integer> idExtractor) {
-    return list -> list.isEmpty() ? 0 : idExtractor.apply(list.get(0));
-  }
-
   @Test
   public void subscribeSocketTrades() throws InterruptedException {
     var feedChecker = new WebSocketFeedChecker();
+    var hasInstrumentId = feedChecker.<SocketTrade>getHasInstrumentIdCheckerFromList(trade -> trade.instrumentId);
     int instrumentId1 = 66;
     var futureResponse = subscriptionService.subscribeTrades(
         new SubscribeTradesParamBuilder(instrumentId1, 3),
-        trades -> feedChecker.<List<SocketTrade>>checkInstrumentId(getInstrumentId(trade -> trade.instrumentId),
-            instrumentId1));
+        hasInstrumentId.apply(instrumentId1),
+        hasInstrumentId.apply(instrumentId1));
     TestHelper.checkNoError(futureResponse);
     var instrumentId2 = 154;
+
     var futureResponse2 = subscriptionService.subscribeTrades(
         new SubscribeTradesParamBuilder(instrumentId2, 3),
-        trades -> feedChecker.<List<SocketTrade>>checkInstrumentId(getInstrumentId(trade -> trade.instrumentId),
-            instrumentId2));
+        hasInstrumentId.apply(instrumentId2),
+        hasInstrumentId.apply(instrumentId2));
     TestHelper.checkNoError(futureResponse2);
-    TimeUnit.MINUTES.sleep(4);
+    TimeUnit.MINUTES.sleep(2);
     webSocketChecker.assertNoError();
     feedChecker.assertNoError();
+    subscriptionService.unsubscribeTrades(new UnsubscribeTradesParamBuilder(instrumentId2));
   }
 
   public void subscribeOrderState() throws InterruptedException {

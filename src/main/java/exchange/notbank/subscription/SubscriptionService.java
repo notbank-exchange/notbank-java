@@ -29,9 +29,9 @@ import exchange.notbank.subscription.paramBuilders.UnsubscribeLevel2ParamBuilder
 import exchange.notbank.subscription.paramBuilders.UnsubscribeOrderStateEventsParamBuilder;
 import exchange.notbank.subscription.paramBuilders.UnsubscribeTickerParamBuilder;
 import exchange.notbank.subscription.paramBuilders.UnsubscribeTradesParamBuilder;
-import exchange.notbank.subscription.responses.Level2Ticker;
+import exchange.notbank.subscription.responses.Level2;
 import exchange.notbank.subscription.responses.SocketTrade;
-import exchange.notbank.trading.responses.Level1Ticker;
+import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Order;
 import exchange.notbank.trading.responses.Ticker;
 import io.vavr.control.Either;
@@ -71,16 +71,15 @@ public class SubscriptionService {
    * https://apidoc.notbank.exchange/#subscribelevel1
    */
   public CompletableFuture<Void> subscribeLevel1(SubscribeLevel1ParamBuilder paramBuilder,
-      Consumer<Level1Ticker> snapshotHandler,
-      Consumer<Level1Ticker> updateHandler) {
+      Consumer<Level1> snapshotHandler,
+      Consumer<Level1> updateHandler) {
     var instrumentId = paramBuilder.getInstrumentId();
     var handlers = List.of(
         new SubscriptionHandler<>(Endpoints.SUBSCRIBE_LEVEL_1, snapshotHandler),
         new SubscriptionHandler<>(Endpoints.UPDATE_LEVEL_1, updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_LEVEL_1, paramBuilder, o -> handlers,
         handler -> CallbackId.Factory.create(handler.eventName, instrumentId),
-        subscriptionCallbacks -> (callbackId, callback) -> subscriptionCallbacks.addLevel1TickerCallback(callbackId,
-            callback))
+        subscriptionCallbacks -> subscriptionCallbacks::addLevel1TickerCallback)
         .thenApply(either -> either.<Void>map(o -> null));
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
@@ -89,16 +88,15 @@ public class SubscriptionService {
    * https://apidoc.notbank.exchange/#subscribelevel2
    */
   public CompletableFuture<Void> subscribeLevel2(SubscribeLevel2ParamBuilder paramBuilder,
-      Consumer<List<Level2Ticker>> snapshotHandler,
-      Consumer<List<Level2Ticker>> updateHandler) {
+      Consumer<List<Level2>> snapshotHandler,
+      Consumer<List<Level2>> updateHandler) {
     var instrumentId = paramBuilder.getInstrumentId();
     var handlers = List.of(
         new SubscriptionHandler<>(Endpoints.SUBSCRIBE_LEVEL_2, snapshotHandler),
         new SubscriptionHandler<>(Endpoints.UPDATE_LEVEL_2, updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_LEVEL_2, paramBuilder, o -> handlers,
         handler -> CallbackId.Factory.create(handler.eventName, instrumentId),
-        subscriptionCallbacks -> (callbackId, callback) -> subscriptionCallbacks.addLevel2TickerCallback(callbackId,
-            callback))
+        subscriptionCallbacks -> subscriptionCallbacks::addLevel2TickerCallback)
         .thenApply(either -> either.<Void>map(o -> null));
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
@@ -107,13 +105,15 @@ public class SubscriptionService {
    * https://apidoc.notbank.exchange/#subscribetrades
    */
   public CompletableFuture<Void> subscribeTrades(SubscribeTradesParamBuilder paramBuilder,
-      Consumer<List<SocketTrade>> subscriptionHandler) {
+      Consumer<List<SocketTrade>> snapshotHandler,
+      Consumer<List<SocketTrade>> updateHandler) {
     var instrumentId = paramBuilder.getInstrumentId();
-    var handlers = List.of(new SubscriptionHandler<>(Endpoints.SUBSCRIBE_TRADES, subscriptionHandler));
+    var handlers = List.of(
+        new SubscriptionHandler<>(Endpoints.SUBSCRIBE_TRADES, snapshotHandler),
+        new SubscriptionHandler<>(Endpoints.UPDATE_TRADES, updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_TRADES, paramBuilder, o -> handlers,
         handler -> CallbackId.Factory.create(handler.eventName, instrumentId),
-        subscriptionCallbacks -> (callbackId, callback) -> subscriptionCallbacks.addSocketTradesCallback(callbackId,
-            callback))
+        subscriptionCallbacks -> subscriptionCallbacks::addSocketTradesCallback)
         .thenApply(either -> either.<Void>map(o -> null));
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
@@ -130,8 +130,7 @@ public class SubscriptionService {
         new SubscriptionHandler<>(Endpoints.UPDATE_TICKER, updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_TICKER, paramBuilder, o -> handlers,
         handler -> CallbackId.Factory.create(handler.eventName, instrumentId),
-        subscriptionCallbacks -> (callbackId, callback) -> subscriptionCallbacks.addTickersCallback(callbackId,
-            callback))
+        subscriptionCallbacks -> subscriptionCallbacks::addTickersCallback)
         .thenApply(either -> either.<Void>map(o -> null));
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
@@ -165,8 +164,11 @@ public class SubscriptionService {
    */
   public CompletableFuture<Void> unsubscribeTrades(UnsubscribeTradesParamBuilder paramBuilder) {
     return unsubscribe(Endpoints.UNSUBSCRIBE_TRADES, paramBuilder,
-        List.of(subscriptionCallbacks -> subscriptionCallbacks.removeSocketTradeCallback(
-            CallbackId.Factory.create(Endpoints.SUBSCRIBE_TRADES, paramBuilder.instrumentId))));
+        List.of(
+            subscriptionCallbacks -> subscriptionCallbacks.removeSocketTradeCallback(
+                CallbackId.Factory.create(Endpoints.SUBSCRIBE_TRADES, paramBuilder.instrumentId)),
+            subscriptionCallbacks -> subscriptionCallbacks.removeSocketTradeCallback(
+                CallbackId.Factory.create(Endpoints.UPDATE_TRADES, paramBuilder.instrumentId))));
   }
 
   /**
@@ -189,8 +191,7 @@ public class SubscriptionService {
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_ACCOUNT_EVENTS, paramBuilder,
         onError -> paramBuilder.getSubscriptions(userResponseAdapter, onError),
         handler -> CallbackId.Factory.create(handler.eventName),
-        subscriptionCallbacks -> (callbackId, callback) -> subscriptionCallbacks.addAccountCallback(callbackId,
-            callback))
+        subscriptionCallbacks -> subscriptionCallbacks::addAccountCallback)
         .thenApply(SubscriptionResponseHandler::checkBoolean);
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
@@ -217,8 +218,7 @@ public class SubscriptionService {
     var handlers = List.of(new SubscriptionHandler<>(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, subscriptionHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, paramBuilder, o -> handlers,
         handler -> CallbackId.Factory.create(handler.eventName, accountId),
-        subscriptionCallbacks -> (callbackId, callback) -> subscriptionCallbacks.addOrderCallback(callbackId,
-            callback))
+        subscriptionCallbacks -> subscriptionCallbacks::addOrderCallback)
         .thenApply(SubscriptionResponseHandler::checkBoolean);
     return CompletableFutureAdapter.fromEither(futureResponse);
   }

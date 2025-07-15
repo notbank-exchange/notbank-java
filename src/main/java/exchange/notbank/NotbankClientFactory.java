@@ -43,7 +43,6 @@ public class NotbankClientFactory {
 
   public static NotbankClient createRestClient(String host) {
     return createRestClient(host, CompletableFuture::completedFuture, (o1, o2) -> {
-      System.out.println(o1.headers());
     }, o -> {
     });
   }

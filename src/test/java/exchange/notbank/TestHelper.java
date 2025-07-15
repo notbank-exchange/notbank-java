@@ -27,6 +27,7 @@ public class TestHelper {
 
   public static <T> void checkNoError(CompletableFuture<T> futureResponse) {
     var response = CompletableFutureAdapter.getToEither(futureResponse);
+    // System.out.println(response);
     assertIsRight(response);
   }
 
@@ -55,7 +56,6 @@ public class TestHelper {
           System.out.println("***message out***");
           System.out.println(messageOut);
         }).get();
-    authenticateFactory(serviceFactory);
     return serviceFactory;
   }
 

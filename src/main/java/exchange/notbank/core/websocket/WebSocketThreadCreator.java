@@ -18,5 +18,4 @@ public class WebSocketThreadCreator {
   private static String buildUrl(String host) {
     return "wss://" + host + "/wsgateway/";
   }
-
 }

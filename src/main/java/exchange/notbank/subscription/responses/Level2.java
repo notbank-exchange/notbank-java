@@ -2,7 +2,7 @@ package exchange.notbank.subscription.responses;
 
 import java.math.BigDecimal;
 
-public class Level2Ticker {
+public class Level2 {
   public final Long marketDataUpdateId;
   public final Integer numberOfAccounts;
   public final Long actionDateTime; // in Posix format X 1000
@@ -14,7 +14,7 @@ public class Level2Ticker {
   public final BigDecimal quantity;
   public final Integer side;
 
-  public Level2Ticker(Long marketDataUpdateId, Integer numberOfAccounts, Long actionDateTime, Integer actionType,
+  public Level2(Long marketDataUpdateId, Integer numberOfAccounts, Long actionDateTime, Integer actionType,
       BigDecimal lastTradePrice, Long numberOfOrders, BigDecimal price, Integer productPairCode, BigDecimal quantity,
       Integer side) {
     this.marketDataUpdateId = marketDataUpdateId;

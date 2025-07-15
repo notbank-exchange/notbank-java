@@ -4,6 +4,10 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
 import exchange.notbank.core.ErrorHandler;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.trading.responses.Balance;
@@ -13,7 +17,7 @@ import exchange.notbank.trading.responses.DailyTicker;
 import exchange.notbank.trading.responses.EarliestTickTime;
 import exchange.notbank.trading.responses.LastTrade;
 import exchange.notbank.trading.responses.Level;
-import exchange.notbank.trading.responses.Level1Ticker;
+import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Level2Snapshot;
 import exchange.notbank.trading.responses.Level2Ticker;
 import exchange.notbank.trading.responses.ModifyOrderResponse;
@@ -26,16 +30,10 @@ import exchange.notbank.trading.responses.SendCancelReplaceListResponse;
 import exchange.notbank.trading.responses.SendOrderListResponse;
 import exchange.notbank.trading.responses.SendOrderResponse;
 import exchange.notbank.trading.responses.SimpleUserAccounts;
-import exchange.notbank.trading.responses.SocketTrade;
 import exchange.notbank.trading.responses.Summary;
 import exchange.notbank.trading.responses.SummaryMin;
 import exchange.notbank.trading.responses.Ticker;
 import exchange.notbank.trading.responses.Trade;
-
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
-
 import io.vavr.control.Either;
 
 public class TradingServiceResponseAdapter {
@@ -45,10 +43,9 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<Level2Snapshot> level2SnapshotJsonAdapter;
   private final JsonAdapter<SimpleUserAccounts> simpleUserAccountListJsonAdapter;
   private final JsonAdapter<List<String>> stringListJsonAdapter;
-  private final JsonAdapter<Level1Ticker> level1JsonAdapter;
-  private final JsonAdapter<List<Level1Ticker>> level1ListJsonAdapter;
+  private final JsonAdapter<Level1> level1JsonAdapter;
+  private final JsonAdapter<List<Level1>> level1ListJsonAdapter;
   private final JsonAdapter<List<Level2Ticker>> level2ListJsonAdapter;
-  private final JsonAdapter<SocketTrade> tradeJsonAdapter;
   private final JsonAdapter<List<Trade>> tradeListJsonAdapter;
   private final JsonAdapter<PublicTrade> publicTradeJsonAdapter;
   private final JsonAdapter<List<PublicTrade>> publicTradeListJsonAdapter;
@@ -85,12 +82,11 @@ public class TradingServiceResponseAdapter {
     this.summaryListJsonAdapter = moshi.adapter(SummaryListType);
     ParameterizedType StringListType = Types.newParameterizedType(List.class, String.class);
     this.stringListJsonAdapter = moshi.adapter(StringListType);
-    this.level1JsonAdapter = moshi.adapter(Level1Ticker.class);
-    ParameterizedType Level1ListType = Types.newParameterizedType(List.class, Level1Ticker.class);
+    this.level1JsonAdapter = moshi.adapter(Level1.class);
+    ParameterizedType Level1ListType = Types.newParameterizedType(List.class, Level1.class);
     this.level1ListJsonAdapter = moshi.adapter(Level1ListType);
     ParameterizedType Level2ListType = Types.newParameterizedType(List.class, Level2Ticker.class);
     this.level2ListJsonAdapter = moshi.adapter(Level2ListType);
-    this.tradeJsonAdapter = moshi.adapter(SocketTrade.class);
     this.publicTradeJsonAdapter = moshi.adapter(PublicTrade.class);
     ParameterizedType PublicTradeListType = Types.newParameterizedType(List.class, PublicTrade.class);
     this.publicTradeListJsonAdapter = moshi.adapter(PublicTradeListType);
@@ -153,22 +149,22 @@ public class TradingServiceResponseAdapter {
     return handle(jsonStr, stringListJsonAdapter);
   }
 
-  public Either<NotbankException, Level1Ticker> toLevel1(String jsonStr) {
+  public Either<NotbankException, Level1> toLevel1(String jsonStr) {
     return handle(jsonStr, level1JsonAdapter);
   }
 
-  public Either<NotbankException, List<Level1Ticker>> toLevel1List(String jsonStr) {
+  public Either<NotbankException, List<Level1>> toLevel1List(String jsonStr) {
     return handle(jsonStr, level1ListJsonAdapter);
   }
 
-  public Either<NotbankException, List<Level1Ticker>> toLevel1Summary(String jsonStr) {
+  public Either<NotbankException, List<Level1>> toLevel1Summary(String jsonStr) {
     var stringList = handle(jsonStr, stringListJsonAdapter);
     if (stringList.isLeft()) {
       return Either.left(stringList.getLeft());
     }
 
     List<NotbankException> errors = new ArrayList<>();
-    List<Level1Ticker> result = stringList.get().stream().map(level1String -> {
+    List<Level1> result = stringList.get().stream().map(level1String -> {
       var level1 = this.toLevel1(level1String);
       if (level1.isLeft()) {
         errors.add(level1.getLeft());
@@ -185,10 +181,6 @@ public class TradingServiceResponseAdapter {
 
   public Either<NotbankException, List<Level2Ticker>> toLevel2List(String jsonStr) {
     return handle(jsonStr, level2ListJsonAdapter);
-  }
-
-  public Either<NotbankException, SocketTrade> toTrade(String jsonStr) {
-    return handle(jsonStr, tradeJsonAdapter);
   }
 
   public Either<NotbankException, PublicTrade> toPublicTrade(String jsonStr) {
