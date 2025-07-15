@@ -12,7 +12,6 @@ import exchange.notbank.fee.adapters.IntSideAdapter;
 import exchange.notbank.fee.adapters.MakerTakerAdapter;
 import exchange.notbank.subscription.adapters.Level2Adapter;
 import exchange.notbank.subscription.adapters.SocketTradeAdapter;
-import exchange.notbank.subscription.responses.Level2;
 import exchange.notbank.trading.SimpleAccountsAdapter;
 import exchange.notbank.trading.adapters.LastTradeAdapter;
 import exchange.notbank.trading.adapters.Level2SnapshotAdapter;
