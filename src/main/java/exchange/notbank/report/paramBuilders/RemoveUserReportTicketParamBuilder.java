@@ -9,12 +9,16 @@ import exchange.notbank.core.ParamBuilder;
 public class RemoveUserReportTicketParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
-  String userReportTicketId;
+  private final String userReportTicketId;
 
   public RemoveUserReportTicketParamBuilder(String userReportTicketId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.userReportTicketId = userReportTicketId;
+  }
+
+  public String getUserReportTicketId() {
+    return userReportTicketId;
   }
 
   public Map<String, Object> getParams() {

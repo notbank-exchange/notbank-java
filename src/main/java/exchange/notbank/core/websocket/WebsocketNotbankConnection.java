@@ -11,6 +11,7 @@ import exchange.notbank.core.NotbankConnection;
 import exchange.notbank.core.AuthenticateUserParamBuilder;
 import exchange.notbank.core.CompletableFutureAdapter;
 import exchange.notbank.core.EndpointCategory;
+import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.JsonDeserializer;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
@@ -108,6 +109,14 @@ public class WebsocketNotbankConnection implements NotbankConnection {
       Function<RequestHandler, CallbackId> callbackIdGetter,
       Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<MessageFrame>>> callbackAdder) {
     websocketRequester.setRequestHandlers(requestHandlers, subscriptionEndpoint, callbackIdGetter, callbackAdder);
+  }
+
+  @Override
+  public <T> CompletableFuture<T> requestPostByText(EndpointCategory endpointCategory, String endpoint, String text,
+      HttpConfiguration httpConfiguration, Function<String, Either<NotbankException, T>> deserializeFn) {
+    var future = websocketRequester.request(endpoint, text)
+        .thenApply(jsonStr -> JsonDeserializer.deserialize(jsonStr, deserializeFn));
+    return CompletableFutureAdapter.fromEither(future);
   }
 
   @Override
