@@ -6,22 +6,22 @@ import java.util.Map;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
-public class UserReportWriterResultRecordsParamBuilder implements ParamBuilder {
+public class GetUserReportWriterResultRecordsParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public UserReportWriterResultRecordsParamBuilder(Integer userId) {
+  public GetUserReportWriterResultRecordsParamBuilder(Integer userId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("UserId", userId);
   }
 
-  public UserReportWriterResultRecordsParamBuilder depth(Integer value) {
+  public GetUserReportWriterResultRecordsParamBuilder depth(Integer value) {
     this.params.put("Depth", value);
     return this;
   }
 
-  public UserReportWriterResultRecordsParamBuilder startIndex(Integer value) {
+  public GetUserReportWriterResultRecordsParamBuilder startIndex(Integer value) {
     this.params.put("StartIndex", value);
     return this;
   }
@@ -34,7 +34,7 @@ public class UserReportWriterResultRecordsParamBuilder implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public UserReportWriterResultRecordsParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public GetUserReportWriterResultRecordsParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }

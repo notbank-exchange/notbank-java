@@ -19,7 +19,7 @@ import exchange.notbank.report.paramBuilders.RemoveUserReportTicketParamBuilder;
 import exchange.notbank.report.paramBuilders.ScheduleActivityReportParamBuilder;
 import exchange.notbank.report.paramBuilders.UserReportTicketsByStatusParamBuilder;
 import exchange.notbank.report.paramBuilders.UserReportTicketsParamBuilder;
-import exchange.notbank.report.paramBuilders.UserReportWriterResultRecordsParamBuilder;
+import exchange.notbank.report.paramBuilders.GetUserReportWriterResultRecordsParamBuilder;
 import exchange.notbank.report.responses.ActivityReport;
 import exchange.notbank.report.responses.DocumentDescriptor;
 import exchange.notbank.report.responses.DocumentSlice;
@@ -57,80 +57,125 @@ public class ReportService {
         .thenCompose(connection -> connection.requestPost(EndpointCategory.AP, endpoint, paramBuilder, deserializeFn));
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#generatetradeactivityreport
+   */
   public CompletableFuture<ActivityReport> generateTradeActivityReport(
       GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_TRADE_ACTIVITY_REPORT, paramBuilder, responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#generatetransactionactivityreport
+   */
   public CompletableFuture<ActivityReport> generateTransactionActivityReport(
       GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_TRANSACTION_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#generateproductdeltaactivityreport
+   */
   public CompletableFuture<ActivityReport> generateProductDeltaActivityReport(
       GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_PRODUCT_DELTA_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#generatepnlactivityreport
+   */
   public CompletableFuture<ActivityReport> generatePnLActivityReport(GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_PN_L_ACTIVITY_REPORT, paramBuilder, responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#scheduletradeactivityreport
+   */
   public CompletableFuture<ActivityReport> scheduleTradeActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_TRADE_ACTIVITY_REPORT, paramBuilder, responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#scheduletransactionactivityreport
+   */
   public CompletableFuture<ActivityReport> scheduleTransactionActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_TRANSACTION_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#scheduleproductdeltaactivityreport
+   */
   public CompletableFuture<ActivityReport> scheduleProductDeltaActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_PRODUCT_DELTA_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#scheduleprofitandlossactivityreport
+   */
   public CompletableFuture<ActivityReport> scheduleProfitAndLossActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_PROFIT_AND_LOSS_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#canceluserreport
+   */
   public CompletableFuture<Void> cancelUserReport(CancelUserReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.CANCEL_USER_REPORT, paramBuilder, responseAdapter::toNone);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#getuserreportwriterresultrecords
+   */
   public CompletableFuture<List<ReportWriterResultRecord>> getUserReportWriterResultRecords(
-      UserReportWriterResultRecordsParamBuilder paramBuilder) {
+      GetUserReportWriterResultRecordsParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GET_USER_REPORT_WRITER_RESULT_RECORDS, paramBuilder,
         responseAdapter::toReportWriterResultRecordList);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#getuserreporttickets
+   */
   public CompletableFuture<List<ActivityReport>> getUserReportTickets(UserReportTicketsParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GET_USER_REPORT_TICKETS, paramBuilder, responseAdapter::toActivityReportList);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#removeuserreportticket
+   */
   public CompletableFuture<Void> removeUserReportTicket(RemoveUserReportTicketParamBuilder paramBuilder) {
     String requestBody = "{" + paramBuilder.getUserReportTicketId() + "}";
     return this.requestPostByText(Endpoints.REMOVE_USER_REPORT_TICKET, requestBody, paramBuilder,
         responseAdapter::toNone);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#getuserreportticketsbystatus
+   */
   public CompletableFuture<List<ActivityReport>> getUserReportTicketsByStatus(
       UserReportTicketsByStatusParamBuilder paramBuilder) {
     return this.requestPostWithParamList(Endpoints.GET_USER_REPORT_TICKETS_BY_STATUS, paramBuilder,
         responseAdapter::toActivityReportList);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#downloaddocument
+   */
   public CompletableFuture<DocumentDescriptor> downloadDocument(DownloadDocumentParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.DOWNLOAD_DOCUMENT, paramBuilder, responseAdapter::toDocumentDescriptor);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#downloaddocumentslice
+   */
   public CompletableFuture<DocumentSlice> downloadDocumentSlice(DownloadDocumentSliceParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.DOWNLOAD_DOCUMENT_SLICE, paramBuilder, responseAdapter::toDocumentSlice);
   }
