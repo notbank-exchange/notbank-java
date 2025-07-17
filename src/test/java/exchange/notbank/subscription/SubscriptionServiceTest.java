@@ -26,7 +26,7 @@ import exchange.notbank.subscription.responses.SocketTrade;
 import exchange.notbank.trading.responses.Level1Ticker;
 import exchange.notbank.trading.responses.Ticker;
 
-public class MarketDataServiceTest {
+public class SubscriptionServiceTest {
   private static SubscriptionService subscriptionService;
   private static WebSocketChecker webSocketChecker;
   private static NotbankClient notbankClient;
