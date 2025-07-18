@@ -15,6 +15,7 @@ import exchange.notbank.wallet.responses.BankAccounts;
 import exchange.notbank.wallet.responses.Banks;
 import exchange.notbank.wallet.responses.CurrencyNetworkTemplates;
 import exchange.notbank.wallet.responses.IdResponse;
+import exchange.notbank.wallet.responses.Transaction;
 import exchange.notbank.wallet.responses.WhitelistedAddress;
 import io.vavr.control.Either;
 
@@ -28,6 +29,7 @@ public class WalletServiceResponseAdapter {
   private final JsonAdapter<DataResponse<List<WhitelistedAddress>>> whitelistedAddressListJsonAdapter;
   private final JsonAdapter<DataResponse<IdResponse>> idResponseJsonAdapter;
   private final JsonAdapter<DataResponse<List<CurrencyNetworkTemplates>>> currencyNetworkTemplatesJsonAdapter;
+  private final JsonAdapter<DataResponse<List<Transaction>>> transactionListJsonAdapter;
 
   public WalletServiceResponseAdapter(Moshi moshi) {
     this.errorHandler = ErrorHandler.Factory.createNbErrorHandler(moshi);
@@ -63,7 +65,13 @@ public class WalletServiceResponseAdapter {
         DataResponse.class,
         CurrencyNetworkTemplatesListType);
     this.currencyNetworkTemplatesJsonAdapter = moshi.adapter(CurrencyNetworkTemplatesListResponseType);
-
+    ParameterizedType TransactionListType = Types.newParameterizedType(
+        List.class,
+        Transaction.class);
+    ParameterizedType TransactionListResponseType = Types.newParameterizedType(
+        DataResponse.class,
+        TransactionListType);
+    this.transactionListJsonAdapter = moshi.adapter(TransactionListResponseType);
   }
 
   public Either<NotbankException, Void> toNone(String jsonStr) {
@@ -105,4 +113,9 @@ public class WalletServiceResponseAdapter {
   Either<NotbankException, String> toIdString(String jsonStr) {
     return handle(jsonStr, idResponseJsonAdapter).map(response -> response.data.id);
   }
+
+  Either<NotbankException, List<Transaction>> toTransactionList(String jsonStr) {
+    return handle(jsonStr, transactionListJsonAdapter).map(response -> response.data);
+  }
+
 }

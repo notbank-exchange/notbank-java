@@ -5,17 +5,15 @@ import java.util.UUID;
 
 import com.squareup.moshi.Json;
 
+import exchange.notbank.quote.constants.QuoteState;
+import exchange.notbank.quote.constants.QuoteType;
+
 public class Quote {
-  @Json(name = "id")
   public final UUID id;
   @Json(name = "is_inverse")
   public final Boolean isInverse;
-  @Json(name = "type")
-  // TODO: #reunion ? which are the types
-  public final Integer type;
-  @Json(name = "state")
-  // TODO: #reunion ? which are the states
-  public final Integer state;
+  public final QuoteType type;
+  public final QuoteState state;
   @Json(name = "currency_in")
   public final String currencyIn;
   @Json(name = "currency_out")
@@ -31,7 +29,7 @@ public class Quote {
   @Json(name = "fee_detail")
   public final String feeDetail;
 
-  public Quote(UUID id, Boolean isInverse, Integer type, Integer state, String currencyIn, String currencyOut,
+  public Quote(UUID id, Boolean isInverse, QuoteType type, QuoteState state, String currencyIn, String currencyOut,
       BigDecimal amountIn, BigDecimal amountOut, BigDecimal amountUsdtOut, BigDecimal feeAmount, String feeDetail) {
     this.id = id;
     this.isInverse = isInverse;

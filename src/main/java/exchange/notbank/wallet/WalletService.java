@@ -21,13 +21,16 @@ import exchange.notbank.wallet.paramBuilders.GetBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetBankAccountsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetBanksParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetDepositAddressesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetTransactionsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetnetworksTemplatesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.TransferFundsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdraw;
 import exchange.notbank.wallet.responses.BankAccount;
 import exchange.notbank.wallet.responses.BankAccounts;
 import exchange.notbank.wallet.responses.Banks;
 import exchange.notbank.wallet.responses.CurrencyNetworkTemplates;
+import exchange.notbank.wallet.responses.Transaction;
 import exchange.notbank.wallet.responses.WhitelistedAddress;
 import io.vavr.control.Either;
 
@@ -172,4 +175,17 @@ public class WalletService {
     return requestPost(Endpoints.CREATE_CRIPTO_WITHDRAW, paramBuilder, responseAdapter::toStringResponse);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/?http#transferfunds
+   */
+  public CompletableFuture<String> transferFunds(TransferFundsParamBuilder paramBuilder) {
+    return requestPost(Endpoints.TRANSFER_FUNDS, paramBuilder, responseAdapter::toStringResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/?http#gettransactions
+   */
+  public CompletableFuture<List<Transaction>> transferFunds(GetTransactionsParamBuilder paramBuilder) {
+    return requestPost(Endpoints.TRANSACTIONS, paramBuilder, responseAdapter::toTransactionList);
+  }
 }

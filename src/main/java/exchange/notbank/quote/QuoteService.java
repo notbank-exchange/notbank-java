@@ -75,7 +75,6 @@ public class QuoteService {
    * https://apidoc.notbank.exchange/?http#executequote
    */
   public CompletableFuture<Quote> executeQuote(ExecuteQuoteParamBuilder paramBuilder) {
-    // TODO: #reunion ? is the result also a quote model ?
     return requestPost(Endpoints.QUOTES + "/" + paramBuilder.quoteId, paramBuilder, responseAdapter::toQuote);
   }
 
