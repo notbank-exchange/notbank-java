@@ -9,6 +9,7 @@ import exchange.notbank.core.NotbankConnectionAuthenticator;
 import exchange.notbank.fee.FeeService;
 import exchange.notbank.instrument.InstrumentService;
 import exchange.notbank.product.ProductService;
+import exchange.notbank.report.ReportService;
 import exchange.notbank.subscription.SubscriptionService;
 import exchange.notbank.system.SystemService;
 import exchange.notbank.trading.TradingService;
@@ -26,11 +27,12 @@ public class NotbankClient {
   public final TradingService tradingService;
   public final UserService userService;
   public final WalletService walletService;
+  public final ReportService reportService;
 
   public NotbankClient(Supplier<NotbankConnection> connectionSupplier, AccountService accountService,
       FeeService feeService, InstrumentService instrumentService, ProductService productService,
       SubscriptionService subscriptionService, SystemService systemService, TradingService tradingService,
-      UserService userService, WalletService walletService) {
+      UserService userService, WalletService walletService, ReportService reportService) {
     this.connectionSupplier = connectionSupplier;
     this.accountService = accountService;
     this.feeService = feeService;
@@ -41,6 +43,7 @@ public class NotbankClient {
     this.tradingService = tradingService;
     this.userService = userService;
     this.walletService = walletService;
+    this.reportService = reportService;
   }
 
   public static class Factory extends NotbankClientFactory {
@@ -97,5 +100,9 @@ public class NotbankClient {
 
   public WalletService getWalletService() {
     return walletService;
+  }
+
+  public ReportService getReportService() {
+    return reportService;
   }
 }
