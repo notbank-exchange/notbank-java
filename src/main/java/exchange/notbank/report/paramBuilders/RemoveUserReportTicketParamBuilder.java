@@ -2,6 +2,7 @@ package exchange.notbank.report.paramBuilders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
@@ -9,15 +10,15 @@ import exchange.notbank.core.ParamBuilder;
 public class RemoveUserReportTicketParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
-  private final String userReportTicketId;
+  private final UUID userReportTicketId;
 
-  public RemoveUserReportTicketParamBuilder(String userReportTicketId) {
+  public RemoveUserReportTicketParamBuilder(UUID userReportTicketId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.userReportTicketId = userReportTicketId;
   }
 
-  public String getUserReportTicketId() {
+  public UUID getUserReportTicketId() {
     return userReportTicketId;
   }
 

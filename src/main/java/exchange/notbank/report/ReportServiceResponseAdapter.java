@@ -9,7 +9,7 @@ import com.squareup.moshi.Types;
 
 import exchange.notbank.core.ErrorHandler;
 import exchange.notbank.core.NotbankException;
-import exchange.notbank.report.responses.ActivityReport;
+import exchange.notbank.report.responses.ActivityReportSummary;
 import exchange.notbank.report.responses.DocumentDescriptor;
 import exchange.notbank.report.responses.DocumentSlice;
 import exchange.notbank.report.responses.ReportWriterResultRecord;
@@ -17,16 +17,18 @@ import io.vavr.control.Either;
 
 public class ReportServiceResponseAdapter {
   private final ErrorHandler errorHandler;
-  private final JsonAdapter<ActivityReport> activityReportAdapter;
-  private final JsonAdapter<List<ActivityReport>> activityReportListAdapter;
+  private final ReportErrorHandler reportErrorHandler;
+  private final JsonAdapter<ActivityReportSummary> activityReportAdapter;
+  private final JsonAdapter<List<ActivityReportSummary>> activityReportListAdapter;
   private final JsonAdapter<DocumentDescriptor> documentDescriptoAdapter;
   private final JsonAdapter<DocumentSlice> documentSliceAdapter;
   private final JsonAdapter<List<ReportWriterResultRecord>> reportWriterResultRecordListAdapter;
 
   public ReportServiceResponseAdapter(Moshi moshi) {
     errorHandler = ErrorHandler.Factory.createApErrorHandler(moshi);
-    activityReportAdapter = moshi.adapter(ActivityReport.class);
-    ParameterizedType ActivityReportListType = Types.newParameterizedType(List.class, ActivityReport.class);
+    reportErrorHandler = ReportErrorHandler.Factory.create(moshi);
+    activityReportAdapter = moshi.adapter(ActivityReportSummary.class);
+    ParameterizedType ActivityReportListType = Types.newParameterizedType(List.class, ActivityReportSummary.class);
     activityReportListAdapter = moshi.adapter(ActivityReportListType);
     documentDescriptoAdapter = moshi.adapter(DocumentDescriptor.class);
     documentSliceAdapter = moshi.adapter(DocumentSlice.class);
@@ -40,14 +42,14 @@ public class ReportServiceResponseAdapter {
   }
 
   private <T> Either<NotbankException, T> handle(String jsonString, JsonAdapter<T> jsonAdapter) {
-    return errorHandler.handleAndThen(jsonAdapter).apply(jsonString);
+    return reportErrorHandler.handle(jsonString).flatMap(errorHandler.handleAndThen(jsonAdapter));
   }
 
-  public Either<NotbankException, ActivityReport> toActivityReport(String jsonStr) {
+  public Either<NotbankException, ActivityReportSummary> toActivityReport(String jsonStr) {
     return handle(jsonStr, activityReportAdapter);
   }
 
-  public Either<NotbankException, List<ActivityReport>> toActivityReportList(String jsonStr) {
+  public Either<NotbankException, List<ActivityReportSummary>> toActivityReportList(String jsonStr) {
     return handle(jsonStr, activityReportListAdapter);
   }
 

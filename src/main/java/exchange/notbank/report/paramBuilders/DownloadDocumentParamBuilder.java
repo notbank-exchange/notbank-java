@@ -2,6 +2,7 @@ package exchange.notbank.report.paramBuilders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
@@ -10,7 +11,7 @@ public class DownloadDocumentParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public DownloadDocumentParamBuilder(String descriptorId) {
+  public DownloadDocumentParamBuilder(UUID descriptorId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("DescriptorId", descriptorId);

@@ -17,10 +17,10 @@ import exchange.notbank.report.paramBuilders.DownloadDocumentSliceParamBuilder;
 import exchange.notbank.report.paramBuilders.GenerateActivityReportParamBuilder;
 import exchange.notbank.report.paramBuilders.RemoveUserReportTicketParamBuilder;
 import exchange.notbank.report.paramBuilders.ScheduleActivityReportParamBuilder;
-import exchange.notbank.report.paramBuilders.UserReportTicketsByStatusParamBuilder;
-import exchange.notbank.report.paramBuilders.UserReportTicketsParamBuilder;
+import exchange.notbank.report.paramBuilders.GetUserReportTicketsByStatusParamBuilder;
+import exchange.notbank.report.paramBuilders.GetUserReportTicketsParamBuilder;
 import exchange.notbank.report.paramBuilders.GetUserReportWriterResultRecordsParamBuilder;
-import exchange.notbank.report.responses.ActivityReport;
+import exchange.notbank.report.responses.ActivityReportSummary;
 import exchange.notbank.report.responses.DocumentDescriptor;
 import exchange.notbank.report.responses.DocumentSlice;
 import exchange.notbank.report.responses.ReportWriterResultRecord;
@@ -60,7 +60,7 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#generatetradeactivityreport
    */
-  public CompletableFuture<ActivityReport> generateTradeActivityReport(
+  public CompletableFuture<ActivityReportSummary> generateTradeActivityReport(
       GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_TRADE_ACTIVITY_REPORT, paramBuilder, responseAdapter::toActivityReport);
   }
@@ -68,7 +68,7 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#generatetransactionactivityreport
    */
-  public CompletableFuture<ActivityReport> generateTransactionActivityReport(
+  public CompletableFuture<ActivityReportSummary> generateTransactionActivityReport(
       GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_TRANSACTION_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
@@ -77,7 +77,7 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#generateproductdeltaactivityreport
    */
-  public CompletableFuture<ActivityReport> generateProductDeltaActivityReport(
+  public CompletableFuture<ActivityReportSummary> generateProductDeltaActivityReport(
       GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_PRODUCT_DELTA_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
@@ -86,14 +86,15 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#generatepnlactivityreport
    */
-  public CompletableFuture<ActivityReport> generatePnLActivityReport(GenerateActivityReportParamBuilder paramBuilder) {
+  public CompletableFuture<ActivityReportSummary> generatePnLActivityReport(
+      GenerateActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GENERATE_PN_L_ACTIVITY_REPORT, paramBuilder, responseAdapter::toActivityReport);
   }
 
   /**
    * https://apidoc.notbank.exchange/?http#scheduletradeactivityreport
    */
-  public CompletableFuture<ActivityReport> scheduleTradeActivityReport(
+  public CompletableFuture<ActivityReportSummary> scheduleTradeActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_TRADE_ACTIVITY_REPORT, paramBuilder, responseAdapter::toActivityReport);
   }
@@ -101,7 +102,7 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#scheduletransactionactivityreport
    */
-  public CompletableFuture<ActivityReport> scheduleTransactionActivityReport(
+  public CompletableFuture<ActivityReportSummary> scheduleTransactionActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_TRANSACTION_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
@@ -110,7 +111,7 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#scheduleproductdeltaactivityreport
    */
-  public CompletableFuture<ActivityReport> scheduleProductDeltaActivityReport(
+  public CompletableFuture<ActivityReportSummary> scheduleProductDeltaActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_PRODUCT_DELTA_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
@@ -119,7 +120,7 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#scheduleprofitandlossactivityreport
    */
-  public CompletableFuture<ActivityReport> scheduleProfitAndLossActivityReport(
+  public CompletableFuture<ActivityReportSummary> scheduleProfitAndLossActivityReport(
       ScheduleActivityReportParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.SCHEDULE_PROFIT_AND_LOSS_ACTIVITY_REPORT, paramBuilder,
         responseAdapter::toActivityReport);
@@ -144,7 +145,8 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#getuserreporttickets
    */
-  public CompletableFuture<List<ActivityReport>> getUserReportTickets(UserReportTicketsParamBuilder paramBuilder) {
+  public CompletableFuture<List<ActivityReportSummary>> getUserReportTickets(
+      GetUserReportTicketsParamBuilder paramBuilder) {
     return this.requestPost(Endpoints.GET_USER_REPORT_TICKETS, paramBuilder, responseAdapter::toActivityReportList);
   }
 
@@ -160,8 +162,8 @@ public class ReportService {
   /**
    * https://apidoc.notbank.exchange/?http#getuserreportticketsbystatus
    */
-  public CompletableFuture<List<ActivityReport>> getUserReportTicketsByStatus(
-      UserReportTicketsByStatusParamBuilder paramBuilder) {
+  public CompletableFuture<List<ActivityReportSummary>> getUserReportTicketsByStatus(
+      GetUserReportTicketsByStatusParamBuilder paramBuilder) {
     return this.requestPostWithParamList(Endpoints.GET_USER_REPORT_TICKETS_BY_STATUS, paramBuilder,
         responseAdapter::toActivityReportList);
   }

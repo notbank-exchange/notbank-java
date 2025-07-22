@@ -240,4 +240,4 @@ project/**/metals.sbt
 # End of https://www.toptal.com/developers/gitignore/api/metals
 
 local-notes.md
-key.json
+key.json*

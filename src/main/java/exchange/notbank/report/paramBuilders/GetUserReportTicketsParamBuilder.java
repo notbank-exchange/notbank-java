@@ -6,11 +6,11 @@ import java.util.Map;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
-public class UserReportTicketsParamBuilder implements ParamBuilder {
+public class GetUserReportTicketsParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public UserReportTicketsParamBuilder(Integer userId) {
+  public GetUserReportTicketsParamBuilder(Integer userId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("UserId", userId);
@@ -24,7 +24,7 @@ public class UserReportTicketsParamBuilder implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public UserReportTicketsParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public GetUserReportTicketsParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }

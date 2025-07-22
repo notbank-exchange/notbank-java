@@ -1,10 +1,14 @@
 package exchange.notbank.report.responses;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.squareup.moshi.Json;
 
-public class ActivityReport {
+import exchange.notbank.report.constants.ReportFrequency;
+import exchange.notbank.report.constants.RequestStatus;
+
+public class ActivityReportSummary {
   @Json(name = "RequestingUser")
   public final Integer requestingUser;
   public final Integer OMSId;
@@ -14,18 +18,18 @@ public class ActivityReport {
   public final String intervalStartTime;
   public final String intervalEndTime;
   @Json(name = "RequestStatus")
-  public final String requestStatus;
+  public final RequestStatus requestStatus;
   @Json(name = "ReportFrequency")
-  public final String reportFrequency;
+  public final ReportFrequency reportFrequency;
   public final Long intervalDuration;
   @Json(name = "RequestId")
-  public final String requestId;
-  public final String lastInstanceId;
+  public final UUID requestId;
+  public final UUID lastInstanceId;
   public final List<Integer> accountIds;
 
-  public ActivityReport(Integer requestingUser, Integer oMSId, String reportFlavor, String createTime,
-      String initialRunTime, String intervalStartTime, String intervalEndTime, String requestStatus,
-      String reportFrequency, Long intervalDuration, String requestId, String lastInstanceId,
+  public ActivityReportSummary(Integer requestingUser, Integer oMSId, String reportFlavor, String createTime,
+      String initialRunTime, String intervalStartTime, String intervalEndTime, RequestStatus requestStatus,
+      ReportFrequency reportFrequency, Long intervalDuration, UUID requestId, UUID lastInstanceId,
       List<Integer> accountIds) {
     this.requestingUser = requestingUser;
     OMSId = oMSId;

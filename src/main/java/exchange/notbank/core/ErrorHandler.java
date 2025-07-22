@@ -8,7 +8,7 @@ import com.squareup.moshi.Moshi;
 import io.vavr.control.Either;
 
 public class ErrorHandler {
-  Function<String, Either<NotbankException, String>> handleErrorFn;
+  private final Function<String, Either<NotbankException, String>> handleErrorFn;
 
   public ErrorHandler(
       Function<String, Either<NotbankException, String>> handleErrorFn) {

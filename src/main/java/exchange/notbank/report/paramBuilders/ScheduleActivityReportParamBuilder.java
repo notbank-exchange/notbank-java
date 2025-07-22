@@ -6,6 +6,7 @@ import java.util.Map;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
+import exchange.notbank.report.constants.ReportFrequency;
 
 public class ScheduleActivityReportParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
@@ -19,7 +20,7 @@ public class ScheduleActivityReportParamBuilder implements ParamBuilder {
     this.params.put("beginTime", beginTime);
   }
 
-  public ScheduleActivityReportParamBuilder frequency(String value) {
+  public ScheduleActivityReportParamBuilder frequency(ReportFrequency value) {
     this.params.put("Frequency", value);
     return this;
   }
