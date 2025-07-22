@@ -1,6 +1,7 @@
 package exchange.notbank.quote;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -51,7 +52,7 @@ public class QuoteService {
   /**
    * https://apidoc.notbank.exchange/?http#createdirectquote
    */
-  public CompletableFuture<String> createDirectQuote(CreateDirectQuoteParamBuilder paramBuilder) {
+  public CompletableFuture<UUID> createDirectQuote(CreateDirectQuoteParamBuilder paramBuilder) {
     return requestPost(Endpoints.QUOTES_DIRECT, paramBuilder,
         jsonStr -> responseAdapter.toIdResponse(jsonStr).map(response -> response.id));
   }
@@ -59,7 +60,7 @@ public class QuoteService {
   /**
    * https://apidoc.notbank.exchange/?http#createinversequote
    */
-  public CompletableFuture<String> createInverseQuote(CreateInverseQuoteParamBuilder paramBuilder) {
+  public CompletableFuture<UUID> createInverseQuote(CreateInverseQuoteParamBuilder paramBuilder) {
     return requestPost(Endpoints.QUOTES_INVERSE, paramBuilder,
         jsonStr -> responseAdapter.toIdResponse(jsonStr).map(response -> response.id));
   }
