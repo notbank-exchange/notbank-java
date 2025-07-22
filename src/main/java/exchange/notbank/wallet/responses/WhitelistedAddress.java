@@ -1,7 +1,9 @@
 package exchange.notbank.wallet.responses;
 
+import java.util.UUID;
+
 public class WhitelistedAddress {
-  public final String id;
+  public final UUID id;
   public final String currency;
   public final String label;
   public final String network;
@@ -9,7 +11,7 @@ public class WhitelistedAddress {
   public final String memo;
   public final Boolean verified;
 
-  public WhitelistedAddress(String id, String currency, String label, String network, String address, String memo,
+  public WhitelistedAddress(UUID id, String currency, String label, String network, String address, String memo,
       Boolean verified) {
     this.id = id;
     this.currency = currency;

@@ -2,6 +2,7 @@ package exchange.notbank.wallet;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.UUID;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -50,9 +51,12 @@ public class WalletServiceResponseAdapter {
         DataResponse.class,
         StringListType);
     this.stringListJsonAdapter = moshi.adapter(StringListResponseType);
+    ParameterizedType WhitelistAddressListType = Types.newParameterizedType(
+        List.class,
+        WhitelistedAddress.class);
     ParameterizedType WhitelistAddressListResponseType = Types.newParameterizedType(
         DataResponse.class,
-        StringListType);
+        WhitelistAddressListType);
     this.whitelistedAddressListJsonAdapter = moshi.adapter(WhitelistAddressListResponseType);
     ParameterizedType IdResponseType = Types.newParameterizedType(
         DataResponse.class,
@@ -107,10 +111,11 @@ public class WalletServiceResponseAdapter {
   }
 
   Either<NotbankException, List<WhitelistedAddress>> toWhiteListedAddressList(String jsonStr) {
+    System.out.println(jsonStr);
     return handle(jsonStr, whitelistedAddressListJsonAdapter).map(response -> response.data);
   }
 
-  Either<NotbankException, String> toIdString(String jsonStr) {
+  Either<NotbankException, UUID> toUuid(String jsonStr) {
     return handle(jsonStr, idResponseJsonAdapter).map(response -> response.data.id);
   }
 

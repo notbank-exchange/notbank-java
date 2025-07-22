@@ -5,14 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import exchange.notbank.CredentialsLoader.UserCredentials;
-import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
+import exchange.notbank.wallet.constants.WithdrawAction;
 import exchange.notbank.wallet.paramBuilders.AddWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ConfirmWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateBankAccountParamBuilder;
@@ -35,7 +36,7 @@ public class WalletServiceTest {
 
   @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException {
-    var client = NotbankClient.Factory.createRestClient(TestHelper.HOST);
+    var client = TestHelper.newRestClient();
     credentials = TestHelper.getUserCredentials();
     client.authenticate(credentials.userId, credentials.apiPublicKey, credentials.apiSecretKey).get();
     service = client.getWalletService();
@@ -94,29 +95,44 @@ public class WalletServiceTest {
   }
 
   @Test
-  public void whitelistedAddressFlow() throws InterruptedException, ExecutionException {
-    service.getWhitelistedAddresses(new GetWhitelistedAddressesParamBuilder(credentials.accountId)).get();
-    var addressId = service
-        .addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
-            credentials.accountId, "USDT", "USDT_BSC_TEST", "123123", "a label", "otp"))
+  public void getWhitelistedAddresses() throws InterruptedException, ExecutionException {
+    var addresses = service.getWhitelistedAddresses(new GetWhitelistedAddressesParamBuilder(credentials.accountId))
         .get();
-    service.confirmWhitelistedAddress(new ConfirmWhitelistedAddressesParamBuilder(addressId, "123")).get();
-    service.getWhitelistedAddresses(new GetWhitelistedAddressesParamBuilder(credentials.accountId)).get();
+    System.out.println(addresses);
+  }
+
+  @Test
+  public void addWhitelistedAddress() throws InterruptedException, ExecutionException {
+    service.addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
+        credentials.accountId, "USDT", "USDT_BSC_TEST", "0x019d9fd2549235105c6C7fd406dF6E08Fd832d61", "a label", 133513))
+        .get();
+  }
+
+  @Test
+  public void confirmWhitelistedAddress() throws InterruptedException, ExecutionException {
+    var addressId = UUID.fromString("0x019d9fd2549235105c6C7fd406dF6E08Fd832d61");
+    service.confirmWhitelistedAddress(new ConfirmWhitelistedAddressesParamBuilder(credentials.accountId,addressId, "123")).get();
+  }
+
+  @Test
+  public void deleteWhitelistedAddress() throws InterruptedException, ExecutionException {
+    var addressId = UUID.fromString("b271fa07-f8bc-e46f-fedd-bdb789e0d90b");
     service
-        .deleteWhitelistedAddress(new DeleteWhitelistedAddressesParamBuilder(addressId, credentials.accountId, "123"))
+        .deleteWhitelistedAddress(new DeleteWhitelistedAddressesParamBuilder(credentials.accountId, addressId, 785989))
         .get();
   }
 
   @Test
   public void updateOneStepWithdraw() throws InterruptedException, ExecutionException {
-    service.updateOneStepWithdraw(new UpdateOneStepWithdraw("action", "otp")).get();
+    service.updateOneStepWithdraw(
+        new UpdateOneStepWithdraw(credentials.accountId, WithdrawAction.DISABLE, 468211)).get();
   }
 
   @Test
   public void createCryptoWithdraw() throws InterruptedException, ExecutionException {
     var withdrawId = service.createCryptoWithdraw(
-        new CreateCryptoWithdrawParamBuilder(credentials.accountId, "BTC", "USDT_BSC", "1231213",
-            new BigDecimal("0.1")))
+        new CreateCryptoWithdrawParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST", "0xD9aF4Be918e2AE1302f37C11939bE3b41A88F23c",
+            new BigDecimal("0.1")).otp(560811))
         .get();
     assertTrue(withdrawId.length() > 0);
   }

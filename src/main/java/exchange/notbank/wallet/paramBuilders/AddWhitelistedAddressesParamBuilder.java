@@ -11,7 +11,7 @@ public class AddWhitelistedAddressesParamBuilder implements ParamBuilder {
   protected HttpConfiguration httpConfiguration;
 
   public AddWhitelistedAddressesParamBuilder(Integer accountId, String currency, String network, String address,
-      String label, String otp) {
+      String label, Integer otp) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.params.put("account_id", accountId);
@@ -19,7 +19,7 @@ public class AddWhitelistedAddressesParamBuilder implements ParamBuilder {
     this.params.put("network", network);
     this.params.put("address", address);
     this.params.put("label", label);
-    this.params.put("otp", otp);
+    this.params.put("otp", otp.toString());
   }
 
   public AddWhitelistedAddressesParamBuilder memoOrTag(String value) {

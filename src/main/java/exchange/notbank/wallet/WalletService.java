@@ -1,6 +1,7 @@
 package exchange.notbank.wallet;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -139,16 +140,17 @@ public class WalletService {
   /**
    * https://apidoc.notbank.exchange/#addwhitelistedaddress
    */
-  public CompletableFuture<String> addWhitelistedAddress(
+  public CompletableFuture<UUID> addWhitelistedAddress(
       AddWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES, paramBuilder, responseAdapter::toIdString);
+    return requestPost(Endpoints.WHITELISTED_ADDRESSES, paramBuilder, responseAdapter::toUuid);
   }
 
   /**
    * https://apidoc.notbank.exchange/#confirmwhitelistedaddress
    */
   public CompletableFuture<Void> confirmWhitelistedAddress(ConfirmWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId(), paramBuilder,
+    return requestPost(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId() + "/verification",
+        paramBuilder,
         responseAdapter::toNone);
   }
 
@@ -156,7 +158,7 @@ public class WalletService {
    * https://apidoc.notbank.exchange/#deletewhitelistedaddress
    */
   public CompletableFuture<Void> deleteWhitelistedAddress(DeleteWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId(), paramBuilder,
+    return requestDelete(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId(), paramBuilder,
         responseAdapter::toNone);
   }
 
