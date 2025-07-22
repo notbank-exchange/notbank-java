@@ -1,6 +1,7 @@
 package exchange.notbank.wallet;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -12,16 +13,20 @@ import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
 import exchange.notbank.wallet.constants.Endpoints;
 import exchange.notbank.wallet.paramBuilders.AddWhitelistedAddressesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.ConfirmFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ConfirmWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateCryptoWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateDepositAddressParamBuilder;
+import exchange.notbank.wallet.paramBuilders.CreateFiatDepositParamBuilder;
+import exchange.notbank.wallet.paramBuilders.CreateFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.DeleteBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.DeleteWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetBankAccountsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetBanksParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetDepositAddressesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetOwnersFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetTransactionsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetnetworksTemplatesParamBuilder;
@@ -30,6 +35,7 @@ import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdraw;
 import exchange.notbank.wallet.responses.BankAccount;
 import exchange.notbank.wallet.responses.BankAccounts;
 import exchange.notbank.wallet.responses.Banks;
+import exchange.notbank.wallet.responses.CbuOwner;
 import exchange.notbank.wallet.responses.CurrencyNetworkTemplates;
 import exchange.notbank.wallet.responses.Transaction;
 import exchange.notbank.wallet.responses.WhitelistedAddress;
@@ -175,6 +181,35 @@ public class WalletService {
    */
   public CompletableFuture<String> createCryptoWithdraw(CreateCryptoWithdrawParamBuilder paramBuilder) {
     return requestPost(Endpoints.CREATE_CRIPTO_WITHDRAW, paramBuilder, responseAdapter::toStringResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#createfiatdeposit
+   */
+
+  public CompletableFuture<Optional<String>> createFiatDeposit(CreateFiatDepositParamBuilder paramBuilder) {
+    return requestPost(Endpoints.FIAT_DEPOSIT, paramBuilder, responseAdapter::toOptionalUrlResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#getownersfiatwithdraw
+   */
+  public CompletableFuture<List<CbuOwner>> getOwnersFiatWithdraw(GetOwnersFiatWithdrawParamBuilder paramBuilder) {
+    return requestPost(Endpoints.GET_OWNERS_FIAT_WITHDRAW, paramBuilder, responseAdapter::toCbuOwnerList);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#createfiatwithdraw
+   */
+  public CompletableFuture<Optional<UUID>> createFiatWithdraw(CreateFiatWithdrawParamBuilder paramBuilder) {
+    return requestPost(Endpoints.FIAT_WITHDRAW, paramBuilder, responseAdapter::toOptionalWithdrawalIdResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#confirmfiatwithdraw
+   */
+  public CompletableFuture<Void> confirmFiatWithdraw(ConfirmFiatWithdrawParamBuilder paramBuilder) {
+    return requestPost(Endpoints.FIAT_WITHDRAW, paramBuilder, responseAdapter::toNone);
   }
 
   /**
