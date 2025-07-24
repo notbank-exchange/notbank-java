@@ -176,7 +176,7 @@ public class SubscriptionCallbacks {
   }
 
   private boolean isOrderEvent(MessageFrame messageFrame) {
-    return messageFrame.functionName.equals(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS);
+    return messageFrame.functionName.equals(Endpoints.ORDER_STATE_EVENT);
   }
 
   private boolean isAccountEvent(MessageFrame messageFrame) {

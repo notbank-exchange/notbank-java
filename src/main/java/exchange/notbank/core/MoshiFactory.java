@@ -21,7 +21,9 @@ import exchange.notbank.trading.adapters.TickerAdapter;
 import exchange.notbank.trading.responses.Level2Snapshot;
 import exchange.notbank.trading.responses.SimpleUserAccounts;
 import exchange.notbank.trading.responses.SummaryMin;
+import exchange.notbank.wallet.adapters.DepositPaymentMethodAdapter;
 import exchange.notbank.wallet.adapters.DirectionAdapter;
+import exchange.notbank.wallet.adapters.WithdrawalPaymentMethodAdapter;
 
 public class MoshiFactory {
   public static Moshi create() {
@@ -43,6 +45,8 @@ public class MoshiFactory {
         .add(new MakerTakerAdapter())
         .add(new LastTradeAdapter())
         .add(new DirectionAdapter())
+        .add(new WithdrawalPaymentMethodAdapter())
+        .add(new DepositPaymentMethodAdapter())
         .build();
   }
 }

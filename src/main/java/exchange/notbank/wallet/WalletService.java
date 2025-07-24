@@ -195,7 +195,7 @@ public class WalletService {
    * https://apidoc.notbank.exchange/#getownersfiatwithdraw
    */
   public CompletableFuture<List<CbuOwner>> getOwnersFiatWithdraw(GetOwnersFiatWithdrawParamBuilder paramBuilder) {
-    return requestPost(Endpoints.GET_OWNERS_FIAT_WITHDRAW, paramBuilder, responseAdapter::toCbuOwnerList);
+    return requestGet(Endpoints.GET_OWNERS_FIAT_WITHDRAW, paramBuilder, responseAdapter::toCbuOwnerList);
   }
 
   /**
@@ -209,7 +209,8 @@ public class WalletService {
    * https://apidoc.notbank.exchange/#confirmfiatwithdraw
    */
   public CompletableFuture<Void> confirmFiatWithdraw(ConfirmFiatWithdrawParamBuilder paramBuilder) {
-    return requestPost(Endpoints.FIAT_WITHDRAW, paramBuilder, responseAdapter::toNone);
+    return requestPost(Endpoints.FIAT_WITHDRAW + "/" + paramBuilder.withdrawalId.toString(), paramBuilder,
+        responseAdapter::toNone);
   }
 
   /**

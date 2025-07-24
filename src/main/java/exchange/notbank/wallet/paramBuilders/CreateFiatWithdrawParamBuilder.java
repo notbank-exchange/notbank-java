@@ -8,7 +8,6 @@ import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 import exchange.notbank.wallet.constants.DepositPaymentMethod;
 
-// TODO
 public class CreateFiatWithdrawParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
@@ -33,8 +32,23 @@ public class CreateFiatWithdrawParamBuilder implements ParamBuilder {
     return this;
   }
 
-  public CreateFiatWithdrawParamBuilder voucher(String value) {
-    this.params.put("voucher", value.toString());
+  public CreateFiatWithdrawParamBuilder cbu(String value) {
+    this.params.put("cbu", value);
+    return this;
+  }
+
+  public CreateFiatWithdrawParamBuilder personType(String value) {
+    this.params.put("person_type", value);
+    return this;
+  }
+
+  public CreateFiatWithdrawParamBuilder cuit(String value) {
+    this.params.put("cuit", value);
+    return this;
+  }
+
+  public CreateFiatWithdrawParamBuilder name(String value) {
+    this.params.put("name", value);
     return this;
   }
 

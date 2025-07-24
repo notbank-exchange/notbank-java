@@ -12,17 +12,17 @@ public class CreateFiatDepositParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
 
-  public CreateFiatDepositParamBuilder(Integer accountId, DepositPaymentMethod paymentMethod, String currency,
+  public CreateFiatDepositParamBuilder(Integer accountId, DepositPaymentMethod depositPaymentMethod, String currency,
       BigDecimal amount) {
-    this(accountId.toString(), paymentMethod, currency, amount);
+    this(accountId.toString(), depositPaymentMethod, currency, amount);
   }
 
-  public CreateFiatDepositParamBuilder(String accountId, DepositPaymentMethod paymentMethod, String currency,
+  public CreateFiatDepositParamBuilder(String accountId, DepositPaymentMethod depositPaymentMethod, String currency,
       BigDecimal amount) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.params.put("account_id", accountId);
-    this.params.put("payment_method", paymentMethod);
+    this.params.put("payment_method", depositPaymentMethod);
     this.params.put("currency", currency);
     this.params.put("amount", amount.toPlainString());
   }
@@ -33,7 +33,7 @@ public class CreateFiatDepositParamBuilder implements ParamBuilder {
   }
 
   public CreateFiatDepositParamBuilder voucher(String value) {
-    this.params.put("voucher", value.toString());
+    this.params.put("voucher", value);
     return this;
   }
 
