@@ -1,13 +1,11 @@
 package exchange.notbank.report;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonDataException;
 import com.squareup.moshi.Moshi;
 
-import exchange.notbank.core.JsonDeserializer;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.NotbankException.ErrorType;
 import io.vavr.control.Either;
