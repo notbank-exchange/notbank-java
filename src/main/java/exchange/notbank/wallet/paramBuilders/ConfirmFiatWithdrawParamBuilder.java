@@ -10,9 +10,13 @@ import exchange.notbank.core.ParamBuilder;
 public class ConfirmFiatWithdrawParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
-  public final UUID withdrawalId;
+  public final String withdrawalId;
 
   public ConfirmFiatWithdrawParamBuilder(UUID withdrawalId, String attemptCode) {
+    this(withdrawalId.toString(), attemptCode);
+  }
+
+  public ConfirmFiatWithdrawParamBuilder(String withdrawalId, String attemptCode) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.params.put("attempt_code", attemptCode);

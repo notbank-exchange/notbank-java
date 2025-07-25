@@ -21,7 +21,7 @@ public class ConfirmWhitelistedAddressesParamBuilder implements ParamBuilder {
     this.params = new HashMap<>();
     this.params.put("accountId", accountId);
     this.params.put("code", code);
-    this.whitelistAddressId = whitelistAddressId.toString();
+    this.whitelistAddressId = whitelistAddressId;
   }
 
   public String getWhitelistAddressId() {

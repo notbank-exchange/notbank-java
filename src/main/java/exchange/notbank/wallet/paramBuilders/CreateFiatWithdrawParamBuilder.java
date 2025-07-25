@@ -3,6 +3,7 @@ package exchange.notbank.wallet.paramBuilders;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
@@ -29,6 +30,11 @@ public class CreateFiatWithdrawParamBuilder implements ParamBuilder {
 
   public CreateFiatWithdrawParamBuilder bankAccountId(String value) {
     this.params.put("bank_account_id", value);
+    return this;
+  }
+
+  public CreateFiatWithdrawParamBuilder bankAccountId(UUID value) {
+    this.params.put("bank_account_id", value.toString());
     return this;
   }
 

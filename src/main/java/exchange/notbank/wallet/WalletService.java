@@ -148,7 +148,7 @@ public class WalletService {
    */
   public CompletableFuture<UUID> addWhitelistedAddress(
       AddWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES, paramBuilder, responseAdapter::toUuid);
+    return requestPost(Endpoints.WHITELISTED_ADDRESSES, paramBuilder, responseAdapter::toIdResponse);
   }
 
   /**
@@ -209,7 +209,7 @@ public class WalletService {
    * https://apidoc.notbank.exchange/#confirmfiatwithdraw
    */
   public CompletableFuture<Void> confirmFiatWithdraw(ConfirmFiatWithdrawParamBuilder paramBuilder) {
-    return requestPost(Endpoints.FIAT_WITHDRAW + "/" + paramBuilder.withdrawalId.toString(), paramBuilder,
+    return requestPost(Endpoints.FIAT_WITHDRAW + "/" + paramBuilder.withdrawalId, paramBuilder,
         responseAdapter::toNone);
   }
 

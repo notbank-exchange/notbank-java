@@ -137,7 +137,7 @@ public class WalletServiceResponseAdapter {
     return handle(jsonStr, whitelistedAddressListJsonAdapter).map(response -> response.data);
   }
 
-  Either<NotbankException, UUID> toUuid(String jsonStr) {
+  Either<NotbankException, UUID> toIdResponse(String jsonStr) {
     return handle(jsonStr, idResponseJsonAdapter).map(response -> response.data.id);
   }
 

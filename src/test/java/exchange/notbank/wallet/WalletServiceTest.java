@@ -97,105 +97,96 @@ public class WalletServiceTest {
   }
 
   @Test
-  public void createDepositAddress() throws InterruptedException, ExecutionException {
+  public void createDepositAddress() {
     var depositAddress = service
-        .createDepositAddress(new CreateDepositAddressParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST"))
-        .get();
-    System.out.println(depositAddress);
+        .createDepositAddress(new CreateDepositAddressParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST"));
+    TestHelper.checkNoError(depositAddress);
   }
 
   @Test
-  public void getDepositAddress() throws InterruptedException, ExecutionException {
-    var depositAddress = service
-        .getDepositAddresses(new GetDepositAddressesParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST"))
-        .get();
-    System.out.println(depositAddress);
+  public void getDepositAddress() {
+    var depositAddresses = service
+        .getDepositAddresses(new GetDepositAddressesParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST"));
+    TestHelper.checkNoError(depositAddresses);
   }
 
   @Test
-  public void getWhitelistedAddresses() throws InterruptedException, ExecutionException {
-    var addresses = service.getWhitelistedAddresses(new GetWhitelistedAddressesParamBuilder(credentials.accountId))
-        .get();
-    System.out.println(addresses);
+  public void getWhitelistedAddresses() {
+    var addresses = service.getWhitelistedAddresses(new GetWhitelistedAddressesParamBuilder(credentials.accountId));
+    TestHelper.checkNoError(addresses);
   }
 
   @Test
-  public void addWhitelistedAddress() throws InterruptedException, ExecutionException {
-    service.addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
+  public void addWhitelistedAddress() {
+    var addressId = service.addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
         credentials.accountId, "USDT", "USDT_BSC_TEST", "0x019d9fd2549235105c6C7fd406dF6E08Fd832d61", "a label",
-        133513))
-        .get();
+        133513));
+    TestHelper.checkNoError(addressId);
   }
 
   @Test
-  public void confirmWhitelistedAddress() throws InterruptedException, ExecutionException {
-    var addressId = UUID.fromString("0x019d9fd2549235105c6C7fd406dF6E08Fd832d61");
-    service
-        .confirmWhitelistedAddress(new ConfirmWhitelistedAddressesParamBuilder(credentials.accountId, addressId, "123"))
-        .get();
+  public void confirmWhitelistedAddress() {
+    var addressId = "11baa35a-aee0-dea9-8528-73075254f9d7";
+    var futureResponse = service
+        .confirmWhitelistedAddress(
+            new ConfirmWhitelistedAddressesParamBuilder(credentials.accountId, addressId, "123"));
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void deleteWhitelistedAddress() throws InterruptedException, ExecutionException {
+  public void deleteWhitelistedAddress() {
     var addressId = UUID.fromString("b271fa07-f8bc-e46f-fedd-bdb789e0d90b");
-    service
-        .deleteWhitelistedAddress(new DeleteWhitelistedAddressesParamBuilder(credentials.accountId, addressId, 785989))
-        .get();
+    var futureResponse = service
+        .deleteWhitelistedAddress(new DeleteWhitelistedAddressesParamBuilder(credentials.accountId, addressId, 785989));
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void updateOneStepWithdraw() throws InterruptedException, ExecutionException {
-    service.updateOneStepWithdraw(
-        new UpdateOneStepWithdraw(credentials.accountId, WithdrawAction.DISABLE, 468211)).get();
+  public void updateOneStepWithdraw() {
+    var futureResponse = service.updateOneStepWithdraw(
+        new UpdateOneStepWithdraw(credentials.accountId, WithdrawAction.DISABLE, 468211));
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void createCryptoWithdraw() throws InterruptedException, ExecutionException {
+  public void createCryptoWithdraw() {
     var withdrawId = service.createCryptoWithdraw(
         new CreateCryptoWithdrawParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST",
             "0xD9aF4Be918e2AE1302f37C11939bE3b41A88F23c",
-            new BigDecimal("0.1")).otp(560811))
-        .get();
-    assertTrue(withdrawId.length() > 0);
+            new BigDecimal("0.1")).otp(560811));
+    TestHelper.checkNoError(withdrawId);
   }
 
   @Test
-  public void createFiatDeposit() throws InterruptedException, ExecutionException {
+  public void createFiatDeposit() {
     var futureResponse = service.createFiatDeposit(
         new CreateFiatDepositParamBuilder(
             credentials.accountId,
             DepositPaymentMethod.BANK_TRANSFER,
             "CLP",
             new BigDecimal("123"))
-            .bankAccountId("5feba948-e7e3-472d-b78a-e3134293ab31"));
-    System.out.println(futureResponse.get());
+            .bankAccountId(UUID.randomUUID()));
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void getOwnersFiatWithdraw() throws InterruptedException, ExecutionException {
-    // *#reunion need help to test? 
-    // *error = {"status":"error","code":"invalid_request","message":"CBU es requerido"}
-    // *cbu usado es el del ejemplo
-    var futureResponse = service.getOwnersFiatWithdraw(new GetOwnersFiatWithdrawParamBuilder("6845784411100069899422"));
-    System.out.println(futureResponse.get());
+  public void getOwnersFiatWithdraw() {
+    var futureResponse = service.getOwnersFiatWithdraw(new GetOwnersFiatWithdrawParamBuilder("1231231231231313123132"));
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void createFiatWithdraw() throws InterruptedException, ExecutionException {
+  public void createFiatWithdraw() {
     var futureResponse = service.createFiatWithdraw(
         new CreateFiatWithdrawParamBuilder(credentials.accountId, DepositPaymentMethod.BANK_TRANSFER, "CLP",
             new BigDecimal("20000")).bankAccountId("5feba948-e7e3-472d-b78a-e3134293ab31"));
-    System.out.println(futureResponse.get());
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void confirmFiatWithdraw() throws InterruptedException, ExecutionException {
-    // *#reunion, error response is:
-    // * <!DOCTYPE html><html lang="en"><head><title>500 | CryptoMarket</title><meta charset="utf-8"/><meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/><meta content="ie=edge" http-equiv="X-UA-Compatible"/><meta content="cryptomkt" name="keywords"/><meta content="Dysopsis" name="author"/><link href="https://testing-r93bz-1.cryptomkt.com/static/errors/css/404.css" rel="stylesheet"/></head><body style="margin: 0; height: 100vh"><div class="content-error"><img alt="404 error" class="principl-error-img" src="https://testing-r93bz-1.cryptomkt.com/static/errors/img/404-error.png"/><h1>Oops! the page you`re looking for cannot be found</h1><p>Visit</p><a class="button-404" href="https://www.cryptomkt.com/">www.cryptomkt.com</a></div></body></html>
-
-    // uses the id with createFiatWithdraw. only used for argentina fiat
+  public void confirmFiatWithdraw() {
     var futureResponse = service.confirmFiatWithdraw(
         new ConfirmFiatWithdrawParamBuilder(UUID.randomUUID(), "1"));
-    System.out.println(futureResponse.get());
+    TestHelper.checkNoError(futureResponse);
   }
 }
