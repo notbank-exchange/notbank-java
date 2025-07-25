@@ -89,7 +89,13 @@ public class HttpNotbankConnection implements NotbankConnection {
         paramBuilder.getParams(),
         sessionToken.withSessionTokenIfPresent(paramBuilder.getHttpConfiguration()));
     return handleFutureResponse(future, deserializationFn);
+  }
 
+  @Override
+  public <T> CompletableFuture<T> requestPostByText(EndpointCategory endpointCategory, String endpoint, String text,
+      HttpConfiguration httpConfiguration, Function<String, Either<NotbankException, T>> deserializeFn) {
+    var future = httpClient.postText(endpointCategory, endpoint, text, httpConfiguration.customizeRequestBuilderFn);
+    return handleFutureResponse(future, deserializeFn);
   }
 
   private <T> CompletableFuture<T> handleFutureResponse(
@@ -162,5 +168,4 @@ public class HttpNotbankConnection implements NotbankConnection {
       Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<T>>> callbackAdder) {
     throw new UnsupportedOperationException("Unsupported method 'subscribe' for http communication");
   }
-
 }
