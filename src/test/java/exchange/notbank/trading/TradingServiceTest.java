@@ -51,11 +51,11 @@ public class TradingServiceTest {
 
   @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException {
-    var serviceFactory = TestHelper.newRestClient();
-    service = serviceFactory.getTradingService();
+    var notbankClient = TestHelper.newRestClient();
+    service = notbankClient.getTradingService();
     credentials = TestHelper.getUserCredentials();
     accountId = credentials.accountId;
-    anInstrument = serviceFactory.getInstrumentService().getInstrument("BTCUSDT").get();
+    anInstrument = notbankClient.getInstrumentService().getInstrument("BTCUSDT").get();
   }
 
   @Test

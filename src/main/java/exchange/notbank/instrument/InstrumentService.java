@@ -84,7 +84,7 @@ public class InstrumentService {
         .thenApply(o -> {
           var newInstrument = instrumentCache.getInstrument(symbol);
           if (newInstrument.isEmpty()) {
-            throw new CompletionException(NotbankException.Factory.create(NotbankException.ErrorType.RESPONSE_ERROR,
+            throw new CompletionException(NotbankException.Factory.create(NotbankException.ErrorType.REQUEST_ERROR,
                 "no instrument exists for symbol: " + symbol));
           }
           return newInstrument.get();
