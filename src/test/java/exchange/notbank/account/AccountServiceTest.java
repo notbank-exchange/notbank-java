@@ -16,18 +16,16 @@ public class AccountServiceTest {
     var credentials = TestHelper.getUserCredentials();
     var accountId = credentials.accountId;
 
-    // instantiate a client
     var client = NotbankClient.Factory.createRestClient(TestHelper.HOST);
 
-    // authentication
     client.authenticate(
         credentials.userId,
         credentials.apiPublicKey,
         credentials.apiSecretKey).get();
 
-    // get USDT user balance (also known as position)
     var positions = client.getAccountService().getAccountPositions(new GetAccountPositionsParamBuilder(accountId))
         .get();
+    positions.stream().filter(p->p.productSymbol.equals("CLP")).forEach(System.out::println);
     assertTrue(positions.size() > 0);
   }
 }

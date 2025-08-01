@@ -133,6 +133,21 @@ public class HttpClient implements AutoCloseable {
         .build();
   }
 
+  public CompletableFuture<Either<NotbankException, String>> postText(
+      EndpointCategory endpointCategory,
+      String endpoint,
+      String text,
+      Function<Builder, Builder> customizeRequestBuilderFn) {
+    var request = customizeRequestBuilderFn.apply(withTimeoutIfPresent(HttpRequest.newBuilder()))
+        .uri(URI.create(buildUrl(endpoint)))
+        .method("POST", HttpRequest.BodyPublishers.ofString(text))
+        .header("charset", "utf-8")
+        .build();
+    peekHttpRequest.accept(request, text);
+    return client.sendAsync(request, BodyHandlers.ofString())
+        .thenApply(response -> handleHttpResponse(endpointCategory, response));
+  }
+
   private HttpRequest newJsonEncodedRequestWithParamsAsList(
       String endpoint,
       String method,

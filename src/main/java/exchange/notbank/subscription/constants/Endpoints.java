@@ -21,5 +21,6 @@ public class Endpoints {
   public static final String UNSUBSCRIBE_ACCOUNT_EVENTS = "UnSubscribeAccountEvents";
 
   public static final String SUBSCRIBE_ORDER_STATE_EVENTS = "SubscribeOrderStateEvents";
+  public static final String ORDER_STATE_EVENT = "OrderStateEvent";
   public static final String UNSUBSCRIBE_ORDER_STATE_EVENTS = "UnSubscribeOrderStateEvents";
 }

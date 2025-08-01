@@ -23,6 +23,10 @@ import exchange.notbank.instrument.InstrumentResponseAdapter;
 import exchange.notbank.instrument.InstrumentService;
 import exchange.notbank.product.ProductResponseAdapter;
 import exchange.notbank.product.ProductService;
+import exchange.notbank.quote.QuoteService;
+import exchange.notbank.quote.QuoteServiceResponseAdapter;
+import exchange.notbank.report.ReportService;
+import exchange.notbank.report.ReportServiceResponseAdapter;
 import exchange.notbank.subscription.SubscriptionResponseAdapter;
 import exchange.notbank.subscription.SubscriptionService;
 import exchange.notbank.system.SystemService;
@@ -117,6 +121,12 @@ public class NotbankClientFactory {
     var walletService = new WalletService(
         () -> notbankConnectionInterceptor.apply(notbankConnection),
         new WalletServiceResponseAdapter(moshi));
+    var quoteService = new QuoteService(
+        () -> notbankConnectionInterceptor.apply(notbankConnection),
+        new QuoteServiceResponseAdapter(moshi));
+    var reportService = new ReportService(
+        () -> notbankConnectionInterceptor.apply(notbankConnection),
+        new ReportServiceResponseAdapter(moshi));
     return new NotbankClient(
         () -> notbankConnection,
         accountService,
@@ -127,6 +137,8 @@ public class NotbankClientFactory {
         systemService,
         tradingService,
         userService,
-        walletService);
+        walletService,
+        quoteService,
+        reportService);
   }
 }

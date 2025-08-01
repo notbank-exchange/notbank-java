@@ -20,7 +20,7 @@ public class GetWhitelistedAddressesParamBuilder implements ParamBuilder {
     this.params.put("account_id", accountId);
   }
 
-  public GetWhitelistedAddressesParamBuilder network(String value) {
+  public GetWhitelistedAddressesParamBuilder search(String value) {
     this.params.put("search", value);
     return this;
   }

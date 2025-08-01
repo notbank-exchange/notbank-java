@@ -10,7 +10,7 @@ public class GetOrdersHistoryByOrderIdParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public GetOrdersHistoryByOrderIdParamBuilder(Integer orderId) {
+  public GetOrdersHistoryByOrderIdParamBuilder(Long orderId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("OMSId", 1);

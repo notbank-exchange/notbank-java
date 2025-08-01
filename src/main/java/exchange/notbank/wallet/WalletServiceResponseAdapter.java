@@ -2,6 +2,8 @@ package exchange.notbank.wallet;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -13,9 +15,13 @@ import exchange.notbank.core.responses.DataResponse;
 import exchange.notbank.wallet.responses.BankAccount;
 import exchange.notbank.wallet.responses.BankAccounts;
 import exchange.notbank.wallet.responses.Banks;
+import exchange.notbank.wallet.responses.CbuOwner;
 import exchange.notbank.wallet.responses.CurrencyNetworkTemplates;
 import exchange.notbank.wallet.responses.IdResponse;
+import exchange.notbank.wallet.responses.Transaction;
+import exchange.notbank.wallet.responses.UrlResponse;
 import exchange.notbank.wallet.responses.WhitelistedAddress;
+import exchange.notbank.wallet.responses.WithdrawalIdResponse;
 import io.vavr.control.Either;
 
 public class WalletServiceResponseAdapter {
@@ -28,6 +34,10 @@ public class WalletServiceResponseAdapter {
   private final JsonAdapter<DataResponse<List<WhitelistedAddress>>> whitelistedAddressListJsonAdapter;
   private final JsonAdapter<DataResponse<IdResponse>> idResponseJsonAdapter;
   private final JsonAdapter<DataResponse<List<CurrencyNetworkTemplates>>> currencyNetworkTemplatesJsonAdapter;
+  private final JsonAdapter<DataResponse<UrlResponse>> urlResponseJsonAdapter;
+  private final JsonAdapter<DataResponse<List<CbuOwner>>> cbuOwnerListJsonAdapter;
+  private final JsonAdapter<DataResponse<WithdrawalIdResponse>> withdrawalIdResponseJsonAdapter;
+  private final JsonAdapter<DataResponse<List<Transaction>>> transactionListJsonAdapter;
 
   public WalletServiceResponseAdapter(Moshi moshi) {
     this.errorHandler = ErrorHandler.Factory.createNbErrorHandler(moshi);
@@ -48,9 +58,12 @@ public class WalletServiceResponseAdapter {
         DataResponse.class,
         StringListType);
     this.stringListJsonAdapter = moshi.adapter(StringListResponseType);
+    ParameterizedType WhitelistAddressListType = Types.newParameterizedType(
+        List.class,
+        WhitelistedAddress.class);
     ParameterizedType WhitelistAddressListResponseType = Types.newParameterizedType(
         DataResponse.class,
-        StringListType);
+        WhitelistAddressListType);
     this.whitelistedAddressListJsonAdapter = moshi.adapter(WhitelistAddressListResponseType);
     ParameterizedType IdResponseType = Types.newParameterizedType(
         DataResponse.class,
@@ -63,7 +76,28 @@ public class WalletServiceResponseAdapter {
         DataResponse.class,
         CurrencyNetworkTemplatesListType);
     this.currencyNetworkTemplatesJsonAdapter = moshi.adapter(CurrencyNetworkTemplatesListResponseType);
-
+    ParameterizedType UrlResponseType = Types.newParameterizedType(
+        DataResponse.class,
+        UrlResponse.class);
+    this.urlResponseJsonAdapter = moshi.adapter(UrlResponseType);
+    ParameterizedType CbuOwnerListType = Types.newParameterizedType(
+        List.class,
+        CbuOwner.class);
+    ParameterizedType CbuOwnerListResponseType = Types.newParameterizedType(
+        DataResponse.class,
+        CbuOwnerListType);
+    this.cbuOwnerListJsonAdapter = moshi.adapter(CbuOwnerListResponseType);
+    ParameterizedType WithdrawalIdResponseType = Types.newParameterizedType(
+        DataResponse.class,
+        WithdrawalIdResponse.class);
+    this.withdrawalIdResponseJsonAdapter = moshi.adapter(WithdrawalIdResponseType);
+    ParameterizedType TransactionListType = Types.newParameterizedType(
+        List.class,
+        Transaction.class);
+    ParameterizedType TransactionListResponseType = Types.newParameterizedType(
+        DataResponse.class,
+        TransactionListType);
+    this.transactionListJsonAdapter = moshi.adapter(TransactionListResponseType);
   }
 
   public Either<NotbankException, Void> toNone(String jsonStr) {
@@ -102,7 +136,26 @@ public class WalletServiceResponseAdapter {
     return handle(jsonStr, whitelistedAddressListJsonAdapter).map(response -> response.data);
   }
 
-  Either<NotbankException, String> toIdString(String jsonStr) {
+  Either<NotbankException, UUID> toIdResponse(String jsonStr) {
     return handle(jsonStr, idResponseJsonAdapter).map(response -> response.data.id);
   }
+
+  Either<NotbankException, Optional<String>> toOptionalUrlResponse(String jsonStr) {
+    return handle(jsonStr, urlResponseJsonAdapter).map(response -> response.data.url).map(Optional::ofNullable);
+  }
+
+  Either<NotbankException, List<CbuOwner>> toCbuOwnerList(String jsonStr) {
+    return handle(jsonStr, cbuOwnerListJsonAdapter).map(response -> response.data);
+  }
+
+  Either<NotbankException, Optional<UUID>> toOptionalWithdrawalIdResponse(String jsonStr) {
+    return handle(jsonStr, withdrawalIdResponseJsonAdapter)
+        .map(response -> response.data.withdrawalId)
+        .map(Optional::ofNullable);
+  }
+
+  Either<NotbankException, List<Transaction>> toTransactionList(String jsonStr) {
+    return handle(jsonStr, transactionListJsonAdapter).map(response -> response.data);
+  }
+
 }

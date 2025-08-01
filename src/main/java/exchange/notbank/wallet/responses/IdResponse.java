@@ -1,9 +1,11 @@
 package exchange.notbank.wallet.responses;
 
-public class IdResponse {
-  public final String id;
+import java.util.UUID;
 
-  public IdResponse(String id) {
+public class IdResponse {
+  public final UUID id;
+
+  public IdResponse(UUID id) {
     this.id = id;
   }
 

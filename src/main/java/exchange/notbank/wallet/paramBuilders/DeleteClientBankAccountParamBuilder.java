@@ -6,12 +6,12 @@ import java.util.Map;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
-public class DeleteBankAccountParamBuilder implements ParamBuilder {
+public class DeleteClientBankAccountParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
   private String bankAccountId;
 
-  public DeleteBankAccountParamBuilder(String bankAccountId) {
+  public DeleteClientBankAccountParamBuilder(String bankAccountId) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.bankAccountId = bankAccountId;
@@ -29,7 +29,7 @@ public class DeleteBankAccountParamBuilder implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public DeleteBankAccountParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public DeleteClientBankAccountParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }

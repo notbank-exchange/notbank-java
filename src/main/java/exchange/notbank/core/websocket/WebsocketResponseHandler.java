@@ -30,7 +30,6 @@ public class WebsocketResponseHandler implements AutoCloseable {
   public void handle(String message) {
     var messageFrame = messageFrameAdapter.fromJson(message);
     if (messageFrame.isLeft()) {
-
       executorService.submit(() -> onError.accept(messageFrame.getLeft()));
       return;
     }

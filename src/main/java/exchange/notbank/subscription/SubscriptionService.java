@@ -215,7 +215,8 @@ public class SubscriptionService {
       SubscribeOrderStateEventsParamBuilder paramBuilder,
       Consumer<Order> subscriptionHandler) {
     var accountId = paramBuilder.getAccountId();
-    var handlers = List.of(new SubscriptionHandler<>(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, subscriptionHandler));
+    var handlers = List.of(
+        new SubscriptionHandler<>(Endpoints.ORDER_STATE_EVENT, subscriptionHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, paramBuilder, o -> handlers,
         handler -> CallbackId.Factory.create(handler.eventName, accountId),
         subscriptionCallbacks -> subscriptionCallbacks::addOrderCallback)
@@ -229,6 +230,6 @@ public class SubscriptionService {
   public CompletableFuture<Void> unsubscribeOrderStateEvents(UnsubscribeOrderStateEventsParamBuilder paramBuilder) {
     return unsubscribe(Endpoints.UNSUBSCRIBE_ORDER_STATE_EVENTS, paramBuilder,
         List.of(subscriptionCallbacks -> subscriptionCallbacks.removeOrderCallback(
-            CallbackId.Factory.create(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, paramBuilder.accountId))));
+            CallbackId.Factory.create(Endpoints.ORDER_STATE_EVENT, paramBuilder.accountId))));
   }
 }

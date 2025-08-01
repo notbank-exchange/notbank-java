@@ -21,6 +21,9 @@ public interface NotbankConnection extends AutoCloseable {
   public <T> CompletableFuture<T> requestPost(EndpointCategory endpointCategory, String endpoint,
       ParamBuilder paramBuilder, Function<String, Either<NotbankException, T>> deserializeFn);
 
+  public <T> CompletableFuture<T> requestPostByText(EndpointCategory endpointCategory, String endpoint,
+      String text, HttpConfiguration httpConfiguration, Function<String, Either<NotbankException, T>> deserializeFn);
+
   public <T> CompletableFuture<T> requestPost(EndpointCategory endpointCategory, String endpoint,
       ParamListBuilder paramBuilder, Function<String, Either<NotbankException, T>> deserializeFn);
 
