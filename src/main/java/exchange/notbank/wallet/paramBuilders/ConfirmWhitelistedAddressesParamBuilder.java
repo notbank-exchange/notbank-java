@@ -12,15 +12,15 @@ public class ConfirmWhitelistedAddressesParamBuilder implements ParamBuilder {
   protected HttpConfiguration httpConfiguration;
   private String whitelistAddressId;
 
-  public ConfirmWhitelistedAddressesParamBuilder(Integer accountId, UUID whitelistAddressId, String code) {
-    this(accountId, whitelistAddressId.toString(), code);
+  public ConfirmWhitelistedAddressesParamBuilder(Integer accountId, UUID whitelistAddressId, String smsCode) {
+    this(accountId, whitelistAddressId.toString(), smsCode);
   }
 
-  public ConfirmWhitelistedAddressesParamBuilder(Integer accountId, String whitelistAddressId, String code) {
+  public ConfirmWhitelistedAddressesParamBuilder(Integer accountId, String whitelistAddressId, String smsCode) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
-    this.params.put("accountId", accountId);
-    this.params.put("code", code);
+    this.params.put("account_id", accountId);
+    this.params.put("sms_code", smsCode);
     this.whitelistAddressId = whitelistAddressId;
   }
 

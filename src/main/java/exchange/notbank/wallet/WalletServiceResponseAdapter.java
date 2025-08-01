@@ -133,7 +133,6 @@ public class WalletServiceResponseAdapter {
   }
 
   Either<NotbankException, List<WhitelistedAddress>> toWhiteListedAddressList(String jsonStr) {
-    System.out.println(jsonStr);
     return handle(jsonStr, whitelistedAddressListJsonAdapter).map(response -> response.data);
   }
 
@@ -146,7 +145,6 @@ public class WalletServiceResponseAdapter {
   }
 
   Either<NotbankException, List<CbuOwner>> toCbuOwnerList(String jsonStr) {
-    System.out.println(jsonStr);
     return handle(jsonStr, cbuOwnerListJsonAdapter).map(response -> response.data);
   }
 

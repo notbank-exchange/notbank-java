@@ -11,12 +11,12 @@ public class UpdateOneStepWithdraw implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
 
-  public UpdateOneStepWithdraw(Integer accountId, WithdrawAction action, Integer otp) {
+  public UpdateOneStepWithdraw(Integer accountId, WithdrawAction action, String otp) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.params.put("account_id", accountId);
     this.params.put("action", action);
-    this.params.put("otp", otp.toString());
+    this.params.put("otp", otp);
   }
 
   public Map<String, Object> getParams() {

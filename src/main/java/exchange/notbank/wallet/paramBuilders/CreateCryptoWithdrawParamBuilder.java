@@ -32,8 +32,8 @@ public class CreateCryptoWithdrawParamBuilder implements ParamBuilder {
     return this;
   }
 
-  public CreateCryptoWithdrawParamBuilder otp(Integer value) {
-    this.params.put("otp", value.toString());
+  public CreateCryptoWithdrawParamBuilder otp(String value) {
+    this.params.put("otp", value);
     return this;
   }
 
