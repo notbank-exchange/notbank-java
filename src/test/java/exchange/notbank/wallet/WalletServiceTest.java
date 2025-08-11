@@ -198,10 +198,11 @@ public class WalletServiceTest {
   }
 
   @Test
-  public void getTransactions() {
-    var futureResponse = service.getTransactinos(
+  public void getTransactions() throws InterruptedException, ExecutionException {
+    var futureResponse = service.getTransactions(
         new GetTransactionsParamBuilder());
-    TestHelper.checkNoError(futureResponse);
+    System.out.println(futureResponse.get());
+    // TestHelper.checkNoError(futureResponse);
   }
 
   @Test

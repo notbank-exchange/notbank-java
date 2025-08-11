@@ -235,7 +235,7 @@ public class WalletService {
   /**
    * https://apidoc.notbank.exchange/?http#gettransactions
    */
-  public CompletableFuture<List<Transaction>> getTransactinos(GetTransactionsParamBuilder paramBuilder) {
-    return requestPost(Endpoints.TRANSACTIONS, paramBuilder, responseAdapter::toTransactionList);
+  public CompletableFuture<List<Transaction>> getTransactions(GetTransactionsParamBuilder paramBuilder) {
+    return requestGet(Endpoints.TRANSACTIONS, paramBuilder, responseAdapter::toTransactionList);
   }
 }
