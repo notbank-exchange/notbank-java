@@ -1,67 +1,48 @@
 package exchange.notbank.core.websocket;
 
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-import exchange.notbank.core.MoshiFactory;
-import exchange.notbank.core.NotbankConnection;
-import exchange.notbank.core.WebAuthenticateResponse;
-import exchange.notbank.core.responses.MessageFrame;
-import exchange.notbank.core.responses.StandardResponse;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Types;
-
+import exchange.notbank.core.websocket.callback.CallbackManager;
 import okhttp3.WebSocket;
 
 class WebsocketNotbankConnectionFactory {
-
   public static CompletableFuture<WebsocketNotbankConnection> create(
-      String host,
-      Function<NotbankConnection, CompletableFuture<NotbankConnection>> notbankConnectionInterceptor,
-      Consumer<Throwable> onError,
-      Consumer<String> peekMessageIn,
-      Consumer<String> peekMessageOut) {
-    var moshi = MoshiFactory.create();
-    var standardResponseJsonAdapter = moshi.adapter(StandardResponse.class);
-    var messageFrameJsonAdapter = moshi.adapter(MessageFrame.class);
-    var webAuthenticateResponseJsonAdapter = moshi.adapter(WebAuthenticateResponse.class);
-    Type MapStringObjectType = Types.newParameterizedType(Map.class, String.class, Object.class);
-    Type ListOfMapStringObjectType = Types.newParameterizedType(List.class, MapStringObjectType);
-    JsonAdapter<Map<String, Object>> mapStringObjectJsonAdapter = moshi.adapter(MapStringObjectType);
-    JsonAdapter<List<Map<String, Object>>> listOfMapStringObjectJsonAdapter = moshi.adapter(ListOfMapStringObjectType);
-    var callbackManager = CallbackManager.Factory.create(moshi);
-    var messageFrameAdapter = new MessageFrameAdapter(messageFrameJsonAdapter, standardResponseJsonAdapter);
-    var payloadGetter = new PayloadGetter(standardResponseJsonAdapter);
+      WebsocketNotbankConnectionConfiguration configuration) {
+    var callbackManager = CallbackManager.Factory.create(configuration.jsonAdapters());
+    var messageFrameAdapter = new MessageFrameAdapter(
+        configuration.jsonAdapters().messageFrameJsonAdapter(),
+        configuration.jsonAdapters().standardResponseJsonAdapter());
+    var payloadGetter = new PayloadGetter(configuration.jsonAdapters().standardResponseJsonAdapter());
     var websocketResponseHandler = new WebsocketResponseHandler(
         Executors.newSingleThreadExecutor(),
         callbackManager,
         messageFrameAdapter,
-        standardResponseJsonAdapter,
-        onError);
-    var webSocketFuture = getWebSocketAndAttachHandler(websocketResponseHandler, host, onError,
-        peekMessageIn);
+        configuration.jsonAdapters().standardResponseJsonAdapter(),
+        configuration.onError());
+    var webSocketFuture = getWebSocketAndAttachHandler(
+        websocketResponseHandler,
+        configuration.host(),
+        configuration.onError(),
+        configuration.peekMessageIn());
     return webSocketFuture.thenApply(webSocket -> {
       var websocketRequester = WebsocketRequester.Factory.create(
           messageFrameStr -> {
-            peekMessageOut.accept(messageFrameStr);
+            configuration.peekMessageOut().accept(messageFrameStr);
             webSocket.send(messageFrameStr);
           },
           callbackManager,
           payloadGetter,
-          messageFrameJsonAdapter);
+          configuration.jsonAdapters().messageFrameJsonAdapter());
       var connection = new WebsocketNotbankConnection(
           webSocket,
           websocketRequester,
           websocketResponseHandler,
-          mapStringObjectJsonAdapter,
-          listOfMapStringObjectJsonAdapter,
-          webAuthenticateResponseJsonAdapter,
-          onError);
+          configuration.jsonAdapters().mapStringObjectJsonAdapter(),
+          configuration.jsonAdapters().listOfMapStringObjectJsonAdapter(),
+          configuration.jsonAdapters().webAuthenticateResponseJsonAdapter(),
+          err -> configuration.onError().accept(err));
       return connection;
     });
   }

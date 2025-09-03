@@ -12,8 +12,8 @@ import exchange.notbank.account.responses.Transaction;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
-import exchange.notbank.core.websocket.AccountEventPayload;
-import exchange.notbank.core.websocket.SubscriptionHandler;
+import exchange.notbank.core.websocket.callback.subscription.SubscriptionHandler;
+import exchange.notbank.core.websocket.callback.subscription.SubscriptionIdMaker;
 import exchange.notbank.subscription.SubscriptionResponseAdapter;
 import exchange.notbank.subscription.constants.AccountEventNames;
 import exchange.notbank.subscription.responses.CancelOrderRejectEvent;
@@ -23,27 +23,29 @@ import exchange.notbank.subscription.responses.WithdrawTicket;
 import exchange.notbank.trading.responses.Balance;
 import exchange.notbank.trading.responses.Order;
 import exchange.notbank.trading.responses.Trade;
-
+import io.vavr.Tuple2;
 import io.vavr.control.Either;
 
 public class SubscribeAccountEventsParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
+  private final Integer accountId;
   private HttpConfiguration httpConfiguration;
-  private Optional<SubscriptionHandler<WithdrawTicket>> withdrawTicketHandler;
-  private Optional<SubscriptionHandler<Transaction>> transactionHandler;
-  private Optional<SubscriptionHandler<Trade>> tradeHandler;
-  private Optional<SubscriptionHandler<Order>> orderHandler;
-  private Optional<SubscriptionHandler<DepositTicket>> depositTicketHandler;
-  private Optional<SubscriptionHandler<AccountInfo>> accountInfoHandler;
-  private Optional<SubscriptionHandler<Balance>> balanceHandler;
-  private Optional<SubscriptionHandler<DepositEvent>> depositEventHandler;
-  private Optional<SubscriptionHandler<CancelOrderRejectEvent>> cancelOrderRejectEventHandler;
+  private Optional<Tuple2<String, Consumer<WithdrawTicket>>> withdrawTicketHandler;
+  private Optional<Tuple2<String, Consumer<Transaction>>> transactionHandler;
+  private Optional<Tuple2<String, Consumer<Trade>>> tradeHandler;
+  private Optional<Tuple2<String, Consumer<Order>>> orderHandler;
+  private Optional<Tuple2<String, Consumer<DepositTicket>>> depositTicketHandler;
+  private Optional<Tuple2<String, Consumer<AccountInfo>>> accountInfoHandler;
+  private Optional<Tuple2<String, Consumer<Balance>>> balanceHandler;
+  private Optional<Tuple2<String, Consumer<DepositEvent>>> depositEventHandler;
+  private Optional<Tuple2<String, Consumer<CancelOrderRejectEvent>>> cancelOrderRejectEventHandler;
 
   public SubscribeAccountEventsParamBuilder(Integer accountId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("OMSId", 1);
     this.params.put("AccountId", accountId);
+    this.accountId = accountId;
     this.withdrawTicketHandler = Optional.empty();
     this.transactionHandler = Optional.empty();
     this.tradeHandler = Optional.empty();
@@ -57,53 +59,52 @@ public class SubscribeAccountEventsParamBuilder implements ParamBuilder {
 
   public SubscribeAccountEventsParamBuilder withdrawTicketHandler(
       Consumer<WithdrawTicket> handler) {
-    this.withdrawTicketHandler = Optional
-        .of(new SubscriptionHandler<>(AccountEventNames.WITHDRAW_TICKET_UPDATE_EVENT, handler));
+    this.withdrawTicketHandler = Optional.of(new Tuple2<>(AccountEventNames.WITHDRAW_TICKET_UPDATE_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder transactionHandler(Consumer<Transaction> handler) {
-    this.transactionHandler = Optional.of(new SubscriptionHandler<>(AccountEventNames.TRANSACTION_EVENT, handler));
+    this.transactionHandler = Optional.of(new Tuple2<>(AccountEventNames.TRANSACTION_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder tradeHandler(Consumer<Trade> handler) {
-    this.tradeHandler = Optional.of(new SubscriptionHandler<>(AccountEventNames.ORDER_TRADE_EVENT, handler));
+    this.tradeHandler = Optional.of(new Tuple2<>(AccountEventNames.ORDER_TRADE_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder orderHandler(Consumer<Order> handler) {
-    this.orderHandler = Optional.of(new SubscriptionHandler<>(AccountEventNames.ORDER_STATE_EVENT, handler));
+    this.orderHandler = Optional.of(new Tuple2<>(AccountEventNames.ORDER_STATE_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder depositTicketHandler(Consumer<DepositTicket> handler) {
     this.depositTicketHandler = Optional
-        .of(new SubscriptionHandler<>(AccountEventNames.DEPOSIT_TICKET_UPDATE_EVENT, handler));
+        .of(new Tuple2<>(AccountEventNames.DEPOSIT_TICKET_UPDATE_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder accountInfoHandler(Consumer<AccountInfo> handler) {
     this.accountInfoHandler = Optional
-        .of(new SubscriptionHandler<>(AccountEventNames.ACCOUNT_INFO_UPDATE_EVENT, handler));
+        .of(new Tuple2<>(AccountEventNames.ACCOUNT_INFO_UPDATE_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder depositHandler(Consumer<DepositEvent> handler) {
     this.depositEventHandler = Optional
-        .of(new SubscriptionHandler<>(AccountEventNames.DEPOSIT_EVENT, handler));
+        .of(new Tuple2<>(AccountEventNames.DEPOSIT_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder cancelOrderReject(
       Consumer<CancelOrderRejectEvent> handler) {
     this.cancelOrderRejectEventHandler = Optional
-        .of(new SubscriptionHandler<>(AccountEventNames.CANCEL_ORDER_REJECT_EVENT, handler));
+        .of(new Tuple2<>(AccountEventNames.CANCEL_ORDER_REJECT_EVENT, handler));
     return this;
   }
 
   public SubscribeAccountEventsParamBuilder balanceHandler(Consumer<Balance> handler) {
-    this.balanceHandler = Optional.of(new SubscriptionHandler<>(AccountEventNames.ACCOUNT_POSITION_EVENT, handler));
+    this.balanceHandler = Optional.of(new Tuple2<>(AccountEventNames.ACCOUNT_POSITION_EVENT, handler));
     return this;
   }
 
@@ -120,35 +121,30 @@ public class SubscribeAccountEventsParamBuilder implements ParamBuilder {
     return this;
   }
 
-  public List<SubscriptionHandler<AccountEventPayload>> getSubscriptions(
-      SubscriptionResponseAdapter responseAdapter,
-      Consumer<Throwable> onError) {
+  public List<SubscriptionHandler> getHandlers(SubscriptionResponseAdapter responseAdapter) {
     return List.of(
-        toHandler(withdrawTicketHandler, responseAdapter::toWithdrawTicket, onError),
-        toHandler(transactionHandler, responseAdapter::toTransaction, onError),
-        toHandler(tradeHandler, responseAdapter::toTrade, onError),
-        toHandler(orderHandler, responseAdapter::toOrder, onError),
-        toHandler(depositTicketHandler, responseAdapter::toDepositTicket, onError),
-        toHandler(accountInfoHandler, responseAdapter::toAccountInfo, onError),
-        toHandler(balanceHandler, responseAdapter::toBalance, onError),
-        toHandler(depositEventHandler, responseAdapter::toDepositEvent, onError),
-        toHandler(cancelOrderRejectEventHandler, responseAdapter::toCancelOrderRejectEvent, onError))
+        toHandler(withdrawTicketHandler, responseAdapter::toWithdrawTicket),
+        toHandler(transactionHandler, responseAdapter::toTransaction),
+        toHandler(tradeHandler, responseAdapter::toTrade),
+        toHandler(orderHandler, responseAdapter::toOrder),
+        toHandler(depositTicketHandler, responseAdapter::toDepositTicket),
+        toHandler(accountInfoHandler, responseAdapter::toAccountInfo),
+        toHandler(balanceHandler, responseAdapter::toBalance),
+        toHandler(depositEventHandler, responseAdapter::toDepositEvent),
+        toHandler(cancelOrderRejectEventHandler, responseAdapter::toCancelOrderRejectEvent))
         .stream().flatMap(Optional::stream).toList();
   }
 
-  <T> Optional<SubscriptionHandler<AccountEventPayload>> toHandler(
-      Optional<SubscriptionHandler<T>> optNamedHandler,
-      Function<String, Either<NotbankException, T>> parser,
-      Consumer<Throwable> onError) {
-    return optNamedHandler
-        .map(namedHandler -> new SubscriptionHandler<>(namedHandler.eventName,
-            accountEventPayload -> {
-              var jsonData = parser.apply(accountEventPayload.getPayload());
-              if (jsonData.isLeft()) {
-                onError.accept(jsonData.getLeft());
-                return;
-              }
-              namedHandler.eventHandler.accept(jsonData.get());
-            }));
+  <T> Optional<SubscriptionHandler> toHandler(
+      Optional<Tuple2<String, Consumer<T>>> optNamedHandler,
+      Function<String, Either<NotbankException, T>> parser) {
+    if (optNamedHandler.isEmpty()) {
+      return Optional.empty();
+    }
+    var handler = SubscriptionHandler.Factory.create(
+        SubscriptionIdMaker.get(optNamedHandler.get()._1(), accountId),
+        parser,
+        optNamedHandler.get()._2);
+    return Optional.of(handler);
   }
 }

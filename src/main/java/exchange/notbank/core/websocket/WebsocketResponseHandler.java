@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.JsonDataException;
+
 import exchange.notbank.core.constants.MessageType;
 import exchange.notbank.core.responses.MessageFrame;
 import exchange.notbank.core.responses.StandardResponse;
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.JsonDataException;
+import exchange.notbank.core.websocket.callback.CallbackManager;
 
 public class WebsocketResponseHandler implements AutoCloseable {
   private final ExecutorService executorService;
@@ -33,7 +35,7 @@ public class WebsocketResponseHandler implements AutoCloseable {
       executorService.submit(() -> onError.accept(messageFrame.getLeft()));
       return;
     }
-    var callback = callbackManager.sequencedCallbacks.pop(messageFrame.get().sequenceNumber);
+    var callback = callbackManager.sequencedCallbacks().pop(messageFrame.get().sequenceNumber);
     if (callback.isPresent()) {
       executorService.submit(() -> callback.get().accept(messageFrame.get()));
       if (isErrorMessage(messageFrame.get())) {
@@ -41,13 +43,9 @@ public class WebsocketResponseHandler implements AutoCloseable {
       }
       // it may exists a subcription callback for the function name at the same time the sequence callback exists, so we continue with function even if callback was called
     }
-    var subscriptionRunnable = callbackManager.subscriptionCallbacks.getRunnable(messageFrame.get());
-    if (subscriptionRunnable.isLeft()) {
-      executorService.submit(() -> onError.accept(subscriptionRunnable.getLeft()));
-      return;
-    }
-    if (subscriptionRunnable.get().isPresent()) {
-      executorService.submit(subscriptionRunnable.get().get());
+    var subscriptionCallback = callbackManager.subscriptionCallbacks().get(messageFrame.get());
+    if (subscriptionCallback.isPresent()) {
+      executorService.submit(() -> subscriptionCallback.get().accept(messageFrame.get().payload));
     }
   }
 

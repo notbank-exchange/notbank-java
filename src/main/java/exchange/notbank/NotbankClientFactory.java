@@ -16,7 +16,9 @@ import exchange.notbank.core.responses.StandardResponse;
 import exchange.notbank.core.rest.AuthenticationResponseAdapter;
 import exchange.notbank.core.rest.HttpClient;
 import exchange.notbank.core.rest.HttpNotbankConnection;
+import exchange.notbank.core.websocket.WebsocketJsonAdapters;
 import exchange.notbank.core.websocket.WebsocketNotbankConnection;
+import exchange.notbank.core.websocket.WebsocketNotbankConnectionConfiguration;
 import exchange.notbank.fee.FeeService;
 import exchange.notbank.fee.FeeServiceResponseAdapter;
 import exchange.notbank.instrument.InstrumentResponseAdapter;
@@ -80,11 +82,13 @@ public class NotbankClientFactory {
       Consumer<String> peekMessageIn,
       Consumer<String> peekMessageOut) {
     var notbankConnection = WebsocketNotbankConnection.Factory.create(
-        host,
-        notbankConnectionInterceptor,
-        onFailure,
-        peekMessageIn,
-        peekMessageOut);
+        new WebsocketNotbankConnectionConfiguration(
+            host,
+            notbankConnectionInterceptor,
+            WebsocketJsonAdapters.Factory.create(),
+            onFailure,
+            peekMessageIn,
+            peekMessageOut));
     return notbankConnection.thenApply(connection -> create(connection, notbankConnectionInterceptor));
   }
 
@@ -103,7 +107,7 @@ public class NotbankClientFactory {
     var instrumentService = InstrumentService.Factory.create(
         () -> notbankConnectionInterceptor.apply(notbankConnection),
         new InstrumentResponseAdapter(moshi));
-    var productService = new ProductService(
+    var productService = ProductService.Factory.create(
         () -> notbankConnectionInterceptor.apply(notbankConnection),
         new ProductResponseAdapter(moshi));
     var subscriptionService = new SubscriptionService(

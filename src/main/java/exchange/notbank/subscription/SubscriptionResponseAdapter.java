@@ -1,7 +1,11 @@
 package exchange.notbank.subscription;
 
+import java.lang.reflect.ParameterizedType;
+import java.util.List;
+
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 
 import exchange.notbank.account.responses.AccountInfo;
 import exchange.notbank.account.responses.Transaction;
@@ -11,9 +15,13 @@ import exchange.notbank.core.StandardApResponseHandler;
 import exchange.notbank.subscription.responses.CancelOrderRejectEvent;
 import exchange.notbank.subscription.responses.DepositEvent;
 import exchange.notbank.subscription.responses.DepositTicket;
+import exchange.notbank.subscription.responses.Level2;
+import exchange.notbank.subscription.responses.SocketTrade;
 import exchange.notbank.subscription.responses.WithdrawTicket;
 import exchange.notbank.trading.responses.Balance;
+import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Order;
+import exchange.notbank.trading.responses.Ticker;
 import exchange.notbank.trading.responses.Trade;
 import io.vavr.control.Either;
 
@@ -28,6 +36,10 @@ public class SubscriptionResponseAdapter {
   private final JsonAdapter<Trade> tradeJsonAdapter;
   private final JsonAdapter<DepositEvent> depositEventJsonAdapter;
   private final JsonAdapter<CancelOrderRejectEvent> cancelOrderRejectEventJsonAdapter;
+  private final JsonAdapter<List<Ticker>> tickerListAdapter;
+  private final JsonAdapter<Level1> level1TickerAdapter;
+  private final JsonAdapter<List<Level2>> level2TickerListAdapter;
+  private final JsonAdapter<List<SocketTrade>> socketTradeListAdapter;
 
   public SubscriptionResponseAdapter(StandardApResponseHandler responseHandler, Moshi moshi) {
     this.errorHandler = ErrorHandler.Factory.createApErrorHandler(moshi);
@@ -40,6 +52,13 @@ public class SubscriptionResponseAdapter {
     this.tradeJsonAdapter = moshi.adapter(Trade.class);
     this.depositEventJsonAdapter = moshi.adapter(DepositEvent.class);
     this.cancelOrderRejectEventJsonAdapter = moshi.adapter(CancelOrderRejectEvent.class);
+    ParameterizedType TickerListType = Types.newParameterizedType(List.class, Ticker.class);
+    this.tickerListAdapter = moshi.adapter(TickerListType);
+    this.level1TickerAdapter = moshi.adapter(Level1.class);
+    ParameterizedType Level2TickerListType = Types.newParameterizedType(List.class, Level2.class);
+    this.level2TickerListAdapter = moshi.adapter(Level2TickerListType);
+    ParameterizedType SocketTradeListType = Types.newParameterizedType(List.class, SocketTrade.class);
+    this.socketTradeListAdapter = moshi.adapter(SocketTradeListType);
   }
 
   public Either<NotbankException, Void> toNone(String jsonStr) {
@@ -84,5 +103,21 @@ public class SubscriptionResponseAdapter {
 
   public Either<NotbankException, CancelOrderRejectEvent> toCancelOrderRejectEvent(String jsonStr) {
     return handle(jsonStr, cancelOrderRejectEventJsonAdapter);
+  }
+
+  public Either<NotbankException, List<Ticker>> toTickerList(String jsonStr) {
+    return handle(jsonStr, tickerListAdapter);
+  }
+
+  public Either<NotbankException, Level1> toLevel1(String jsonStr) {
+    return handle(jsonStr, level1TickerAdapter);
+  }
+
+  public Either<NotbankException, List<Level2>> toLevel2List(String jsonStr) {
+    return handle(jsonStr, level2TickerListAdapter);
+  }
+
+  public Either<NotbankException, List<SocketTrade>> toSocketTradeList(String jsonStr) {
+    return handle(jsonStr, socketTradeListAdapter);
   }
 }

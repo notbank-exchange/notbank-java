@@ -3,25 +3,26 @@ package exchange.notbank.core.websocket;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
-import exchange.notbank.core.NotbankConnection;
+import com.squareup.moshi.JsonAdapter;
+
 import exchange.notbank.core.AuthenticateUserParamBuilder;
 import exchange.notbank.core.CompletableFutureAdapter;
 import exchange.notbank.core.EndpointCategory;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.JsonDeserializer;
+import exchange.notbank.core.NotbankConnection;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
 import exchange.notbank.core.ParamListBuilder;
 import exchange.notbank.core.StandardResponseAdapter;
+import exchange.notbank.core.SubscriptionData;
 import exchange.notbank.core.WebAuthenticateResponse;
 import exchange.notbank.core.WebAuthenticateUserParamBuilder;
-import exchange.notbank.core.responses.MessageFrame;
-import com.squareup.moshi.JsonAdapter;
-
+import exchange.notbank.core.websocket.callback.subscription.EventHandler;
+import exchange.notbank.core.websocket.callback.subscription.OnErrorConsumer;
+import exchange.notbank.core.websocket.callback.subscription.SubscriptionId;
 import io.vavr.control.Either;
 import okhttp3.WebSocket;
 
@@ -36,7 +37,7 @@ public class WebsocketNotbankConnection implements NotbankConnection {
   private final JsonAdapter<Map<String, Object>> mapJsonAdapter;
   private final JsonAdapter<List<Map<String, Object>>> listJsonAdapter;
   private final JsonAdapter<WebAuthenticateResponse> webAuthenticateResponseJsonAdapter;
-  private final Consumer<Throwable> onError;
+  private final OnErrorConsumer onErrorConsumer;
 
   public WebsocketNotbankConnection(
       WebSocket webSocket,
@@ -45,14 +46,14 @@ public class WebsocketNotbankConnection implements NotbankConnection {
       JsonAdapter<Map<String, Object>> mapJsonAdapter,
       JsonAdapter<List<Map<String, Object>>> listJsonAdapter,
       JsonAdapter<WebAuthenticateResponse> webAuthenticateResponseJsonAdapter,
-      Consumer<Throwable> onError) {
+      OnErrorConsumer onErrorConsumer) {
     this.webSocket = webSocket;
     this.websocketRequester = websocketRequester;
     this.websocketResponseHandler = websocketResponseHandler;
     this.mapJsonAdapter = mapJsonAdapter;
     this.listJsonAdapter = listJsonAdapter;
     this.webAuthenticateResponseJsonAdapter = webAuthenticateResponseJsonAdapter;
-    this.onError = onError;
+    this.onErrorConsumer = onErrorConsumer;
   }
 
   public static class Factory extends WebsocketNotbankConnectionFactory {
@@ -86,29 +87,23 @@ public class WebsocketNotbankConnection implements NotbankConnection {
   }
 
   @Override
-  public <T> CompletableFuture<Either<NotbankException, String>> subscribe(
+  public CompletableFuture<Either<NotbankException, String>> subscribe(SubscriptionData subscriptionData) {
+    return websocketRequester.subscribe(
+        subscriptionData.endpoint(),
+        mapJsonAdapter.toJson(subscriptionData.paramBuilder().getParams()),
+        subscriptionData.subscriptionHandlers().stream()
+            .map(subscriptionHandler -> new EventHandler(
+                subscriptionHandler.subscriptionId(),
+                subscriptionHandler.eventHandler().apply(err -> onErrorConsumer.accept(err))))
+            .toList());
+  }
+
+  @Override
+  public CompletableFuture<Either<NotbankException, Void>> unsubscribe(
       String endpoint,
       ParamBuilder paramBuilder,
-      Function<Consumer<Throwable>, List<SubscriptionHandler<T>>> subscriptionHandlers,
-      Function<SubscriptionHandler<T>, CallbackId> callbackIdGetter,
-      Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<T>>> callbackAdder) {
-    return websocketRequester.subscribe(endpoint, mapJsonAdapter.toJson(paramBuilder.getParams()),
-        subscriptionHandlers.apply(onError), callbackIdGetter, callbackAdder);
-  }
-
-  @Override
-  public CompletableFuture<Either<NotbankException, Void>> unsubscribe(String endpoint, ParamBuilder paramBuilder,
-      List<Consumer<SubscriptionCallbacks>> removeCallbacks) {
+      List<SubscriptionId> removeCallbacks) {
     return websocketRequester.unsubscribe(endpoint, mapJsonAdapter.toJson(paramBuilder.getParams()), removeCallbacks);
-  }
-
-  @Override
-  public void setRequestResponses(
-      List<RequestHandler> requestHandlers,
-      String subscriptionEndpoint,
-      Function<RequestHandler, CallbackId> callbackIdGetter,
-      Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<MessageFrame>>> callbackAdder) {
-    websocketRequester.setRequestHandlers(requestHandlers, subscriptionEndpoint, callbackIdGetter, callbackAdder);
   }
 
   @Override

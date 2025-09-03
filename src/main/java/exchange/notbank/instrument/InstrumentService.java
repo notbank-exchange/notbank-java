@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import exchange.notbank.core.EndpointCategory;
+import exchange.notbank.core.HashMapCache;
 import exchange.notbank.core.NotbankConnection;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
@@ -16,16 +17,15 @@ import exchange.notbank.instrument.paramBuilders.GetInstrumentVerificationLevelC
 import exchange.notbank.instrument.paramBuilders.GetInstrumentsParamBuilder;
 import exchange.notbank.instrument.responses.Instrument;
 import exchange.notbank.instrument.responses.InstrumentVerificationLevelConfig;
-
 import io.vavr.control.Either;
 
 public class InstrumentService {
   private final Supplier<CompletableFuture<NotbankConnection>> getNotbankConnection;
   private final InstrumentResponseAdapter responseAdapter;
-  private final InstrumentCache instrumentCache;
+  private final HashMapCache<Instrument> instrumentCache;
 
   public InstrumentService(Supplier<CompletableFuture<NotbankConnection>> getNotbankConnection,
-      InstrumentResponseAdapter responseAdapter, InstrumentCache publicDataCache) {
+      InstrumentResponseAdapter responseAdapter, HashMapCache<Instrument> publicDataCache) {
     this.getNotbankConnection = getNotbankConnection;
     this.responseAdapter = responseAdapter;
     this.instrumentCache = publicDataCache;
@@ -35,7 +35,7 @@ public class InstrumentService {
     public static InstrumentService create(
         Supplier<CompletableFuture<NotbankConnection>> getNotbankConnection,
         InstrumentResponseAdapter responseAdapter) {
-      return new InstrumentService(getNotbankConnection, responseAdapter, InstrumentCache.Factory.create());
+      return new InstrumentService(getNotbankConnection, responseAdapter, HashMapCache.Factory.create());
     }
   }
 
@@ -75,14 +75,14 @@ public class InstrumentService {
   }
 
   public CompletableFuture<Instrument> getInstrument(String symbol) {
-    var instrumentId = instrumentCache.getInstrument(symbol);
-    if (instrumentId.isPresent()) {
-      return CompletableFuture.completedFuture(instrumentId.get());
+    var instrument = instrumentCache.get(symbol);
+    if (instrument.isPresent()) {
+      return CompletableFuture.completedFuture(instrument.get());
     }
     return getInstruments(new GetInstrumentsParamBuilder())
-        .thenAccept(instruments -> instrumentCache.updateInstruments(instruments))
+        .thenAccept(instruments -> instrumentCache.update(instruments, anInstrument -> anInstrument.symbol))
         .thenApply(o -> {
-          var newInstrument = instrumentCache.getInstrument(symbol);
+          var newInstrument = instrumentCache.get(symbol);
           if (newInstrument.isEmpty()) {
             throw new CompletionException(NotbankException.Factory.create(NotbankException.ErrorType.REQUEST_ERROR,
                 "no instrument exists for symbol: " + symbol));
