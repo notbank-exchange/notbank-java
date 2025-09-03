@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import exchange.notbank.core.responses.MessageFrame;
 import exchange.notbank.core.websocket.WebsocketJsonAdapters;
+import exchange.notbank.subscription.constants.Endpoints;
 
 public class SubscriptionCallbacks {
   private final SubscriptionIdMaker subscriptionIdMaker;
@@ -27,11 +28,17 @@ public class SubscriptionCallbacks {
 
   public Optional<Consumer<String>> get(MessageFrame messageFrame) {
     var subscriptionId = subscriptionIdMaker.get(messageFrame);
-    return Optional.ofNullable(subscriptions.get(subscriptionId));
+    var subscription = Optional.ofNullable(subscriptions.get(subscriptionId));
+    if (messageFrame.functionName.equals(Endpoints.ORDER_STATE_EVENT) && subscription.isEmpty()) {
+      var broaderSubscriptionId = removeLastSuffixSection(subscriptionId);
+      return Optional.ofNullable(subscriptions.get(broaderSubscriptionId));
+    }
+    return subscription;
   }
 
-  public Optional<Consumer<String>> get(SubscriptionId eventIdentifier) {
-    return Optional.ofNullable(subscriptions.get(eventIdentifier));
+  private SubscriptionId removeLastSuffixSection(SubscriptionId subscriptionId) {
+    var lastSuffixSectionStartIndex = subscriptionId.id().lastIndexOf("_");
+    return new SubscriptionId(subscriptionId.id().substring(0, lastSuffixSectionStartIndex));
   }
 
   public void remove(SubscriptionId eventIdentifier) {

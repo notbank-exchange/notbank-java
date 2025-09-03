@@ -74,7 +74,7 @@ public class SuffixFnByEventBuilder {
       return Suffixer.EMPTY_SUFFIX;
     }
     var accountId = Optional.ofNullable(ids.get().accountId);
-    var instrumentId = Optional.ofNullable(ids.get().instrumentId);
+    var instrumentId = Optional.ofNullable(ids.get().instrument);
     return Suffixer.toSuffix(accountId) + Suffixer.toSuffix(instrumentId);
   }
 
@@ -92,10 +92,6 @@ public class SuffixFnByEventBuilder {
 
   private Either<String, String> getInstrumentedId(String payload) {
     return getIdFromIds(payload, ids -> ids.instrumentId);
-  }
-
-  private Either<String, String> getInstrumentedIdFromInstrument(String payload) {
-    return getIdFromIds(payload, ids -> ids.instrument);
   }
 
   private Either<String, String> getAccountId(String payload) {
