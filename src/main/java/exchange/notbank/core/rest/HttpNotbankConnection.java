@@ -143,14 +143,12 @@ public class HttpNotbankConnection implements NotbankConnection {
 
   @Override
   public CompletableFuture<Either<NotbankException, String>> subscribe(SubscriptionData subscriptionData) {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unsupported method 'subscribe' for http communication");
   }
 
   @Override
   public CompletableFuture<Either<NotbankException, Void>> unsubscribe(String endpoint, ParamBuilder paramBuilder,
       List<SubscriptionId> removeCallbacks) {
-    // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unsupported method 'unsubscribe' for http communication");
   }
 }
