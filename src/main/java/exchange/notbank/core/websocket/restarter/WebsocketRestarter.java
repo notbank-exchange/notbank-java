@@ -60,6 +60,7 @@ public class WebsocketRestarter implements AutoCloseable {
     }
     reconnecting = true;
     closeCurrentConnection();
+    connection = Optional.empty();
     var newConnection = newConnection();
     if (newConnection.isEmpty()) {
       // close requested
