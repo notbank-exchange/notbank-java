@@ -45,14 +45,14 @@ public class SubscriptionService {
     this.responseAdapter = responseAdapter;
   }
 
-  private CompletableFuture<Either<NotbankException, Void>> subscribe(
+  private CompletableFuture<Either<NotbankException, String>> subscribe(
       String endpoint,
       ParamBuilder paramBuilder,
       List<SubscriptionHandler> subscriptionHandlers) {
     return getNotbankConnection.get()
         .thenCompose(connection -> connection.subscribe(
-            new SubscriptionData(endpoint, paramBuilder, subscriptionHandlers)))
-        .thenApply(SubscriptionResponseHandler::checkBoolean);
+            new SubscriptionData(endpoint, paramBuilder, subscriptionHandlers)));
+
   }
 
   private CompletableFuture<Void> unsubscribe(
@@ -80,7 +80,7 @@ public class SubscriptionService {
             responseAdapter::toLevel1,
             updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_LEVEL_1, paramBuilder, handlers);
-    return CompletableFutureAdapter.fromEither(futureResponse);
+    return CompletableFutureAdapter.fromEither(futureResponse).thenApply(o -> null);
   }
 
   /**
@@ -99,7 +99,7 @@ public class SubscriptionService {
             responseAdapter::toLevel2List,
             updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_LEVEL_2, paramBuilder, handlers);
-    return CompletableFutureAdapter.fromEither(futureResponse);
+    return CompletableFutureAdapter.fromEither(futureResponse).thenApply(o -> null);
   }
 
   /**
@@ -118,7 +118,7 @@ public class SubscriptionService {
             responseAdapter::toSocketTradeList,
             updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_TRADES, paramBuilder, handlers);
-    return CompletableFutureAdapter.fromEither(futureResponse);
+    return CompletableFutureAdapter.fromEither(futureResponse).thenApply(o -> null);
   }
 
   /**
@@ -137,7 +137,7 @@ public class SubscriptionService {
             responseAdapter::toTickerList,
             updateHandler));
     var futureResponse = subscribe(Endpoints.SUBSCRIBE_TICKER, paramBuilder, handlers);
-    return CompletableFutureAdapter.fromEither(futureResponse);
+    return CompletableFutureAdapter.fromEither(futureResponse).thenApply(o -> null);
   }
 
   /**
@@ -186,7 +186,8 @@ public class SubscriptionService {
   public CompletableFuture<Void> subscribeAccountEvents(
       SubscribeAccountEventsParamBuilder paramBuilder) {
     var handlers = paramBuilder.getHandlers(responseAdapter);
-    var futureResponse = subscribe(Endpoints.SUBSCRIBE_ACCOUNT_EVENTS, paramBuilder, handlers);
+    var futureResponse = subscribe(Endpoints.SUBSCRIBE_ACCOUNT_EVENTS, paramBuilder, handlers)
+        .thenApply(SubscriptionResponseHandler::checkBoolean);
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
 
@@ -212,8 +213,8 @@ public class SubscriptionService {
             SubscriptionIdMaker.get(Endpoints.ORDER_STATE_EVENT, paramBuilder.getAccountId()),
             responseAdapter::toOrder,
             subscriptionHandler));
-
-    var futureResponse = subscribe(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, paramBuilder, handlers);
+    var futureResponse = subscribe(Endpoints.SUBSCRIBE_ORDER_STATE_EVENTS, paramBuilder, handlers)
+        .thenApply(SubscriptionResponseHandler::checkBoolean);
     return CompletableFutureAdapter.fromEither(futureResponse);
   }
 

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import exchange.notbank.core.CompletableFutureAdapter;
 import exchange.notbank.core.NotbankConnection;
 import exchange.notbank.core.NotbankException;
+import exchange.notbank.core.NotbankException.ErrorType;
 import exchange.notbank.core.websocket.WebsocketNotbankConnection;
 import exchange.notbank.core.websocket.WebsocketNotbankConnectionConfiguration;
 import io.vavr.control.Either;
@@ -46,8 +47,11 @@ public class WebsocketRestarter implements AutoCloseable {
     }
   }
 
-  public NotbankConnection getConnection() {
-    return this.connection.get();
+  public Either<NotbankException, NotbankConnection> getConnection() {
+    if (connection.isEmpty()) {
+      return Either.left(NotbankException.Factory.create(ErrorType.API_CONNECTION, "websocket not connected"));
+    }
+    return Either.right(this.connection.get());
   }
 
   public void reconnect() {
@@ -57,32 +61,33 @@ public class WebsocketRestarter implements AutoCloseable {
     reconnecting = true;
     closeCurrentConnection();
     var newConnection = newConnection();
-    if (newConnection.isLeft()) {
+    if (newConnection.isEmpty()) {
+      // close requested
       return;
     }
     connection = Optional.of(newConnection.get());
-    var authed = await(reauther.authenticate(getConnection()));
+    var authed = await(reauther.authenticate(connection.get()));
     if (authed.isLeft()) {
-      // TODO: do something
+      connectionConfiguration.onError().accept(authed.getLeft());
       return;
     }
-    var subscribed = await(resubscriber.subscribe(getConnection()));
+    var subscribed = await(resubscriber.resubscribe(connection.get()));
     if (subscribed.isLeft()) {
-      // TODO: do something
+      connectionConfiguration.onError().accept(subscribed.getLeft());
       return;
     }
-    pinger.startPing(getConnection(), this::reconnect);
+    pinger.startPing(connection.get(), this::reconnect);
     reconnecting = false;
   }
 
-  private Either<Void, ? extends NotbankConnection> newConnection() {
+  private Optional<? extends NotbankConnection> newConnection() {
     while (!closeRequested) {
       var newConnetion = createNewConnection();
       if (newConnetion.isRight()) {
-        return newConnetion.mapLeft(o -> null);
+        return newConnetion.toJavaOptional();
       }
     }
-    return Either.left(null);
+    return Optional.empty();
   }
 
   private Either<String, ? extends NotbankConnection> createNewConnection() {
@@ -101,17 +106,17 @@ public class WebsocketRestarter implements AutoCloseable {
     return await(connection).mapLeft(Object::toString);
   }
 
-  private void closeCurrentConnection() {
+  private Optional<Exception> closeCurrentConnection() {
     pinger.stop();
     if (connection.isEmpty()) {
-      return;
+      return Optional.empty();
     }
     try {
       connection.get().close();
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      return Optional.of(e);
     }
+    return Optional.empty();
   }
 
   private <T> Either<NotbankException, T> await(CompletableFuture<T> future) {
@@ -121,6 +126,9 @@ public class WebsocketRestarter implements AutoCloseable {
   @Override
   public void close() throws Exception {
     closeRequested = true;
-    closeCurrentConnection();
+    var error = closeCurrentConnection();
+    if (error.isPresent()) {
+      throw error.get();
+    }
   }
 }

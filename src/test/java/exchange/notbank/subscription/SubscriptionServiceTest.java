@@ -145,7 +145,7 @@ public class SubscriptionServiceTest {
     webSocketChecker.assertNoError();
     feedChecker.assertNoError();
     subscriptionService.unsubscribeTrades(new UnsubscribeTradesParamBuilder(instrumentId2));
-  }
+  } 
 
   @Test
   public void subscribeOrderState() throws InterruptedException, ExecutionException {

@@ -3,13 +3,10 @@ package exchange.notbank.core.websocket.restarter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 import exchange.notbank.core.CompletableFutureAdapter;
 import exchange.notbank.core.NotbankConnection;
-import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.SubscriptionData;
-import exchange.notbank.core.NotbankException.ErrorType;
 import exchange.notbank.core.websocket.callback.subscription.SubscriptionHandler;
 import exchange.notbank.core.websocket.callback.subscription.SubscriptionId;
 
@@ -30,24 +27,14 @@ public class Resubscriber {
     currentSubscriptions.add(subscriptionData);
   }
 
-  CompletableFuture<Void> subscribe(NotbankConnection connection) {
+  CompletableFuture<Void> resubscribe(NotbankConnection connection) {
     List<CompletableFuture<Void>> subscriptionResults = new ArrayList<>();
     for (var subscriptionData : currentSubscriptions) {
       var subscribedFuture = connection.subscribe(subscriptionData);
-      var some = CompletableFutureAdapter.fromEither(subscribedFuture).thenCompose(this::checkSubscriptionResult);
-      subscriptionResults.add(some);
+      CompletableFuture<Void> subscribed = CompletableFutureAdapter.fromEither(subscribedFuture).thenApply(o -> null);
+      subscriptionResults.add(subscribed);
     }
-    return CompletableFuture.allOf(subscriptionResults.toArray(new CompletableFuture[subscriptionResults.size()]))
-        .thenApply(o -> null);
-  }
-
-  private CompletionStage<Void> checkSubscriptionResult(String subscriptionResult) {
-    if (subscriptionResult.contains("true")) {
-      return CompletableFuture.completedStage(null);
-    }
-    return CompletableFuture
-        .failedStage(NotbankException.Factory.create(ErrorType.RESPONSE_ERROR,
-            "subscription failed. response was " + subscriptionResult));
+    return CompletableFuture.allOf(subscriptionResults.toArray(new CompletableFuture[subscriptionResults.size()]));
   }
 
   public void removeSubscriptions(List<SubscriptionId> subscriptionsIds) {

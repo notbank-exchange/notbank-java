@@ -26,43 +26,67 @@ public class RestartingWebsocketConnection implements NotbankConnection {
 
   @Override
   public void close() throws Exception {
-    restarter.getConnection().close();
+    restarter.close();
   }
 
   @Override
   public <T> CompletableFuture<T> requestGet(EndpointCategory endpointCategory, String endpoint,
       ParamBuilder paramBuilder, Function<String, Either<NotbankException, T>> deserializeFn) {
-    return restarter.getConnection().requestGet(endpointCategory, endpoint, paramBuilder, deserializeFn);
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().requestGet(endpointCategory, endpoint, paramBuilder, deserializeFn);
   }
 
   @Override
   public <T> CompletableFuture<T> requestPost(EndpointCategory endpointCategory, String endpoint,
       ParamBuilder paramBuilder, Function<String, Either<NotbankException, T>> deserializeFn) {
-    return restarter.getConnection().requestPost(endpointCategory, endpoint, paramBuilder, deserializeFn);
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().requestPost(endpointCategory, endpoint, paramBuilder, deserializeFn);
   }
 
   @Override
   public <T> CompletableFuture<T> requestPostByText(EndpointCategory endpointCategory, String endpoint, String text,
       HttpConfiguration httpConfiguration, Function<String, Either<NotbankException, T>> deserializeFn) {
-    return restarter.getConnection().requestPostByText(endpointCategory, endpoint, text, httpConfiguration,
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().requestPostByText(endpointCategory, endpoint, text, httpConfiguration,
         deserializeFn);
   }
 
   @Override
   public <T> CompletableFuture<T> requestPost(EndpointCategory endpointCategory, String endpoint,
       ParamListBuilder paramBuilder, Function<String, Either<NotbankException, T>> deserializeFn) {
-    return restarter.getConnection().requestPost(endpointCategory, endpoint, paramBuilder, deserializeFn);
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().requestPost(endpointCategory, endpoint, paramBuilder, deserializeFn);
   }
 
   @Override
   public <T> CompletableFuture<T> requestDelete(EndpointCategory endpointCategory, String endpoint,
       ParamBuilder paramBuilder, Function<String, Either<NotbankException, T>> deserializeFn) {
-    return restarter.getConnection().requestDelete(endpointCategory, endpoint, paramBuilder, deserializeFn);
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().requestDelete(endpointCategory, endpoint, paramBuilder, deserializeFn);
   }
 
   @Override
   public CompletableFuture<Either<NotbankException, String>> subscribe(SubscriptionData subscriptionData) {
-    return restarter.getConnection().subscribe(subscriptionData)
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().subscribe(subscriptionData)
         .thenCompose(
             subscriptionResult -> {
               if (subscriptionResult.isRight()) {
@@ -75,7 +99,11 @@ public class RestartingWebsocketConnection implements NotbankConnection {
   @Override
   public CompletableFuture<Either<NotbankException, Void>> unsubscribe(String endpoint, ParamBuilder paramBuilder,
       List<SubscriptionId> subscriptionsIds) {
-    return restarter.getConnection().unsubscribe(endpoint, paramBuilder, subscriptionsIds)
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().unsubscribe(endpoint, paramBuilder, subscriptionsIds)
         .thenCompose(
             unsubscriptionResult -> {
               if (unsubscriptionResult.isRight()) {
@@ -87,21 +115,29 @@ public class RestartingWebsocketConnection implements NotbankConnection {
 
   @Override
   public CompletableFuture<Void> authenticateUser(AuthenticateUserParamBuilder paramBuilder) {
-    return restarter.getConnection().authenticateUser(paramBuilder)
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().authenticateUser(paramBuilder)
         .thenCompose(
             authResult -> {
-              restarter.reauther.updateReauthenticateFn(connection -> connection.authenticateUser(paramBuilder));
+              restarter.reauther.updateReauthenticateFn(conn -> conn.authenticateUser(paramBuilder));
               return CompletableFuture.completedStage(authResult);
             });
   }
 
   @Override
   public CompletableFuture<WebAuthenticateResponse> webAuthenticateUser(WebAuthenticateUserParamBuilder paramBuilder) {
-    return restarter.getConnection().webAuthenticateUser(paramBuilder)
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().webAuthenticateUser(paramBuilder)
         .thenCompose(
             authResult -> {
-              restarter.reauther.updateReauthenticateFn(connection -> {
-                connection.webAuthenticateUser(paramBuilder);
+              restarter.reauther.updateReauthenticateFn(conn -> {
+                conn.webAuthenticateUser(paramBuilder);
                 return null;
               });
               return CompletableFuture.completedStage(authResult);
@@ -110,12 +146,24 @@ public class RestartingWebsocketConnection implements NotbankConnection {
 
   @Override
   public CompletableFuture<Void> logOut() {
-    return restarter.getConnection().logOut();
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().logOut();
   }
 
   @Override
   public CompletableFuture<Void> ping() {
-    return restarter.getConnection().ping();
+    var connection = restarter.getConnection();
+    if (connection.isLeft()) {
+      return CompletableFuture.failedFuture(connection.getLeft());
+    }
+    return connection.get().ping();
+  }
+
+  public void reconnect() {
+    restarter.reconnect();
   }
 
 }

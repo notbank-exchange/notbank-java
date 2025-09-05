@@ -80,6 +80,11 @@ public class SendOrderParamBuilder implements ParamBuilder {
     return this;
   }
 
+  public SendOrderParamBuilder postOnly(Boolean value) {
+    this.params.put("PostOnly", value);
+    return this;
+  }
+
   public Map<String, Object> getParams() {
     return params;
   }

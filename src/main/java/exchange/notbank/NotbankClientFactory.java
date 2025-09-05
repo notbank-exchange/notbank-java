@@ -19,6 +19,8 @@ import exchange.notbank.core.rest.HttpNotbankConnection;
 import exchange.notbank.core.websocket.WebsocketJsonAdapters;
 import exchange.notbank.core.websocket.WebsocketNotbankConnection;
 import exchange.notbank.core.websocket.WebsocketNotbankConnectionConfiguration;
+import exchange.notbank.core.websocket.restarter.RestartingWebsocketConnection;
+import exchange.notbank.core.websocket.restarter.WebsocketRestarter;
 import exchange.notbank.fee.FeeService;
 import exchange.notbank.fee.FeeServiceResponseAdapter;
 import exchange.notbank.instrument.InstrumentResponseAdapter;
@@ -90,6 +92,35 @@ public class NotbankClientFactory {
             peekMessageIn,
             peekMessageOut));
     return notbankConnection.thenApply(connection -> create(connection, notbankConnectionInterceptor));
+  }
+
+  public static CompletableFuture<NotbankClient> createRestartingWebsocketClient() {
+    return createRestartingWebsocketClient(HOST, CompletableFuture::completedFuture,
+        o -> {
+        },
+        o -> {
+        },
+        o -> {
+        });
+  }
+
+  public static CompletableFuture<NotbankClient> createRestartingWebsocketClient(
+      String host,
+      Function<NotbankConnection, CompletableFuture<NotbankConnection>> notbankConnectionInterceptor,
+      Consumer<Throwable> onFailure,
+      Consumer<String> peekMessageIn,
+      Consumer<String> peekMessageOut) {
+    var websocketRestarter = WebsocketRestarter.Factory.create(
+        new WebsocketNotbankConnectionConfiguration(
+            host,
+            notbankConnectionInterceptor,
+            WebsocketJsonAdapters.Factory.create(),
+            onFailure,
+            peekMessageIn,
+            peekMessageOut));
+    var notbankConnection = new RestartingWebsocketConnection(websocketRestarter);
+    notbankConnection.reconnect();
+    return CompletableFuture.completedFuture(create(notbankConnection, notbankConnectionInterceptor));
   }
 
   private static NotbankClient create(

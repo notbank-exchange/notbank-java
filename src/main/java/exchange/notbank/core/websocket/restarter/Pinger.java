@@ -9,7 +9,7 @@ import java.util.concurrent.TimeoutException;
 import exchange.notbank.core.NotbankConnection;
 
 public class Pinger {
-  private final Timer timer;
+  private Timer timer;
   private final Integer pingIntervalMillis;
   private final Integer pingTimeoutInMillis;
 
@@ -37,6 +37,7 @@ public class Pinger {
   }
 
   public void startPing(NotbankConnection connection, Runnable restartConnection) {
+    timer = new Timer();
     var pingTask = new TimerTask() {
       public void run() {
         try {
@@ -53,7 +54,7 @@ public class Pinger {
         }
       }
     };
-    timer.schedule(pingTask, pingIntervalMillis);
+    timer.schedule(pingTask, pingIntervalMillis, pingIntervalMillis);
   }
 
   void stop() {
