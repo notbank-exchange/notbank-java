@@ -29,7 +29,7 @@ public class SubscriptionCallbacks {
   public Optional<Consumer<String>> get(MessageFrame messageFrame) {
     var subscriptionId = subscriptionIdMaker.get(messageFrame);
     var subscription = Optional.ofNullable(subscriptions.get(subscriptionId));
-    if (messageFrame.functionName.equals(Endpoints.ORDER_STATE_EVENT) && subscription.isEmpty()) {
+    if (subscription.isEmpty()) {
       var broaderSubscriptionId = removeLastSuffixSection(subscriptionId);
       return Optional.ofNullable(subscriptions.get(broaderSubscriptionId));
     }
