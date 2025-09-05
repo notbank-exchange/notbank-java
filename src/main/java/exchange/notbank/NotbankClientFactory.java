@@ -68,9 +68,13 @@ public class NotbankClientFactory {
   }
 
   public static CompletableFuture<NotbankClient> createWebsocketClient() {
+    return createWebsocketClient(o -> {
+    });
+  }
+
+  public static CompletableFuture<NotbankClient> createWebsocketClient(Consumer<Throwable> onFailure) {
     return createWebsocketClient(HOST, CompletableFuture::completedFuture,
-        o -> {
-        },
+        onFailure,
         o -> {
         },
         o -> {
@@ -95,9 +99,13 @@ public class NotbankClientFactory {
   }
 
   public static CompletableFuture<NotbankClient> createRestartingWebsocketClient() {
+    return createRestartingWebsocketClient(o -> {
+    });
+  }
+
+  public static CompletableFuture<NotbankClient> createRestartingWebsocketClient(Consumer<Throwable> onFailure) {
     return createRestartingWebsocketClient(HOST, CompletableFuture::completedFuture,
-        o -> {
-        },
+        onFailure,
         o -> {
         },
         o -> {
