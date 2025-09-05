@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import exchange.notbank.core.responses.MessageFrame;
 import exchange.notbank.core.websocket.WebsocketJsonAdapters;
-import exchange.notbank.subscription.constants.Endpoints;
 
 public class SubscriptionCallbacks {
   private final SubscriptionIdMaker subscriptionIdMaker;
