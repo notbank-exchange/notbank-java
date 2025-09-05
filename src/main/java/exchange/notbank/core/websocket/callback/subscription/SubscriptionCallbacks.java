@@ -28,16 +28,15 @@ public class SubscriptionCallbacks {
   public Optional<Consumer<String>> get(MessageFrame messageFrame) {
     var subscriptionId = subscriptionIdMaker.get(messageFrame);
     var subscription = Optional.ofNullable(subscriptions.get(subscriptionId));
-    if (subscription.isEmpty()) {
-      var broaderSubscriptionId = removeLastSuffixSection(subscriptionId);
-      return Optional.ofNullable(subscriptions.get(broaderSubscriptionId));
+    if (subscription.isPresent()) {
+      return subscription;
     }
-    return subscription;
-  }
-
-  private SubscriptionId removeLastSuffixSection(SubscriptionId subscriptionId) {
     var lastSuffixSectionStartIndex = subscriptionId.id().lastIndexOf("_");
-    return new SubscriptionId(subscriptionId.id().substring(0, lastSuffixSectionStartIndex));
+    if (lastSuffixSectionStartIndex == -1) {
+      return Optional.empty();
+    }
+    var broaderSubscriptionId = new SubscriptionId(subscriptionId.id().substring(0, lastSuffixSectionStartIndex));
+    return Optional.ofNullable(subscriptions.get(broaderSubscriptionId));
   }
 
   public void remove(SubscriptionId eventIdentifier) {
