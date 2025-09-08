@@ -51,11 +51,11 @@ public class TradingServiceTest {
 
   @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException {
-    var serviceFactory = TestHelper.newRestClient();
-    service = serviceFactory.getTradingService();
+    var notbankClient = TestHelper.newRestClient();
+    service = notbankClient.getTradingService();
     credentials = TestHelper.getUserCredentials();
     accountId = credentials.accountId;
-    anInstrument = serviceFactory.getInstrumentService().getInstrument("BTCUSDT").get();
+    anInstrument = notbankClient.getInstrumentService().getInstrument("BTCUSDT").get();
   }
 
   @Test
@@ -155,7 +155,7 @@ public class TradingServiceTest {
   @Test
   public void sendOrderIsRejectedIfNotAuthorized() throws InterruptedException {
     var responseFuture = service.sendOrder(
-        new SendOrderParamBuilder(anInstrument, 1, TimeInForce.FOK, OrderSide.BUY, OrderType.MARKET,
+        new SendOrderParamBuilder(anInstrument, 1, TimeInForce.GTC, OrderSide.BUY, OrderType.MARKET,
             new BigDecimal("0.001")));
     assertThrows(ExecutionException.class, () -> responseFuture.get());
   }
@@ -193,8 +193,8 @@ public class TradingServiceTest {
   @Test
   public void getOrderStatus() throws InterruptedException, ExecutionException {
     var orderFuture = service.getOrderStatus(new GetOrderStatusParamBuilder()
-        .accountId(13)
-        .orderId(3166211L));
+        .accountId(1)
+        .orderId(15392620L));
     var response = orderFuture.get();
     System.out.println(response);
 

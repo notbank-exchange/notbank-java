@@ -2,8 +2,6 @@ package exchange.notbank.core.rest;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import exchange.notbank.core.AuthenticateUserParamBuilder;
@@ -14,14 +12,11 @@ import exchange.notbank.core.NotbankConnection;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
 import exchange.notbank.core.ParamListBuilder;
+import exchange.notbank.core.SubscriptionData;
 import exchange.notbank.core.WebAuthenticateResponse;
 import exchange.notbank.core.WebAuthenticateUserParamBuilder;
 import exchange.notbank.core.constants.HttpMethod;
-import exchange.notbank.core.responses.MessageFrame;
-import exchange.notbank.core.websocket.CallbackId;
-import exchange.notbank.core.websocket.RequestHandler;
-import exchange.notbank.core.websocket.SubscriptionCallbacks;
-import exchange.notbank.core.websocket.SubscriptionHandler;
+import exchange.notbank.core.websocket.callback.subscription.SubscriptionId;
 import io.vavr.control.Either;
 
 public class HttpNotbankConnection implements NotbankConnection {
@@ -89,7 +84,13 @@ public class HttpNotbankConnection implements NotbankConnection {
         paramBuilder.getParams(),
         sessionToken.withSessionTokenIfPresent(paramBuilder.getHttpConfiguration()));
     return handleFutureResponse(future, deserializationFn);
+  }
 
+  @Override
+  public <T> CompletableFuture<T> requestPostByText(EndpointCategory endpointCategory, String endpoint, String text,
+      HttpConfiguration httpConfiguration, Function<String, Either<NotbankException, T>> deserializeFn) {
+    var future = httpClient.postText(endpointCategory, endpoint, text, httpConfiguration.customizeRequestBuilderFn);
+    return handleFutureResponse(future, deserializeFn);
   }
 
   private <T> CompletableFuture<T> handleFutureResponse(
@@ -136,31 +137,18 @@ public class HttpNotbankConnection implements NotbankConnection {
   }
 
   @Override
-  public void setRequestResponses(
-      List<RequestHandler> requestHandlers,
-      String subscriptionEndpoint,
-      Function<RequestHandler, CallbackId> callbackIdGetter,
-      Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<MessageFrame>>> callbackAdder) {
-    throw new UnsupportedOperationException("Unsupported method 'setRequestResponses' for http communication");
-  }
-
-  @Override
   public CompletableFuture<WebAuthenticateResponse> webAuthenticateUser(WebAuthenticateUserParamBuilder paramBuilder) {
     throw new UnsupportedOperationException("Unsupported method 'webAuthenticateUser' for http communication");
   }
 
   @Override
-  public CompletableFuture<Either<NotbankException, Void>> unsubscribe(String endpoint, ParamBuilder paramBuilder,
-      List<Consumer<SubscriptionCallbacks>> removeCallback) {
-    throw new UnsupportedOperationException("Unsupported method 'unsubscribe' for http communication");
-  }
-
-  @Override
-  public <T> CompletableFuture<Either<NotbankException, String>> subscribe(String endpoint, ParamBuilder paramBuilder,
-      Function<Consumer<Throwable>, List<SubscriptionHandler<T>>> subscriptionHandlers,
-      Function<SubscriptionHandler<T>, CallbackId> callbackIdGetter,
-      Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<T>>> callbackAdder) {
+  public CompletableFuture<Either<NotbankException, String>> subscribe(SubscriptionData subscriptionData) {
     throw new UnsupportedOperationException("Unsupported method 'subscribe' for http communication");
   }
 
+  @Override
+  public CompletableFuture<Either<NotbankException, Void>> unsubscribe(String endpoint, ParamBuilder paramBuilder,
+      List<SubscriptionId> removeCallbacks) {
+    throw new UnsupportedOperationException("Unsupported method 'unsubscribe' for http communication");
+  }
 }

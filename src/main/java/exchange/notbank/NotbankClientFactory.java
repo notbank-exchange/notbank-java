@@ -16,13 +16,21 @@ import exchange.notbank.core.responses.StandardResponse;
 import exchange.notbank.core.rest.AuthenticationResponseAdapter;
 import exchange.notbank.core.rest.HttpClient;
 import exchange.notbank.core.rest.HttpNotbankConnection;
+import exchange.notbank.core.websocket.WebsocketJsonAdapters;
 import exchange.notbank.core.websocket.WebsocketNotbankConnection;
+import exchange.notbank.core.websocket.WebsocketNotbankConnectionConfiguration;
+import exchange.notbank.core.websocket.restarter.RestartingWebsocketConnection;
+import exchange.notbank.core.websocket.restarter.WebsocketRestarter;
 import exchange.notbank.fee.FeeService;
 import exchange.notbank.fee.FeeServiceResponseAdapter;
 import exchange.notbank.instrument.InstrumentResponseAdapter;
 import exchange.notbank.instrument.InstrumentService;
 import exchange.notbank.product.ProductResponseAdapter;
 import exchange.notbank.product.ProductService;
+import exchange.notbank.quote.QuoteService;
+import exchange.notbank.quote.QuoteServiceResponseAdapter;
+import exchange.notbank.report.ReportService;
+import exchange.notbank.report.ReportServiceResponseAdapter;
 import exchange.notbank.subscription.SubscriptionResponseAdapter;
 import exchange.notbank.subscription.SubscriptionService;
 import exchange.notbank.system.SystemService;
@@ -60,9 +68,13 @@ public class NotbankClientFactory {
   }
 
   public static CompletableFuture<NotbankClient> createWebsocketClient() {
+    return createWebsocketClient(o -> {
+    });
+  }
+
+  public static CompletableFuture<NotbankClient> createWebsocketClient(Consumer<Throwable> onFailure) {
     return createWebsocketClient(HOST, CompletableFuture::completedFuture,
-        o -> {
-        },
+        onFailure,
         o -> {
         },
         o -> {
@@ -76,12 +88,47 @@ public class NotbankClientFactory {
       Consumer<String> peekMessageIn,
       Consumer<String> peekMessageOut) {
     var notbankConnection = WebsocketNotbankConnection.Factory.create(
-        host,
-        notbankConnectionInterceptor,
-        onFailure,
-        peekMessageIn,
-        peekMessageOut);
+        new WebsocketNotbankConnectionConfiguration(
+            host,
+            notbankConnectionInterceptor,
+            WebsocketJsonAdapters.Factory.create(),
+            onFailure,
+            peekMessageIn,
+            peekMessageOut));
     return notbankConnection.thenApply(connection -> create(connection, notbankConnectionInterceptor));
+  }
+
+  public static CompletableFuture<NotbankClient> createRestartingWebsocketClient() {
+    return createRestartingWebsocketClient(o -> {
+    });
+  }
+
+  public static CompletableFuture<NotbankClient> createRestartingWebsocketClient(Consumer<Throwable> onFailure) {
+    return createRestartingWebsocketClient(HOST, CompletableFuture::completedFuture,
+        onFailure,
+        o -> {
+        },
+        o -> {
+        });
+  }
+
+  public static CompletableFuture<NotbankClient> createRestartingWebsocketClient(
+      String host,
+      Function<NotbankConnection, CompletableFuture<NotbankConnection>> notbankConnectionInterceptor,
+      Consumer<Throwable> onFailure,
+      Consumer<String> peekMessageIn,
+      Consumer<String> peekMessageOut) {
+    var websocketRestarter = WebsocketRestarter.Factory.create(
+        new WebsocketNotbankConnectionConfiguration(
+            host,
+            notbankConnectionInterceptor,
+            WebsocketJsonAdapters.Factory.create(),
+            onFailure,
+            peekMessageIn,
+            peekMessageOut));
+    var notbankConnection = new RestartingWebsocketConnection(websocketRestarter);
+    notbankConnection.reconnect();
+    return CompletableFuture.completedFuture(create(notbankConnection, notbankConnectionInterceptor));
   }
 
   private static NotbankClient create(
@@ -99,7 +146,7 @@ public class NotbankClientFactory {
     var instrumentService = InstrumentService.Factory.create(
         () -> notbankConnectionInterceptor.apply(notbankConnection),
         new InstrumentResponseAdapter(moshi));
-    var productService = new ProductService(
+    var productService = ProductService.Factory.create(
         () -> notbankConnectionInterceptor.apply(notbankConnection),
         new ProductResponseAdapter(moshi));
     var subscriptionService = new SubscriptionService(
@@ -117,6 +164,12 @@ public class NotbankClientFactory {
     var walletService = new WalletService(
         () -> notbankConnectionInterceptor.apply(notbankConnection),
         new WalletServiceResponseAdapter(moshi));
+    var quoteService = new QuoteService(
+        () -> notbankConnectionInterceptor.apply(notbankConnection),
+        new QuoteServiceResponseAdapter(moshi));
+    var reportService = new ReportService(
+        () -> notbankConnectionInterceptor.apply(notbankConnection),
+        new ReportServiceResponseAdapter(moshi));
     return new NotbankClient(
         () -> notbankConnection,
         accountService,
@@ -127,6 +180,8 @@ public class NotbankClientFactory {
         systemService,
         tradingService,
         userService,
-        walletService);
+        walletService,
+        quoteService,
+        reportService);
   }
 }

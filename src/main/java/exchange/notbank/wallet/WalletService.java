@@ -1,6 +1,8 @@
 package exchange.notbank.wallet;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -11,23 +13,32 @@ import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.ParamBuilder;
 import exchange.notbank.wallet.constants.Endpoints;
 import exchange.notbank.wallet.paramBuilders.AddWhitelistedAddressesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.ConfirmFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ConfirmWhitelistedAddressesParamBuilder;
-import exchange.notbank.wallet.paramBuilders.CreateBankAccountParamBuilder;
+import exchange.notbank.wallet.paramBuilders.AddClientBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateCryptoWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateDepositAddressParamBuilder;
-import exchange.notbank.wallet.paramBuilders.DeleteBankAccountParamBuilder;
+import exchange.notbank.wallet.paramBuilders.CreateFiatDepositParamBuilder;
+import exchange.notbank.wallet.paramBuilders.CreateFiatWithdrawParamBuilder;
+import exchange.notbank.wallet.paramBuilders.DeleteClientBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.DeleteWhitelistedAddressesParamBuilder;
-import exchange.notbank.wallet.paramBuilders.GetBankAccountParamBuilder;
-import exchange.notbank.wallet.paramBuilders.GetBankAccountsParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetClientBankAccountParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetClientBankAccountsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetBanksParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetDepositAddressesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetOwnersFiatWithdrawParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetTransactionsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetnetworksTemplatesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.ResendVerificationCodeWhitelistedAddresParamBuilder;
+import exchange.notbank.wallet.paramBuilders.TransferFundsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdraw;
 import exchange.notbank.wallet.responses.BankAccount;
 import exchange.notbank.wallet.responses.BankAccounts;
 import exchange.notbank.wallet.responses.Banks;
+import exchange.notbank.wallet.responses.CbuOwner;
 import exchange.notbank.wallet.responses.CurrencyNetworkTemplates;
+import exchange.notbank.wallet.responses.Transaction;
 import exchange.notbank.wallet.responses.WhitelistedAddress;
 import io.vavr.control.Either;
 
@@ -71,32 +82,32 @@ public class WalletService {
   }
 
   /**
-   * https://apidoc.notbank.exchange/#createbankaccount
+   * https://apidoc.notbank.exchange/#addclientbankaccount
    */
-  public CompletableFuture<BankAccount> createBankAccount(CreateBankAccountParamBuilder paramBuilder) {
+  public CompletableFuture<BankAccount> addClientBankAccount(AddClientBankAccountParamBuilder paramBuilder) {
     return requestPost(Endpoints.BANK_ACCOUNTS, paramBuilder, responseAdapter::toBankAccount);
   }
 
   /**
-   * https://apidoc.notbank.exchange/#getbankaccount
+   * https://apidoc.notbank.exchange/#getclientbankaccount
    */
-  public CompletableFuture<BankAccount> getBankAccount(GetBankAccountParamBuilder paramBuilder) {
+  public CompletableFuture<BankAccount> getClientBankAccount(GetClientBankAccountParamBuilder paramBuilder) {
     return requestGet(Endpoints.BANK_ACCOUNTS + "/" + paramBuilder.getBankAccountId(), paramBuilder,
         responseAdapter::toBankAccount);
   }
 
   /**
-   * https://apidoc.notbank.exchange/#getbankaccounts
+   * https://apidoc.notbank.exchange/#getclientbankaccounts
    */
-  public CompletableFuture<BankAccounts> getBankAccounts(GetBankAccountsParamBuilder paramBuilder) {
+  public CompletableFuture<BankAccounts> getClientBankAccounts(GetClientBankAccountsParamBuilder paramBuilder) {
     return requestGet(Endpoints.BANK_ACCOUNTS, paramBuilder, responseAdapter::toBankAccounts);
   }
 
   /**
-   * https://apidoc.notbank.exchange/#deletebankaccount
+   * https://apidoc.notbank.exchange/#deleteclientbankaccount
    * 
    */
-  public CompletableFuture<Void> deleteBankAccount(DeleteBankAccountParamBuilder paramBuilder) {
+  public CompletableFuture<Void> deleteClientBankAccount(DeleteClientBankAccountParamBuilder paramBuilder) {
     return requestDelete(Endpoints.BANK_ACCOUNTS + "/" + paramBuilder.getBankAccountId(), paramBuilder,
         responseAdapter::toNone);
   }
@@ -136,16 +147,27 @@ public class WalletService {
   /**
    * https://apidoc.notbank.exchange/#addwhitelistedaddress
    */
-  public CompletableFuture<String> addWhitelistedAddress(
+  public CompletableFuture<UUID> addWhitelistedAddress(
       AddWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES, paramBuilder, responseAdapter::toIdString);
+    return requestPost(Endpoints.WHITELISTED_ADDRESSES, paramBuilder, responseAdapter::toIdResponse);
   }
 
   /**
    * https://apidoc.notbank.exchange/#confirmwhitelistedaddress
    */
   public CompletableFuture<Void> confirmWhitelistedAddress(ConfirmWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId(), paramBuilder,
+    return requestPost(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId() + "/verification",
+        paramBuilder,
+        responseAdapter::toNone);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#resendverificationcodewhitelistedaddress
+   
+   */
+  public CompletableFuture<Void> resendVerificationCodeWhitelistedAddress(ResendVerificationCodeWhitelistedAddresParamBuilder paramBuilder) {
+    return requestGet(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId() + "/verification",
+        paramBuilder,
         responseAdapter::toNone);
   }
 
@@ -153,9 +175,10 @@ public class WalletService {
    * https://apidoc.notbank.exchange/#deletewhitelistedaddress
    */
   public CompletableFuture<Void> deleteWhitelistedAddress(DeleteWhitelistedAddressesParamBuilder paramBuilder) {
-    return requestPost(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId(), paramBuilder,
+    return requestDelete(Endpoints.WHITELISTED_ADDRESSES + "/" + paramBuilder.getWhitelistAddressId(), paramBuilder,
         responseAdapter::toNone);
   }
+  
 
   /**
    * https://apidoc.notbank.exchange/#updateonestepwithdraw
@@ -172,4 +195,47 @@ public class WalletService {
     return requestPost(Endpoints.CREATE_CRIPTO_WITHDRAW, paramBuilder, responseAdapter::toStringResponse);
   }
 
+  /**
+   * https://apidoc.notbank.exchange/#createfiatdeposit
+   */
+
+  public CompletableFuture<Optional<String>> createFiatDeposit(CreateFiatDepositParamBuilder paramBuilder) {
+    return requestPost(Endpoints.FIAT_DEPOSIT, paramBuilder, responseAdapter::toOptionalUrlResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#getownersfiatwithdraw
+   */
+  public CompletableFuture<List<CbuOwner>> getOwnersFiatWithdraw(GetOwnersFiatWithdrawParamBuilder paramBuilder) {
+    return requestGet(Endpoints.GET_OWNERS_FIAT_WITHDRAW, paramBuilder, responseAdapter::toCbuOwnerList);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#createfiatwithdraw
+   */
+  public CompletableFuture<Optional<UUID>> createFiatWithdraw(CreateFiatWithdrawParamBuilder paramBuilder) {
+    return requestPost(Endpoints.FIAT_WITHDRAW, paramBuilder, responseAdapter::toOptionalWithdrawalIdResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/#confirmfiatwithdraw
+   */
+  public CompletableFuture<Void> confirmFiatWithdraw(ConfirmFiatWithdrawParamBuilder paramBuilder) {
+    return requestPost(Endpoints.FIAT_WITHDRAW + "/" + paramBuilder.withdrawalId, paramBuilder,
+        responseAdapter::toNone);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/?http#transferfunds
+   */
+  public CompletableFuture<String> transferFunds(TransferFundsParamBuilder paramBuilder) {
+    return requestPost(Endpoints.TRANSFER_FUNDS, paramBuilder, responseAdapter::toStringResponse);
+  }
+
+  /**
+   * https://apidoc.notbank.exchange/?http#gettransactions
+   */
+  public CompletableFuture<List<Transaction>> getTransactions(GetTransactionsParamBuilder paramBuilder) {
+    return requestGet(Endpoints.TRANSACTIONS, paramBuilder, responseAdapter::toTransactionList);
+  }
 }

@@ -2,15 +2,16 @@ package exchange.notbank.core.websocket;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
+
+import com.squareup.moshi.JsonAdapter;
 
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.core.constants.MessageType;
 import exchange.notbank.core.responses.MessageFrame;
-import com.squareup.moshi.JsonAdapter;
-
+import exchange.notbank.core.websocket.callback.CallbackManager;
+import exchange.notbank.core.websocket.callback.subscription.EventHandler;
+import exchange.notbank.core.websocket.callback.subscription.SubscriptionId;
 import io.vavr.control.Either;
 
 public class WebsocketRequester {
@@ -43,47 +44,17 @@ public class WebsocketRequester {
   public <T> CompletableFuture<Either<NotbankException, String>> subscribe(
       String endpoint,
       String message,
-      List<SubscriptionHandler<T>> subscriptionshandlers,
-      Function<SubscriptionHandler<T>, CallbackId> callbackIdGetter,
-      Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<T>>> callbackAdder) {
-    subscriptionshandlers.stream()
-        .forEach(subscriptionHandler -> callbackAdder.apply(callbackManager.subscriptionCallbacks).accept(
-            callbackIdGetter.apply(subscriptionHandler),
-            subscriptionHandler.eventHandler));
+      List<EventHandler> eventHandlers) {
+    eventHandlers.stream().forEach(eventHandler -> callbackManager.subscriptionCallbacks().put(eventHandler));
     return requestToFuture(endpoint, message, MessageType.REQUEST);
   }
 
-  public CompletableFuture<Either<NotbankException, Void>> unsubscribe(String endpoint, String message,
-      List<Consumer<SubscriptionCallbacks>> removeCallbacks) {
-    removeCallbacks.stream().forEach(removeCallback -> removeCallback.accept(callbackManager.subscriptionCallbacks));
+  public CompletableFuture<Either<NotbankException, Void>> unsubscribe(
+      String endpoint,
+      String message,
+      List<SubscriptionId> callbackIds) {
+    callbackIds.stream().forEach(id -> callbackManager.subscriptionCallbacks().remove(id));
     return requestToFuture(endpoint, message, MessageType.REQUEST).thenApply(result -> result.map(o -> null));
-  }
-
-  public void setRequestHandlers(
-      List<RequestHandler> requestHandlers,
-      String subscriptionEndpoint,
-      Function<RequestHandler, CallbackId> callbackIdGetter,
-      Function<SubscriptionCallbacks, BiConsumer<CallbackId, Consumer<MessageFrame>>> callbackAdder) {
-    requestHandlers.stream().forEach(requestHandler -> {
-      callbackAdder.apply(callbackManager.subscriptionCallbacks).accept(
-          callbackIdGetter.apply(requestHandler),
-          getReplayFn(requestHandler));
-    });
-  }
-
-  private Consumer<MessageFrame> getReplayFn(RequestHandler requestHandler) {
-    return messageFrame -> {
-      var response = requestHandler.eventHandler.apply(payloadGetter.get(messageFrame));
-      if (response.isEmpty()) {
-        return;
-      }
-      var responseMessageFrame = new MessageFrame(
-          MessageType.REPLY,
-          messageFrame.sequenceNumber,
-          messageFrame.functionName,
-          response.get());
-      webSocketSendFn.accept(messageFrameJsonAdapter.toJson(responseMessageFrame));
-    };
   }
 
   public CompletableFuture<Either<NotbankException, String>> request(String endpoint, String message) {
@@ -93,7 +64,7 @@ public class WebsocketRequester {
   private CompletableFuture<Either<NotbankException, String>> requestToFuture(
       String endpoint, String message, MessageType messageType) {
     var future = new CompletableFuture<Either<NotbankException, String>>();
-    var sequenceNumber = callbackManager.sequencedCallbacks.put(handleRequestResponse(future));
+    var sequenceNumber = callbackManager.sequencedCallbacks().put(handleRequestResponse(future));
     var messageFrame = new MessageFrame(messageType, sequenceNumber, endpoint, message);
     var messageFrameStr = messageFrameJsonAdapter.toJson(messageFrame);
     this.webSocketSendFn.accept(messageFrameStr);

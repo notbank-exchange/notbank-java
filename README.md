@@ -149,6 +149,20 @@ public class ExampleClass {
 }
 ```
 
+## Websocket 
+The websocket client can be instanced with auto reconnection active. If done, then the restarting websocket will reconnect forever when the connection goes down unexpectedly, re-authenticating if it was authenticated, and re-subscribing to already stablished subscriptions. While reconnecting, calls to the websocket will return a failed future. For subscriptions, reconnection will call again the snapshot hooks.
+```java
+var clientFuture = NotbankClientFactory.createRestartingWebsocketClient(throwable->System.out.println(throwable));
+
+// or, without automatic reconnection
+client = NotbankClientFactory.createWebsocketClient(throwable->System.out.println(throwable));
+
+// wait for connection
+var client = clientFuture.get();
+
+// using the client 
+// ...
+```
 ## Using Either
 
 There is a class, CompletableFutureAdapter, that waits for the future completion as a Right, and in case of exception returns an exception class NotbankException as Left.

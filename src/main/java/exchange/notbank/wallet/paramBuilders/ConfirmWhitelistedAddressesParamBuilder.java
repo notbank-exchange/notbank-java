@@ -2,6 +2,7 @@ package exchange.notbank.wallet.paramBuilders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
@@ -11,10 +12,15 @@ public class ConfirmWhitelistedAddressesParamBuilder implements ParamBuilder {
   protected HttpConfiguration httpConfiguration;
   private String whitelistAddressId;
 
-  public ConfirmWhitelistedAddressesParamBuilder(String whitelistAddressId, String code) {
+  public ConfirmWhitelistedAddressesParamBuilder(Integer accountId, UUID whitelistAddressId, String smsCode) {
+    this(accountId, whitelistAddressId.toString(), smsCode);
+  }
+
+  public ConfirmWhitelistedAddressesParamBuilder(Integer accountId, String whitelistAddressId, String smsCode) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
-    this.params.put("code", code);
+    this.params.put("account_id", accountId);
+    this.params.put("sms_code", smsCode);
     this.whitelistAddressId = whitelistAddressId;
   }
 

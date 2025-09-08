@@ -1,4 +1,4 @@
-package exchange.notbank.core.websocket;
+package exchange.notbank.core.websocket.callback;
 
 import java.util.Optional;
 

@@ -1,5 +1,6 @@
 package exchange.notbank.subscription;
 
+import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +23,11 @@ import exchange.notbank.subscription.paramBuilders.UnsubscribeTickerParamBuilder
 import exchange.notbank.subscription.paramBuilders.UnsubscribeTradesParamBuilder;
 import exchange.notbank.subscription.responses.Level2;
 import exchange.notbank.subscription.responses.SocketTrade;
+import exchange.notbank.trading.constants.OrderSide;
+import exchange.notbank.trading.constants.OrderType;
+import exchange.notbank.trading.constants.TimeInForce;
+import exchange.notbank.trading.paramBuilders.CancelAllOrdersParamBuilder;
+import exchange.notbank.trading.paramBuilders.SendOrderParamBuilder;
 import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Ticker;
 
@@ -41,10 +47,10 @@ public class SubscriptionServiceTest {
     subscriptionService = notbankWebsocketClient
         .getSubscriptionService();
     credentials = TestHelper.getUserCredentials();
-    // notbankWebsocketClient.authenticate(
-    //     credentials.userId,
-    //     credentials.apiPublicKey,
-    //     credentials.apiSecretKey).get();
+    notbankWebsocketClient.authenticate(
+        credentials.userId,
+        credentials.apiPublicKey,
+        credentials.apiSecretKey).get();
   }
 
   @AfterAll
@@ -71,7 +77,6 @@ public class SubscriptionServiceTest {
     webSocketChecker.assertNoError();
     feedChecker.assertNoError();
   }
-
 
   @Test
   public void subscribeLevel2() throws InterruptedException {
@@ -140,14 +145,28 @@ public class SubscriptionServiceTest {
     webSocketChecker.assertNoError();
     feedChecker.assertNoError();
     subscriptionService.unsubscribeTrades(new UnsubscribeTradesParamBuilder(instrumentId2));
-  }
+  } 
 
-  public void subscribeOrderState() throws InterruptedException {
+  @Test
+  public void subscribeOrderState() throws InterruptedException, ExecutionException {
     var futureResponse = subscriptionService.subscribeOrderStateEvents(
-        new SubscribeOrderStateEventsParamBuilder(13),
+        new SubscribeOrderStateEventsParamBuilder(credentials.accountId).instrumentId(66),
         order -> System.out.println(order));
     TestHelper.checkNoError(futureResponse);
-    TimeUnit.MINUTES.sleep(1);
+    TimeUnit.SECONDS.sleep(2);
+    var anInstrument = notbankWebsocketClient.getInstrumentService().getInstrument("USDTCLP").get();
+    notbankWebsocketClient.getTradingService().sendOrder(
+        new SendOrderParamBuilder(
+            anInstrument,
+            credentials.accountId,
+            TimeInForce.FOK,
+            OrderSide.BUY,
+            OrderType.MARKET,
+            new BigDecimal("1")));
+    TimeUnit.SECONDS.sleep(65);
+    notbankWebsocketClient.getTradingService()
+        .cancelAllOrders(new CancelAllOrdersParamBuilder(anInstrument.instrumentId, credentials.accountId)).get();
+    TimeUnit.SECONDS.sleep(67);
     webSocketChecker.assertNoError();
   }
 

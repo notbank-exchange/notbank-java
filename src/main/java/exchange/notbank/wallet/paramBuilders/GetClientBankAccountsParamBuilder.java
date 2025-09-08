@@ -6,19 +6,24 @@ import java.util.Map;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
-public class GetBankAccountParamBuilder implements ParamBuilder {
+public class GetClientBankAccountsParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
-  private String bankAccountId;
 
-  public GetBankAccountParamBuilder(String bankAccountId) {
+  public GetClientBankAccountsParamBuilder() {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
-    this.bankAccountId = bankAccountId;
+
   }
 
-  public String getBankAccountId() {
-    return bankAccountId;
+  public GetClientBankAccountsParamBuilder page(Integer value) {
+    this.params.put("page", value);
+    return this;
+  }
+
+  public GetClientBankAccountsParamBuilder pageSize(Integer value) {
+    this.params.put("page_size", value);
+    return this;
   }
 
   public Map<String, Object> getParams() {
@@ -29,7 +34,7 @@ public class GetBankAccountParamBuilder implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public GetBankAccountParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public GetClientBankAccountsParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }

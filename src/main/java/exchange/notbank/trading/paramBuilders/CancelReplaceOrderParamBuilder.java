@@ -70,6 +70,11 @@ public class CancelReplaceOrderParamBuilder implements ParamBuilder {
     return this;
   }
 
+  public CancelReplaceOrderParamBuilder postOnly(Long value) {
+    this.params.put("PostOnly", value);
+    return this;
+  }
+
   public Map<String, Object> getParams() {
     return params;
   }
