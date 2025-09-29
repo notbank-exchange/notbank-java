@@ -16,7 +16,7 @@ public class CancelReplaceOrderParamBuilder implements ParamBuilder {
   private HttpConfiguration httpConfiguration;
 
   public CancelReplaceOrderParamBuilder(Integer accountId, Integer instrumentId, BigDecimal quantity,
-      Integer orderIdToReplace, OrderType orderType,
+      Long orderIdToReplace, OrderType orderType,
       OrderSide side, TimeInForce timeInForce) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
@@ -70,7 +70,7 @@ public class CancelReplaceOrderParamBuilder implements ParamBuilder {
     return this;
   }
 
-  public CancelReplaceOrderParamBuilder postOnly(Long value) {
+  public CancelReplaceOrderParamBuilder postOnly(Boolean value) {
     this.params.put("PostOnly", value);
     return this;
   }
