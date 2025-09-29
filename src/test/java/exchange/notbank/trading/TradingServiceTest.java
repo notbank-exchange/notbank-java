@@ -22,6 +22,7 @@ import exchange.notbank.trading.constants.OrderType;
 import exchange.notbank.trading.constants.SendOrderResponseStatus;
 import exchange.notbank.trading.constants.TimeInForce;
 import exchange.notbank.trading.paramBuilders.CancelAllOrdersParamBuilder;
+import exchange.notbank.trading.paramBuilders.CancelReplaceOrderParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLastTradesParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLevel1ParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLevel1SummaryParamBuilder;
@@ -172,6 +173,34 @@ public class TradingServiceTest {
   }
 
   @Test
+  public void sendOrderWithPostOnly() throws InterruptedException, ExecutionException {
+    var sentOrderResponse = service.sendOrder(new SendOrderParamBuilder(
+        anInstrument,
+        credentials.accountId,
+        TimeInForce.GTC,
+        OrderSide.BUY,
+        OrderType.LIMIT,
+        new BigDecimal("1"))
+        .limitPrice(new BigDecimal("0.1"))).get();
+    System.out.println(sentOrderResponse);
+    var updatedOrder = service.cancelReplaceOrder(new CancelReplaceOrderParamBuilder(
+        credentials.accountId,
+        anInstrument.instrumentId,
+        new BigDecimal("2"),
+        sentOrderResponse.orderId,
+        OrderType.LIMIT,
+        OrderSide.BUY,
+        TimeInForce.GTC)
+        .limitPrice(new BigDecimal("0.1"))
+        .postOnly(true)).get();
+    System.out.println(updatedOrder);
+    var order = service.getOrderStatus(new GetOrderStatusParamBuilder()
+        .accountId(credentials.accountId)
+        .orderId(updatedOrder.replacementOrderId)).get();
+    System.out.println(order);
+  }
+
+  @Test
   public void sendOrderThrowsIfInvalidTickSize() throws InterruptedException, ExecutionException {
     var responseFuture = service.sendOrder(
         new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.BUY,
@@ -193,8 +222,8 @@ public class TradingServiceTest {
   @Test
   public void getOrderStatus() throws InterruptedException, ExecutionException {
     var orderFuture = service.getOrderStatus(new GetOrderStatusParamBuilder()
-        .accountId(1)
-        .orderId(15392620L));
+        .accountId(credentials.accountId)
+        .orderId(50443359L));
     var response = orderFuture.get();
     System.out.println(response);
 

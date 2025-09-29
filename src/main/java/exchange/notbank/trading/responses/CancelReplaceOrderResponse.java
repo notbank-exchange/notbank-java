@@ -3,17 +3,17 @@ package exchange.notbank.trading.responses;
 import com.squareup.moshi.Json;
 
 public class CancelReplaceOrderResponse {
-  @Json(name = "replacementOrderId")
-  public final Integer replacementOrderId;
-  @Json(name = "replacementClOrdId")
-  public final Integer replacementClientOrderId;
-  @Json(name = "origOrderId")
-  public final Integer originalOrderId;
-  @Json(name = "origClOrdId")
-  public final Integer originalClientOrderId;
+  @Json(name = "ReplacementOrderId")
+  public final Long replacementOrderId;
+  @Json(name = "ReplacementClOrdId")
+  public final Long replacementClientOrderId;
+  @Json(name = "OrigOrderId")
+  public final Long originalOrderId;
+  @Json(name = "OrigClOrdId")
+  public final Long originalClientOrderId;
 
-  public CancelReplaceOrderResponse(Integer replacementOrderId, Integer replacementClientOrderId,
-      Integer originalOrderId, Integer originalClientOrderId) {
+  public CancelReplaceOrderResponse(Long replacementOrderId, Long replacementClientOrderId,
+      Long originalOrderId, Long originalClientOrderId) {
     this.replacementOrderId = replacementOrderId;
     this.replacementClientOrderId = replacementClientOrderId;
     this.originalOrderId = originalOrderId;
