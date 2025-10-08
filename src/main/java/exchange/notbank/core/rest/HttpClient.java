@@ -29,7 +29,7 @@ public class HttpClient implements AutoCloseable {
   private final java.net.http.HttpClient client;
   private final Optional<Duration> optRequestTimeoutInMillis;
   private final JsonAdapter<Map<String, Object>> mapJsonAdapter;
-  private final JsonAdapter<List<String>> mapListJsonAdapter;
+  private final JsonAdapter<List<Map<String, Object>>> listOfMapJsonAdapter;
   private final BiConsumer<HttpRequest, String> peekHttpRequest;
   private final Consumer<HttpResponse<String>> peekJsonResponse;
 
@@ -42,10 +42,10 @@ public class HttpClient implements AutoCloseable {
       Consumer<HttpResponse<String>> peekHttpResponse) {
     this.host = host;
     this.client = client;
-    ParameterizedType mapType = Types.newParameterizedType(Map.class, String.class, Object.class);
-    ParameterizedType mapListType = Types.newParameterizedType(List.class, mapType);
-    this.mapJsonAdapter = moshi.adapter(mapType);
-    this.mapListJsonAdapter = moshi.adapter(mapListType);
+    ParameterizedType MapType = Types.newParameterizedType(Map.class, String.class, Object.class);
+    ParameterizedType ListOfMapType = Types.newParameterizedType(List.class, MapType);
+    this.mapJsonAdapter = moshi.adapter(MapType);
+    this.listOfMapJsonAdapter = moshi.adapter(ListOfMapType);
     this.optRequestTimeoutInMillis = Optional.of(requestTimeoutInMillis);
     this.peekHttpRequest = peekHttpRequest;
     this.peekJsonResponse = peekHttpResponse;
@@ -59,10 +59,10 @@ public class HttpClient implements AutoCloseable {
       Consumer<HttpResponse<String>> peekHttpResponse) {
     this.host = host;
     this.client = client;
-    ParameterizedType mapType = Types.newParameterizedType(Map.class, String.class, Object.class);
-    ParameterizedType mapListType = Types.newParameterizedType(List.class, String.class);
-    this.mapJsonAdapter = moshi.adapter(mapType);
-    this.mapListJsonAdapter = moshi.adapter(mapListType);
+    ParameterizedType MapType = Types.newParameterizedType(Map.class, String.class, Object.class);
+    ParameterizedType ListOfMapType = Types.newParameterizedType(List.class, MapType);
+    this.mapJsonAdapter = moshi.adapter(MapType);
+    this.listOfMapJsonAdapter = moshi.adapter(ListOfMapType);
     this.optRequestTimeoutInMillis = Optional.empty();
     this.peekHttpRequest = peekHttpRequest;
     this.peekJsonResponse = peekHttpResponse;
@@ -91,9 +91,9 @@ public class HttpClient implements AutoCloseable {
       String endpoint,
       List<Map<String, Object>> params,
       Function<Builder, Builder> customizeRequestBuilderFn) {
-    var cleanList = convertListValuesToString(params);
-    var jsonBody = mapListJsonAdapter.toJson(cleanList);
-    var request = newJsonEncodedRequestWithParamsAsList(endpointCategory.getValue() + endpoint, HttpMethod.POST, params,
+    var jsonBody = listOfMapJsonAdapter.toJson(params);
+    var request = newJsonEncodedRequestWithParamsAsList(endpointCategory.getValue() + endpoint, HttpMethod.POST,
+        params,
         customizeRequestBuilderFn);
     return doRequest(endpointCategory, request, jsonBody);
   }
@@ -139,7 +139,7 @@ public class HttpClient implements AutoCloseable {
       String text,
       Function<Builder, Builder> customizeRequestBuilderFn) {
     var request = customizeRequestBuilderFn.apply(withTimeoutIfPresent(HttpRequest.newBuilder()))
-        .uri(URI.create(buildUrl(endpoint)))
+        .uri(URI.create(buildUrl(endpointCategory.getValue() + endpoint)))
         .method("POST", HttpRequest.BodyPublishers.ofString(text))
         .header("charset", "utf-8")
         .build();
@@ -153,8 +153,7 @@ public class HttpClient implements AutoCloseable {
       String method,
       List<Map<String, Object>> params,
       Function<Builder, Builder> customizeRequestBuilderFn) {
-    var cleanList = convertListValuesToString(params);
-    var jsonBody = mapListJsonAdapter.toJson(cleanList);
+    var jsonBody = listOfMapJsonAdapter.toJson(params);
     return customizeRequestBuilderFn.apply(withTimeoutIfPresent(HttpRequest.newBuilder()))
         .uri(URI.create(buildUrl(endpoint)))
         .method(method, HttpRequest.BodyPublishers.ofString(jsonBody))
@@ -163,11 +162,6 @@ public class HttpClient implements AutoCloseable {
         .build();
   }
 
-  private List<String> convertListValuesToString(List<Map<String, Object>> params) {
-    return params.stream()
-        .map(this.mapJsonAdapter::toJson)
-        .toList();
-  }
 
   private Builder withTimeoutIfPresent(Builder builder) {
     if (optRequestTimeoutInMillis.isPresent()) {

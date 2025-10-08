@@ -15,4 +15,10 @@ public class StandardReportResponse {
     this.rejectMessage = rejectMessage;
     this.requestId = requestId;
   }
+
+  @Override
+  public String toString() {
+    return "StandardReportResponse [accepted=" + accepted + ", rejectMessage=" + rejectMessage + ", requestId="
+        + requestId + "]";
+  }
 }

@@ -231,9 +231,9 @@ public class TradingServiceTest {
 
   @Test
   public void sendOrderList() {
-    var order1 = new SendOrderParamBuilder(anInstrument, 1, TimeInForce.FOK, OrderSide.BUY, OrderType.MARKET,
+    var order1 = new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.BUY, OrderType.MARKET,
         new BigDecimal("10"));
-    var order2 = new SendOrderParamBuilder(anInstrument, 1, TimeInForce.FOK, OrderSide.SELL, OrderType.MARKET,
+    var order2 = new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.SELL, OrderType.MARKET,
         new BigDecimal("15"));
     List<SendOrderParamBuilder> params = List.of(order1, order2);
     var futureResponse = service.sendOrderList(new SendOrderListParamBuilder(params));
