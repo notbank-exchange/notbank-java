@@ -2,30 +2,50 @@ package exchange.notbank.account;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import exchange.notbank.CredentialsLoader.UserCredentials;
 import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
 import exchange.notbank.account.paramBuilders.GetAccountPositionsParamBuilder;
+import exchange.notbank.account.paramBuilders.GetAccountTransactionsParamBuilder;
+import exchange.notbank.users.constants.ReferenceType;
 
 public class AccountServiceTest {
-  @Test
-  public void getAccountPositions() throws InterruptedException, ExecutionException {
-    var credentials = TestHelper.getUserCredentials();
-    var accountId = credentials.accountId;
 
-    var client = NotbankClient.Factory.createRestClient(TestHelper.HOST);
+  private static NotbankClient client;
+  private static UserCredentials credentials;
 
+  @BeforeAll
+  public static void beforeAll() throws InterruptedException, ExecutionException {
+    client = TestHelper.newRestClient();
+    credentials = TestHelper.getUserCredentials();
     client.authenticate(
         credentials.userId,
         credentials.apiPublicKey,
         credentials.apiSecretKey).get();
+  }
 
-    var positions = client.getAccountService().getAccountPositions(new GetAccountPositionsParamBuilder(accountId))
-        .get();
-    positions.stream().filter(p->p.productSymbol.equals("CLP")).forEach(System.out::println);
-    assertTrue(positions.size() > 0);
+  @Test
+  public void getAccountPositions() throws InterruptedException, ExecutionException {
+    var futureResponse = client.getAccountService()
+        .getAccountPositions(new GetAccountPositionsParamBuilder(credentials.accountId));
+    var response = futureResponse.get();
+    response.stream().filter(p -> p.productSymbol.equals("CLP")).forEach(System.out::println);
+    assertTrue(response.size() > 0);
+  }
+
+  @Test
+  public void getAccountTransactions() throws InterruptedException, ExecutionException {
+    var futureResponse = client.getAccountService().getAccountTransactions(new GetAccountTransactionsParamBuilder()
+        .accountId(credentials.accountId)
+        .transactionReferenceTypes(List.of(ReferenceType.DEPOSIT, ReferenceType.WITHDRAW))
+        .productId(3));
+    var response = futureResponse.get();
+    System.out.println(response);
   }
 }

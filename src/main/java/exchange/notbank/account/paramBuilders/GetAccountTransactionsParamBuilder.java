@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.lang.model.type.ReferenceType;
-
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
+import exchange.notbank.users.constants.ReferenceType;
 import exchange.notbank.users.constants.TransactionType;
 
 public class GetAccountTransactionsParamBuilder implements ParamBuilder {
