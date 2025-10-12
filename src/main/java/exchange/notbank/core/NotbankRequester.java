@@ -14,7 +14,7 @@ public class NotbankRequester {
 
   public <T> Either<String, T> run(
       Supplier<CompletableFuture<T>> getCompletableFuture) {
-    return runAndGetError(getCompletableFuture).mapLeft(err -> err.getMessage());
+    return runAndGetError(getCompletableFuture).mapLeft(Object::toString);
   }
 
   public <T> Either<NotbankException, T> runAndGetError(Supplier<CompletableFuture<T>> getCompletableFuture) {

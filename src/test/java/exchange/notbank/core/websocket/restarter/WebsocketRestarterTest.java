@@ -21,7 +21,6 @@ public class WebsocketRestarterTest {
     }
     var fileWriter = new java.io.FileWriter(testResultsFile, true);
     var logWriter = new java.io.PrintWriter(fileWriter, true);
-
     var client = NotbankClientFactory.createRestartingWebsocketClient(
         TestHelper.HOST,
         connection -> CompletableFuture.completedFuture(connection),
