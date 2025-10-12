@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import exchange.notbank.CredentialsLoader.UserCredentials;
 import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
+import exchange.notbank.account.paramBuilders.GetAccountInfoParamBuilder;
 import exchange.notbank.account.paramBuilders.GetAccountInstrumentStatisticsParamBuilder;
 import exchange.notbank.account.paramBuilders.GetAccountPositionsParamBuilder;
 import exchange.notbank.account.paramBuilders.GetAccountTransactionsParamBuilder;
@@ -52,6 +53,13 @@ public class AccountServiceTest {
   public void getAccountInstrumentStatistics() throws InterruptedException, ExecutionException {
     var futureResponse = client.getAccountService().getAccountInstrumentStatistics(
         new GetAccountInstrumentStatisticsParamBuilder().accountId(credentials.accountId));
+    TestHelper.checkNoError(futureResponse);
+  }
+
+  @Test
+  public void getAccountInfo() throws InterruptedException, ExecutionException {
+    var futureResponse = client.getAccountService()
+        .getAccountInfo(new GetAccountInfoParamBuilder().accountId(credentials.accountId));
     TestHelper.checkNoError(futureResponse);
   }
 }
