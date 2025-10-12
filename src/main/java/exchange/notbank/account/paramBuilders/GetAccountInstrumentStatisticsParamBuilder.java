@@ -13,15 +13,11 @@ public class GetAccountInstrumentStatisticsParamBuilder implements ParamBuilder 
   public GetAccountInstrumentStatisticsParamBuilder() {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
+    this.params.put("OMSId", 1);
   }
 
   public GetAccountInstrumentStatisticsParamBuilder accountId(Integer accountId) {
     this.params.put("AccountId", accountId);
-    return this;
-  }
-
-  public GetAccountInstrumentStatisticsParamBuilder omsId(Integer omsId) {
-    this.params.put("OMSId", omsId);
     return this;
   }
 

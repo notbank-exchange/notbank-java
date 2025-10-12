@@ -32,7 +32,7 @@ public class AccountServiceAdapterTest {
 
   @Test
   public void getAccountInstrumentStatistics() {
-    var params = new GetAccountInstrumentStatisticsParamBuilder().omsId(1).accountId(credentials.accountId);
+    var params = new GetAccountInstrumentStatisticsParamBuilder().accountId(credentials.accountId);
     var futureResponse = accountService.getAccountInstrumentStatistics(params);
     TestHelper.checkNoError(futureResponse);
   }
