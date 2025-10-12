@@ -35,7 +35,6 @@ public class AccountServiceTest {
     var futureResponse = client.getAccountService()
         .getAccountPositions(new GetAccountPositionsParamBuilder(credentials.accountId));
     var response = futureResponse.get();
-    response.stream().filter(p -> p.productSymbol.equals("CLP")).forEach(System.out::println);
     assertTrue(response.size() > 0);
   }
 
@@ -45,7 +44,6 @@ public class AccountServiceTest {
         .accountId(credentials.accountId)
         .transactionReferenceTypes(List.of(ReferenceType.DEPOSIT, ReferenceType.WITHDRAW))
         .productId(3));
-    var response = futureResponse.get();
-    System.out.println(response);
+    TestHelper.checkNoError(futureResponse);
   }
 }
