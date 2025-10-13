@@ -26,12 +26,22 @@ public class AuthenticationTest {
     var response = futureResponse.get();
   }
 
-
-
   @Test
   public void webAuthenticate() throws InterruptedException, ExecutionException {
     var client = TestHelper.newWebsocketClient(System.out::println);
-    var futureResponse = client.webAuthenticateUser(new WebAuthenticateUserParamBuilder().sessionToken("session-token"));
+    var futureResponse = client
+        .webAuthenticateUser(new WebAuthenticateUserParamBuilder().sessionToken("session-token"));
     var response = futureResponse.get();
   }
+
+  @Test
+  public void logOut() throws InterruptedException, ExecutionException {
+    var client = TestHelper.newRestClient();
+    client.authenticate(
+        credentials.userId,
+        credentials.apiPublicKey,
+        credentials.apiSecretKey).get();
+    client.logOut().get();
+  }
+
 }

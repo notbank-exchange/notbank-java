@@ -17,6 +17,6 @@ public class OrderFee {
 
   @Override
   public String toString() {
-    return "OrderFee [orderFee=" + orderFee + ", productId=" + productId + "]";
+    return "OrderFee [orderFee=" + orderFee.stripTrailingZeros().toPlainString() + ", productId=" + productId + "]";
   }
 }
