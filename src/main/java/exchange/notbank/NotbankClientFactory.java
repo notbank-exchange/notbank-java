@@ -64,7 +64,6 @@ public class NotbankClientFactory {
     var httpClient = HttpClient.Factory.newHttpClient(host, moshi, peekHttpRequest, peekHttpResponse);
     var notbankConnection = new HttpNotbankConnection(httpClient, new AuthenticationResponseAdapter(moshi));
     return create(notbankConnection, notbankConnectionInterceptor);
-
   }
 
   public static CompletableFuture<NotbankClient> createWebsocketClient() {
@@ -131,7 +130,7 @@ public class NotbankClientFactory {
     return CompletableFuture.completedFuture(create(notbankConnection, notbankConnectionInterceptor));
   }
 
-  private static NotbankClient create(
+  public static NotbankClient create(
       NotbankConnection notbankConnection,
       Function<NotbankConnection, CompletableFuture<NotbankConnection>> notbankConnectionInterceptor) {
     var moshi = MoshiFactory.create();

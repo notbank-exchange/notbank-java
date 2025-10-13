@@ -26,6 +26,9 @@ public class ReportErrorHandler {
   public <T> Either<NotbankException, String> handle(String jsonStr) {
     try {
       var errorResponse = adapter.fromJson(jsonStr);
+      if (errorResponse.accepted == null && errorResponse.rejectMessage == null) {
+        return Either.right(jsonStr);
+      }
       var errMessage = errorResponse.rejectMessage;
       return Either.left(NotbankException.Factory.create(ErrorType.RESPONSE_ERROR, errMessage));
     } catch (IOException | JsonDataException e) {

@@ -1,12 +1,16 @@
 package exchange.notbank.report;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import exchange.notbank.CredentialsLoader.UserCredentials;
+import exchange.notbank.StringResponseNotbankConnection;
 import exchange.notbank.TestHelper;
 import exchange.notbank.report.constants.ReportFrequency;
 import exchange.notbank.report.constants.RequestStatus;
@@ -24,9 +28,12 @@ public class ReportServiceTest {
   private static Integer accountId;
   private static UserCredentials credentials;
   private static ReportService service;
+  private static StringResponseNotbankConnection connection;
 
   @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException {
+    connection = new StringResponseNotbankConnection();
+    // var client = NotbankClientFactory.create(connection, conn -> CompletableFuture.completedFuture(conn));
     var client = TestHelper.newRestClient();
     service = client.getReportService();
     credentials = TestHelper.getUserCredentials();
@@ -35,6 +42,10 @@ public class ReportServiceTest {
 
   @Test
   public void generateTradeActivityReport() {
+    var response = """
+        {"RequestingUser":9,"OMSId":1,"reportFlavor":"TradeActivity","createTime":"2025-10-02T04:13:05.515Z","initialRunTime":"2025-10-02T04:13:05.515Z","intervalStartTime":"2025-06-10T16:00:00.000Z","intervalEndTime":"2025-07-15T16:00:00.000Z","RequestStatus":"Submitted","ReportFrequency":"onDemand","intervalDuration":30240000000000,"RequestId":"ad2d5627-7840-1aa0-2968-308f7e771e21","lastInstanceId":"00000000-0000-0000-0000-000000000000","accountIds":[235]}
+        """;
+    connection.setJsonResponse(response);
     var futureResponse = service.generateTradeActivityReport(new GenerateActivityReportParamBuilder(
         List.of(accountId),
         "2025-06-10T16:00:00.000Z",
@@ -80,7 +91,7 @@ public class ReportServiceTest {
   public void scheduleTransactionActivityReport() {
     var futureResponse = service.scheduleTransactionActivityReport(
         new ScheduleActivityReportParamBuilder(List.of(accountId), "2025-07-19T16:00:00.000Z")
-            .frequency(ReportFrequency.ANNUALLY));
+            .frequency(ReportFrequency.MONTHLY));
     TestHelper.checkNoError(futureResponse);
   }
 
@@ -117,7 +128,7 @@ public class ReportServiceTest {
   @Test
   public void getUserReportWriterResultRecords() {
     var futureResponse = service.getUserReportWriterResultRecords(
-        new GetUserReportWriterResultRecordsParamBuilder(accountId));
+        new GetUserReportWriterResultRecordsParamBuilder(credentials.userId));
     TestHelper.checkNoError(futureResponse);
   }
 
@@ -133,35 +144,28 @@ public class ReportServiceTest {
   }
 
   @Test
-  public void removeUserReportTicket() throws InterruptedException, ExecutionException {
+  public void removeUserReportTicket() throws InterruptedException, ExecutionException, TimeoutException {
     var reportSummary = service.generateTradeActivityReport(new GenerateActivityReportParamBuilder(
         List.of(accountId),
         "2025-06-10T16:00:00.000Z",
         "2025-07-15T16:00:00.000Z"));
+    TimeUnit.SECONDS.sleep(5);
     var futureResponse = service.removeUserReportTicket(
-        new RemoveUserReportTicketParamBuilder(reportSummary.get().requestId));
+        new RemoveUserReportTicketParamBuilder(reportSummary.get(1, TimeUnit.MINUTES).requestId));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void downloadDocument() throws InterruptedException, ExecutionException {
-    var reportSummary = service.generateTradeActivityReport(new GenerateActivityReportParamBuilder(
-        List.of(accountId),
-        "2025-06-10T16:00:00.000Z",
-        "2025-07-15T16:00:00.000Z"));
     var futureResponse = service.downloadDocument(
-        new DownloadDocumentParamBuilder(reportSummary.get().requestId));
+        new DownloadDocumentParamBuilder(UUID.fromString("3108e502-ba32-f2b0-73b3-ffb0bd997390")));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void downloadDocumentSlice() throws InterruptedException, ExecutionException {
-    var reportSummary = service.generateTradeActivityReport(new GenerateActivityReportParamBuilder(
-        List.of(accountId),
-        "2025-06-10T16:00:00.000Z",
-        "2025-07-15T16:00:00.000Z"));
     var documentDescriptor = service.downloadDocument(
-        new DownloadDocumentParamBuilder(reportSummary.get().requestId));
+        new DownloadDocumentParamBuilder(UUID.fromString("3108e502-ba32-f2b0-73b3-ffb0bd997390")));
     var futureResponse = service
         .downloadDocumentSlice(new DownloadDocumentSliceParamBuilder(documentDescriptor.get().descriptorId));
     TestHelper.checkNoError(futureResponse);
