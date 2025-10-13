@@ -17,6 +17,11 @@ public class WebAuthenticateUserParamBuilder implements ParamBuilder {
     return this;
   }
 
+  public WebAuthenticateUserParamBuilder sessionToken(String value) {
+    this.params.put("SessionToken", value);
+    return this;
+  }
+
   public HttpConfiguration getHttpConfiguration() {
     return httpConfiguration;
   }

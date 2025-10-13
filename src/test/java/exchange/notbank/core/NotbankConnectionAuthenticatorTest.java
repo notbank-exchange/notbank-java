@@ -24,6 +24,5 @@ public class NotbankConnectionAuthenticatorTest {
     }
     assertEquals(authenticationResult.getLeft().errorType, ErrorType.EXECUTION_ERROR);
     assertTrue(authenticationResult.getLeft().getMessage().toLowerCase().contains("empty key"));
-
   }
 }

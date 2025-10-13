@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import exchange.notbank.CredentialsLoader.UserCredentials;
+import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
 import exchange.notbank.WebSocketChecker;
@@ -30,6 +31,12 @@ public class UserServiceTest {
   @AfterAll
   public static void afterAll() throws Exception {
     websocketServiceFactory.getNotbankConnection().close();
+  }
+
+  @Test
+  public void getUserAccounts() {
+    var futureResponse = userService.getUserAccounts(new GetUserAccountsParamBuilder(credentials.userId));
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
