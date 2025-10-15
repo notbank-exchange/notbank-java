@@ -38,7 +38,7 @@ public class FeeServiceTest {
   @Test
   public void getWithdrawFee() {
     var futureResponse = client.getFeeService()
-        .getWithdrawFee(new GetWithdrawFeeParamBuilder(credentials.accountId, 1, new BigDecimal(100)));
+        .getWithdrawFee(new GetWithdrawFeeParamBuilder(credentials.accountId, 2, new BigDecimal(100)));
     TestHelper.checkNoError(futureResponse);
   }
 
@@ -59,9 +59,8 @@ public class FeeServiceTest {
 
   @Test
   public void getOmsDepositFees() {
-    
     var futureResponse = client.getFeeService()
-        .getOmsDepositFees(new GetOmsDepositFeesParamsBuilder().productId(1).accountProviderId(5));
+        .getOmsDepositFees(new GetOmsDepositFeesParamsBuilder().productId(2).accountProviderId(4));
     TestHelper.checkNoError(futureResponse);
   }
 

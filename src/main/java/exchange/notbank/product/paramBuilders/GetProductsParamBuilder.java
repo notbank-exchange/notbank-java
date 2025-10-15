@@ -26,6 +26,11 @@ public class GetProductsParamBuilder implements ParamBuilder {
     return this;
   }
 
+  public GetProductsParamBuilder attributeValue(boolean value) {
+    params.put("AttributeValue", value);
+    return this;
+  }
+
   public GetProductsParamBuilder getDisabled(Boolean value) {
     params.put("GetDisabled", value);
     return this;

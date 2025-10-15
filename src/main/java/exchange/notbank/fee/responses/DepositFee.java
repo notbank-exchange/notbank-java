@@ -17,6 +17,6 @@ public class DepositFee {
 
   @Override
   public String toString() {
-    return "DepositFee [feeAmount=" + feeAmount + ", ticketAmount=" + ticketAmount + "]";
+    return "DepositFee [feeAmount=" + feeAmount.stripTrailingZeros().toPlainString() + ", ticketAmount=" + ticketAmount.stripTrailingZeros().toPlainString() + "]";
   }
 }
