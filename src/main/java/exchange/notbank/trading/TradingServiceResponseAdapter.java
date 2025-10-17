@@ -3,6 +3,7 @@ package exchange.notbank.trading;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -13,8 +14,8 @@ import exchange.notbank.core.NotbankException;
 import exchange.notbank.trading.responses.Balance;
 import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
-import exchange.notbank.trading.responses.DailyTicker;
 import exchange.notbank.trading.responses.EarliestTickTime;
+import exchange.notbank.trading.responses.InstrumentTicker;
 import exchange.notbank.trading.responses.LastTrade;
 import exchange.notbank.trading.responses.Level;
 import exchange.notbank.trading.responses.Level1;
@@ -55,7 +56,7 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<List<Summary>> summaryListJsonAdapter;
   private final JsonAdapter<EarliestTickTime> earliestTickTimeJsonAdapter;
   private final JsonAdapter<List<LastTrade>> lastTradeListJsonAdapter;
-  private final JsonAdapter<DailyTicker> dailyTickerJsonAdapter;
+  private final JsonAdapter<Map<String, InstrumentTicker>> dailyTickerJsonAdapter;
   private final JsonAdapter<OrderBookRaw> orderBookRawJsonAdapter;
   private final JsonAdapter<Order> orderJsonAdapter;
   private final JsonAdapter<SendOrderResponse> sendOrderJsonAdapter;
@@ -78,7 +79,7 @@ public class TradingServiceResponseAdapter {
     this.simpleUserAccountListJsonAdapter = moshi.adapter(SimpleUserAccounts.class);
     ParameterizedType SummaryMinListType = Types.newParameterizedType(List.class, SummaryMin.class);
     this.summaryMinListJsonAdapter = moshi.adapter(SummaryMinListType);
-    ParameterizedType SummaryListType = Types.newParameterizedType(List.class, SummaryMin.class);
+    ParameterizedType SummaryListType = Types.newParameterizedType(List.class, Summary.class);
     this.summaryListJsonAdapter = moshi.adapter(SummaryListType);
     ParameterizedType StringListType = Types.newParameterizedType(List.class, String.class);
     this.stringListJsonAdapter = moshi.adapter(StringListType);
@@ -96,7 +97,8 @@ public class TradingServiceResponseAdapter {
     this.earliestTickTimeJsonAdapter = moshi.adapter(EarliestTickTime.class);
     ParameterizedType LastTradeListType = Types.newParameterizedType(List.class, LastTrade.class);
     this.lastTradeListJsonAdapter = moshi.adapter(LastTradeListType);
-    this.dailyTickerJsonAdapter = moshi.adapter(DailyTicker.class);
+    ParameterizedType StringTicketMapType = Types.newParameterizedType(Map.class, String.class, InstrumentTicker.class);
+    this.dailyTickerJsonAdapter = moshi.adapter(StringTicketMapType);
 
     this.orderBookRawJsonAdapter = moshi.adapter(OrderBookRaw.class);
     this.orderJsonAdapter = moshi.adapter(Order.class);
@@ -207,7 +209,7 @@ public class TradingServiceResponseAdapter {
     return handle(jsonStr, lastTradeListJsonAdapter);
   }
 
-  public Either<NotbankException, DailyTicker> toDailyTicker(String jsonStr) {
+  public Either<NotbankException, Map<String, InstrumentTicker>> toDailyTicker(String jsonStr) {
     return handle(jsonStr, dailyTickerJsonAdapter);
   }
 

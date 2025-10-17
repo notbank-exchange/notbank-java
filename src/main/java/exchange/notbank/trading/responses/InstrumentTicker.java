@@ -15,7 +15,7 @@ public class InstrumentTicker {
     @Json(name = "quote_volume")
     public final BigDecimal quoteVolume;
 
-    public String instrumentId;
+    public final String instrumentId;
 
     public InstrumentTicker(
             String instrumentId,
@@ -35,7 +35,7 @@ public class InstrumentTicker {
     @Override
     public String toString() {
         return "InstrumentTicker [id=" + instrumentId + ", baseId=" + baseId + ", quoteId=" + quoteId + ", lastPrice="
-                + lastPrice + ", baseVolume=" + baseVolume + ", quoteVolume="
-                + quoteVolume + "]";
+                + lastPrice.stripTrailingZeros() + ", baseVolume=" + baseVolume.stripTrailingZeros() + ", quoteVolume="
+                + quoteVolume.stripTrailingZeros() + "]";
     }
 }

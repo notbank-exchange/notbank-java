@@ -1,6 +1,7 @@
 package exchange.notbank.trading;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -27,9 +28,9 @@ import exchange.notbank.trading.paramBuilders.GetOrderStatusParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetOrdersHistoryByOrderIdParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetOrdersHistoryParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetOrdersParamBuilder;
-import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTickerHistoryParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTradesHistoryParamBuilder;
+import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.trading.paramBuilders.ModifyOrderParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelReplaceListParamBuilder;
@@ -39,7 +40,7 @@ import exchange.notbank.trading.paramBuilders.SummaryParamBuilder;
 import exchange.notbank.trading.paramBuilders.TradesParamBuilder;
 import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
-import exchange.notbank.trading.responses.DailyTicker;
+import exchange.notbank.trading.responses.InstrumentTicker;
 import exchange.notbank.trading.responses.LastTrade;
 import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Level2Snapshot;
@@ -56,7 +57,6 @@ import exchange.notbank.trading.responses.Summary;
 import exchange.notbank.trading.responses.SummaryMin;
 import exchange.notbank.trading.responses.Ticker;
 import exchange.notbank.trading.responses.Trade;
-
 import io.vavr.control.Either;
 
 public class TradingService {
@@ -175,7 +175,7 @@ public class TradingService {
   /**
    * https://apidoc.notbank.exchange/#ticker
    */
-  public CompletableFuture<DailyTicker> getTicker() {
+  public CompletableFuture<Map<String,InstrumentTicker>> getTicker() {
     return requestPost(Endpoints.TICKER, ParamBuilder.EMPTY, responseAdapter::toDailyTicker);
   }
 
