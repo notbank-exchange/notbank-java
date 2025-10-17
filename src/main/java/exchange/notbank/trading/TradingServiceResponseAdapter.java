@@ -15,6 +15,7 @@ import exchange.notbank.trading.responses.Balance;
 import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
 import exchange.notbank.trading.responses.EarliestTickTime;
+import exchange.notbank.trading.responses.EnumClass;
 import exchange.notbank.trading.responses.InstrumentTicker;
 import exchange.notbank.trading.responses.LastTrade;
 import exchange.notbank.trading.responses.Level;
@@ -66,6 +67,7 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<SendCancelReplaceListResponse> sendCancelReplaceListResponseJsonAdapter;
   private final JsonAdapter<ModifyOrderResponse> modifyOrderResponseJsonAdapter;
   private final JsonAdapter<CancelAllOrdersResponse> cancelAllOrdersResponseJsonAdapter;
+  private final JsonAdapter<List<EnumClass>> enumClassAdapter;
 
   public TradingServiceResponseAdapter(Moshi moshi) {
     this.errorHandler = ErrorHandler.Factory.createApErrorHandler(moshi);
@@ -99,7 +101,8 @@ public class TradingServiceResponseAdapter {
     this.lastTradeListJsonAdapter = moshi.adapter(LastTradeListType);
     ParameterizedType StringTicketMapType = Types.newParameterizedType(Map.class, String.class, InstrumentTicker.class);
     this.dailyTickerJsonAdapter = moshi.adapter(StringTicketMapType);
-
+    ParameterizedType EnumClassListType = Types.newParameterizedType(List.class, EnumClass.class);
+    this.enumClassAdapter = moshi.adapter(EnumClassListType);
     this.orderBookRawJsonAdapter = moshi.adapter(OrderBookRaw.class);
     this.orderJsonAdapter = moshi.adapter(Order.class);
     this.sendOrderJsonAdapter = moshi.adapter(SendOrderResponse.class);
@@ -252,5 +255,9 @@ public class TradingServiceResponseAdapter {
 
   public Either<NotbankException, CancelAllOrdersResponse> toCancelAllOrdersResponse(String jsonStr) {
     return handle(jsonStr, cancelAllOrdersResponseJsonAdapter);
+  }
+
+  public Either<NotbankException, List<EnumClass>> toEnumClassList(String jsonStr) {
+    return handle(jsonStr, enumClassAdapter);
   }
 }

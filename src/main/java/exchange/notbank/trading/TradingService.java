@@ -15,6 +15,7 @@ import exchange.notbank.trading.constants.Endpoints;
 import exchange.notbank.trading.paramBuilders.CancelAllOrdersParamBuilder;
 import exchange.notbank.trading.paramBuilders.CancelOrderParamBuilder;
 import exchange.notbank.trading.paramBuilders.CancelReplaceOrderParamBuilder;
+import exchange.notbank.trading.paramBuilders.GetEnumsParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLastTradesParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLevel1ParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLevel1SummaryParamBuilder;
@@ -40,6 +41,7 @@ import exchange.notbank.trading.paramBuilders.SummaryParamBuilder;
 import exchange.notbank.trading.paramBuilders.TradesParamBuilder;
 import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
+import exchange.notbank.trading.responses.EnumClass;
 import exchange.notbank.trading.responses.InstrumentTicker;
 import exchange.notbank.trading.responses.LastTrade;
 import exchange.notbank.trading.responses.Level1;
@@ -175,7 +177,7 @@ public class TradingService {
   /**
    * https://apidoc.notbank.exchange/#ticker
    */
-  public CompletableFuture<Map<String,InstrumentTicker>> getTicker() {
+  public CompletableFuture<Map<String, InstrumentTicker>> getTicker() {
     return requestPost(Endpoints.TICKER, ParamBuilder.EMPTY, responseAdapter::toDailyTicker);
   }
 
@@ -272,4 +274,12 @@ public class TradingService {
   public CompletableFuture<Order> getOrderStatus(GetOrderStatusParamBuilder paramBuilder) {
     return requestPost(Endpoints.GET_ORDER_STATUS, paramBuilder, responseAdapter::toOrder);
   }
+
+  /**
+   * https://apidoc.notbank.exchange/#getenums
+   */
+  public CompletableFuture<List<EnumClass>> getEnums(GetEnumsParamBuilder paramBuilder) {
+    return requestPost(Endpoints.GET_ENUMS, paramBuilder, responseAdapter::toEnumClassList);
+  }
+
 }

@@ -23,7 +23,7 @@ public class AuthenticationTest {
         credentials.userId,
         credentials.apiPublicKey,
         credentials.apiSecretKey);
-    var response = futureResponse.get();
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test
@@ -31,7 +31,7 @@ public class AuthenticationTest {
     var client = TestHelper.newWebsocketClient(System.out::println);
     var futureResponse = client
         .webAuthenticateUser(new WebAuthenticateUserParamBuilder().sessionToken("session-token"));
-    var response = futureResponse.get();
+    TestHelper.checkNoError(futureResponse);
   }
 
   @Test

@@ -23,6 +23,7 @@ import exchange.notbank.trading.constants.SendOrderResponseStatus;
 import exchange.notbank.trading.constants.TimeInForce;
 import exchange.notbank.trading.paramBuilders.CancelAllOrdersParamBuilder;
 import exchange.notbank.trading.paramBuilders.CancelReplaceOrderParamBuilder;
+import exchange.notbank.trading.paramBuilders.GetEnumsParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLastTradesParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLevel1ParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetLevel1SummaryParamBuilder;
@@ -231,9 +232,11 @@ public class TradingServiceTest {
 
   @Test
   public void sendOrderList() {
-    var order1 = new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.BUY, OrderType.MARKET,
+    var order1 = new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.BUY,
+        OrderType.MARKET,
         new BigDecimal("10"));
-    var order2 = new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.SELL, OrderType.MARKET,
+    var order2 = new SendOrderParamBuilder(anInstrument, credentials.accountId, TimeInForce.FOK, OrderSide.SELL,
+        OrderType.MARKET,
         new BigDecimal("15"));
     List<SendOrderParamBuilder> params = List.of(order1, order2);
     var futureResponse = service.sendOrderList(new SendOrderListParamBuilder(params));
@@ -275,6 +278,12 @@ public class TradingServiceTest {
   public void cancelAllOrders() throws Exception {
     var params = new CancelAllOrdersParamBuilder(9, credentials.accountId);
     var futureResponse = service.cancelAllOrders(params);
+    TestHelper.checkNoError(futureResponse);
+  }
+
+  @Test
+  public void getEnums() throws Exception {
+    var futureResponse = service.getEnums(new GetEnumsParamBuilder());
     TestHelper.checkNoError(futureResponse);
   }
 }
