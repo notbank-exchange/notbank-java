@@ -2,7 +2,7 @@ package exchange.notbank.report.constants;
 
 import com.squareup.moshi.Json;
 
-public enum RequestStatus {
+public enum ReportRequestStatus {
   @Json(name = "Submitted")
   SUBMITTED,
   @Json(name = "Validating")
