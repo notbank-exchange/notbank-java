@@ -78,8 +78,8 @@ public class ExampleTest {
           accountId,
           TimeInForce.GTC,
           OrderSide.BUY,
-          OrderType.LIMIT,
-          orderQuantity)
+          OrderType.LIMIT)
+          .quantity(orderQuantity)
           .limitPrice(orderPrice);
       var orderResult = client.getTradingService().sendOrder(orderParamBuilder).get();
 

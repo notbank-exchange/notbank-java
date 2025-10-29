@@ -6,15 +6,14 @@ import java.util.Map;
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
-
-public class TradesParamBuilder implements ParamBuilder {
+public class GetTickerParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public TradesParamBuilder(String marketPair) {
+  public GetTickerParamBuilder() {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
-    this.params.put("market_pair", marketPair);
+
   }
 
   public Map<String, Object> getParams() {
@@ -25,7 +24,7 @@ public class TradesParamBuilder implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public TradesParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public GetTickerParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }

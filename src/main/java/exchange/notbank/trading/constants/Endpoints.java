@@ -35,4 +35,5 @@ public class Endpoints {
   public static final String MODIFY_ORDER = "ModifyOrder";
   public static final String CANCEL_ALL_ORDERS = "CancelAllOrders";
   public static final String GET_ENUMS = "GetEnums";
+  public static final String GET_ACCOUNT_TRADES = "GetAccountTrades";
 }

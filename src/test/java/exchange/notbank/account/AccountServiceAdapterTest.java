@@ -45,7 +45,7 @@ public class AccountServiceAdapterTest {
   }
 
   @Test
-  public void getAccountTrades() {
+  public void getAccountTransactions() {
     var params = new GetAccountTransactionsParamBuilder();
     var futureResponse = accountService.getAccountTransactions(params);
     TestHelper.checkNoError(futureResponse);

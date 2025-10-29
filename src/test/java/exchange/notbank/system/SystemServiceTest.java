@@ -7,22 +7,22 @@ import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
 
 public class SystemServiceTest {
-  private static SystemService systemService;
+  private static NotbankClient client;
 
   @BeforeAll
   public static void beforeAll() {
-    systemService = NotbankClient.Factory.createRestClient(TestHelper.HOST).getSystemService();
+    client = NotbankClient.Factory.createRestClient(TestHelper.HOST);
   }
 
   @Test
   public void ping() {
-    var futureResponse = systemService.ping();
+    var futureResponse = client.getSystemService().ping();
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void healthCheck() {
-    var futureResponse = systemService.healthCheck();
+    var futureResponse = client.getSystemService().healthCheck();
     TestHelper.checkNoError(futureResponse);
   }
 }

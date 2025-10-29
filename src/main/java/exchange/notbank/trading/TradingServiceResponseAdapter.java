@@ -22,7 +22,6 @@ import exchange.notbank.trading.responses.Level;
 import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Level2Snapshot;
 import exchange.notbank.trading.responses.Level2Ticker;
-import exchange.notbank.trading.responses.ModifyOrderResponse;
 import exchange.notbank.trading.responses.Order;
 import exchange.notbank.trading.responses.OrderBook;
 import exchange.notbank.trading.responses.OrderBookRaw;
@@ -65,7 +64,6 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<CancelReplaceOrderResponse> cancelReplaceOrderResponseJsonAdapter;
   private final JsonAdapter<SendCancelListResponse> sendCancelListResponseJsonAdapter;
   private final JsonAdapter<SendCancelReplaceListResponse> sendCancelReplaceListResponseJsonAdapter;
-  private final JsonAdapter<ModifyOrderResponse> modifyOrderResponseJsonAdapter;
   private final JsonAdapter<CancelAllOrdersResponse> cancelAllOrdersResponseJsonAdapter;
   private final JsonAdapter<List<EnumClass>> enumClassAdapter;
 
@@ -110,7 +108,6 @@ public class TradingServiceResponseAdapter {
     this.cancelReplaceOrderResponseJsonAdapter = moshi.adapter(CancelReplaceOrderResponse.class);
     this.sendCancelListResponseJsonAdapter = moshi.adapter(SendCancelListResponse.class);
     this.sendCancelReplaceListResponseJsonAdapter = moshi.adapter(SendCancelReplaceListResponse.class);
-    this.modifyOrderResponseJsonAdapter = moshi.adapter(ModifyOrderResponse.class);
     this.cancelAllOrdersResponseJsonAdapter = moshi.adapter(CancelAllOrdersResponse.class);
   }
 
@@ -247,10 +244,6 @@ public class TradingServiceResponseAdapter {
 
   public Either<NotbankException, SendCancelReplaceListResponse> toSendCancelReplaceListResponse(String jsonStr) {
     return handle(jsonStr, sendCancelReplaceListResponseJsonAdapter);
-  }
-
-  public Either<NotbankException, ModifyOrderResponse> toModifyOrderResponse(String jsonStr) {
-    return handle(jsonStr, modifyOrderResponseJsonAdapter);
   }
 
   public Either<NotbankException, CancelAllOrdersResponse> toCancelAllOrdersResponse(String jsonStr) {
