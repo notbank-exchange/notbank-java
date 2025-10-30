@@ -32,7 +32,7 @@ import exchange.notbank.wallet.paramBuilders.GetWhitelistedAddressesParamBuilder
 import exchange.notbank.wallet.paramBuilders.GetnetworksTemplatesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ResendVerificationCodeWhitelistedAddresParamBuilder;
 import exchange.notbank.wallet.paramBuilders.TransferFundsParamBuilder;
-import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdraw;
+import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdrawParamBuilder;
 import exchange.notbank.wallet.responses.BankAccount;
 import exchange.notbank.wallet.responses.BankAccounts;
 import exchange.notbank.wallet.responses.Banks;
@@ -184,7 +184,7 @@ public class WalletService {
    * https://apidoc.notbank.exchange/#updateonestepwithdraw
    */
 
-  public CompletableFuture<Void> updateOneStepWithdraw(UpdateOneStepWithdraw paramBuilder) {
+  public CompletableFuture<Void> updateOneStepWithdraw(UpdateOneStepWithdrawParamBuilder paramBuilder) {
     return requestPost(Endpoints.UPDATE_ONE_STEP_WITHDRAW, paramBuilder, responseAdapter::toNone);
   }
 

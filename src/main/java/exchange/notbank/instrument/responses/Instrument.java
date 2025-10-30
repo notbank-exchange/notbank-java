@@ -151,25 +151,25 @@ public class Instrument {
         + ", venueInstrumentId=" + venueInstrumentId + ", venueId=" + venueId + ", sortIndex=" + sortIndex
         + ", sessionStatus=" + sessionStatus + ", previousSessionStatus=" + previousSessionStatus
         + ", sessionStatusDateTime=" + sessionStatusDateTime + ", selfTradePrevention=" + selfTradePrevention
-        + ", quantityIncrement=" + quantityIncrement.toPlainString() + ", priceIncrement="
-        + priceIncrement.toPlainString() + ", minimumQuantity="
-        + minimumQuantity.toPlainString() + ", minimumPrice=" + minimumPrice.toPlainString() + ", venueSymbol="
+        + ", quantityIncrement=" + quantityIncrement.stripTrailingZeros().toPlainString() + ", priceIncrement="
+        + priceIncrement.stripTrailingZeros().toPlainString() + ", minimumQuantity="
+        + minimumQuantity.stripTrailingZeros().toPlainString() + ", minimumPrice=" + minimumPrice.stripTrailingZeros().toPlainString() + ", venueSymbol="
         + venueSymbol + ", isDisable="
         + isDisable + ", masterDataId=" + masterDataId + ", priceCollarThreshold="
-        + priceCollarThreshold.toPlainString()
-        + ", priceCollarPercent=" + priceCollarPercent.toPlainString() + ", priceCollarEnabled=" + priceCollarEnabled
-        + ", priceFloorLimit=" + priceFloorLimit.toPlainString() + ", priceFloorLimitEnabled=" + priceFloorLimitEnabled
-        + ", priceCeilingLimit=" + priceCeilingLimit.toPlainString() + ", priceCeilingLimitEnabled="
+        + priceCollarThreshold.stripTrailingZeros().toPlainString()
+        + ", priceCollarPercent=" + priceCollarPercent.stripTrailingZeros().toPlainString() + ", priceCollarEnabled=" + priceCollarEnabled
+        + ", priceFloorLimit=" + priceFloorLimit.stripTrailingZeros().toPlainString() + ", priceFloorLimitEnabled=" + priceFloorLimitEnabled
+        + ", priceCeilingLimit=" + priceCeilingLimit.stripTrailingZeros().toPlainString() + ", priceCeilingLimitEnabled="
         + priceCeilingLimitEnabled
         + ", createWithMarketRunning=" + createWithMarketRunning + ", allowOnlyMarketMakerCounterParty="
         + allowOnlyMarketMakerCounterParty + ", priceCollarIndexDifference="
-        + priceCollarIndexDifference.toPlainString()
+        + priceCollarIndexDifference.stripTrailingZeros().toPlainString()
         + ", priceCollarConvertToOtcEnabled=" + priceCollarConvertToOtcEnabled
         + ", priceCollarConvertToOtcClientUserId=" + priceCollarConvertToOtcClientUserId
         + ", priceCollarConvertToOtcAccountId=" + priceCollarConvertToOtcAccountId
-        + ", priceCollarConvertToOtcThreshold=" + priceCollarConvertToOtcThreshold.toPlainString()
+        + ", priceCollarConvertToOtcThreshold=" + priceCollarConvertToOtcThreshold.stripTrailingZeros().toPlainString()
         + ", otcConvertSizeThreshold="
-        + otcConvertSizeThreshold.toPlainString() + ", otcConvertSizeEnabled=" + otcConvertSizeEnabled
+        + otcConvertSizeThreshold.stripTrailingZeros().toPlainString() + ", otcConvertSizeEnabled=" + otcConvertSizeEnabled
         + ", otcTradesPublic="
         + otcTradesPublic + ", priceTier=" + priceTier + "]";
   }

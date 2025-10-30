@@ -19,7 +19,7 @@ public class SendOrderParamBuilder implements ParamBuilder {
   private HttpConfiguration httpConfiguration;
 
   public SendOrderParamBuilder(Instrument instrument, Integer accountId, TimeInForce timeInForce,
-      OrderSide side, OrderType orderType, BigDecimal quantity) {
+      OrderSide side, OrderType orderType) {
     this.instrument = instrument;
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
@@ -29,8 +29,12 @@ public class SendOrderParamBuilder implements ParamBuilder {
     this.params.put("TimeInForce", timeInForce);
     this.params.put("Side", side);
     this.params.put("OrderType", orderType);
-    var effectiveQuantity = Truncator.truncate(quantity, instrument.quantityIncrement);
+  }
+
+  public SendOrderParamBuilder quantity(BigDecimal value) {
+    var effectiveQuantity = Truncator.truncate(value, instrument.quantityIncrement);
     this.params.put("Quantity", effectiveQuantity.toPlainString());
+    return this;
   }
 
   public SendOrderParamBuilder clientOrderId(Long value) {
@@ -82,6 +86,12 @@ public class SendOrderParamBuilder implements ParamBuilder {
 
   public SendOrderParamBuilder postOnly(Boolean value) {
     this.params.put("PostOnly", value);
+    return this;
+  }
+
+
+  public SendOrderParamBuilder value(BigDecimal value) {
+    this.params.put("Value", value);
     return this;
   }
 

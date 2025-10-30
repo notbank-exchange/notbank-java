@@ -40,9 +40,9 @@ public class Summary {
 
   @Override
   public String toString() {
-    return "Summary [tradingPairs=" + tradingPairs + ", lastPrice=" + lastPrice + ", lowestAsk=" + lowestAsk
-        + ", highestBid=" + highestBid + ", baseVolume=" + baseVolume + ", quoteVolume=" + quoteVolume
-        + ", priceChangePercent24h=" + priceChangePercent24h + ", highestPrice24h=" + highestPrice24h
-        + ", lowestPrice24h=" + lowestPrice24h + "]";
+    return "Summary [tradingPairs=" + tradingPairs + ", lastPrice=" + lastPrice.stripTrailingZeros() + ", lowestAsk=" + lowestAsk.stripTrailingZeros()
+        + ", highestBid=" + highestBid.stripTrailingZeros() + ", baseVolume=" + baseVolume.stripTrailingZeros() + ", quoteVolume=" + quoteVolume.stripTrailingZeros()
+        + ", priceChangePercent24h=" + priceChangePercent24h.stripTrailingZeros() + ", highestPrice24h=" + highestPrice24h.stripTrailingZeros()
+        + ", lowestPrice24h=" + lowestPrice24h.stripTrailingZeros() + "]";
   }
 }

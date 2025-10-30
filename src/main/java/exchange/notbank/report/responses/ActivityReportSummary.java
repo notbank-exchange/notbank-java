@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.squareup.moshi.Json;
 
 import exchange.notbank.report.constants.ReportFrequency;
-import exchange.notbank.report.constants.RequestStatus;
+import exchange.notbank.report.constants.ReportRequestStatus;
 
 public class ActivityReportSummary {
   @Json(name = "RequestingUser")
@@ -18,7 +18,7 @@ public class ActivityReportSummary {
   public final String intervalStartTime;
   public final String intervalEndTime;
   @Json(name = "RequestStatus")
-  public final RequestStatus requestStatus;
+  public final ReportRequestStatus requestStatus;
   @Json(name = "ReportFrequency")
   public final ReportFrequency reportFrequency;
   public final Long intervalDuration;
@@ -28,7 +28,7 @@ public class ActivityReportSummary {
   public final List<Integer> accountIds;
 
   public ActivityReportSummary(Integer requestingUser, Integer oMSId, String reportFlavor, String createTime,
-      String initialRunTime, String intervalStartTime, String intervalEndTime, RequestStatus requestStatus,
+      String initialRunTime, String intervalStartTime, String intervalEndTime, ReportRequestStatus requestStatus,
       ReportFrequency reportFrequency, Long intervalDuration, UUID requestId, UUID lastInstanceId,
       List<Integer> accountIds) {
     this.requestingUser = requestingUser;

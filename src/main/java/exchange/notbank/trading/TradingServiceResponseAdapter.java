@@ -3,6 +3,7 @@ package exchange.notbank.trading;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
@@ -13,14 +14,14 @@ import exchange.notbank.core.NotbankException;
 import exchange.notbank.trading.responses.Balance;
 import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
-import exchange.notbank.trading.responses.DailyTicker;
 import exchange.notbank.trading.responses.EarliestTickTime;
+import exchange.notbank.trading.responses.EnumClass;
+import exchange.notbank.trading.responses.InstrumentTicker;
 import exchange.notbank.trading.responses.LastTrade;
 import exchange.notbank.trading.responses.Level;
 import exchange.notbank.trading.responses.Level1;
 import exchange.notbank.trading.responses.Level2Snapshot;
 import exchange.notbank.trading.responses.Level2Ticker;
-import exchange.notbank.trading.responses.ModifyOrderResponse;
 import exchange.notbank.trading.responses.Order;
 import exchange.notbank.trading.responses.OrderBook;
 import exchange.notbank.trading.responses.OrderBookRaw;
@@ -55,7 +56,7 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<List<Summary>> summaryListJsonAdapter;
   private final JsonAdapter<EarliestTickTime> earliestTickTimeJsonAdapter;
   private final JsonAdapter<List<LastTrade>> lastTradeListJsonAdapter;
-  private final JsonAdapter<DailyTicker> dailyTickerJsonAdapter;
+  private final JsonAdapter<Map<String, InstrumentTicker>> dailyTickerJsonAdapter;
   private final JsonAdapter<OrderBookRaw> orderBookRawJsonAdapter;
   private final JsonAdapter<Order> orderJsonAdapter;
   private final JsonAdapter<SendOrderResponse> sendOrderJsonAdapter;
@@ -63,8 +64,8 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<CancelReplaceOrderResponse> cancelReplaceOrderResponseJsonAdapter;
   private final JsonAdapter<SendCancelListResponse> sendCancelListResponseJsonAdapter;
   private final JsonAdapter<SendCancelReplaceListResponse> sendCancelReplaceListResponseJsonAdapter;
-  private final JsonAdapter<ModifyOrderResponse> modifyOrderResponseJsonAdapter;
   private final JsonAdapter<CancelAllOrdersResponse> cancelAllOrdersResponseJsonAdapter;
+  private final JsonAdapter<List<EnumClass>> enumClassAdapter;
 
   public TradingServiceResponseAdapter(Moshi moshi) {
     this.errorHandler = ErrorHandler.Factory.createApErrorHandler(moshi);
@@ -78,7 +79,7 @@ public class TradingServiceResponseAdapter {
     this.simpleUserAccountListJsonAdapter = moshi.adapter(SimpleUserAccounts.class);
     ParameterizedType SummaryMinListType = Types.newParameterizedType(List.class, SummaryMin.class);
     this.summaryMinListJsonAdapter = moshi.adapter(SummaryMinListType);
-    ParameterizedType SummaryListType = Types.newParameterizedType(List.class, SummaryMin.class);
+    ParameterizedType SummaryListType = Types.newParameterizedType(List.class, Summary.class);
     this.summaryListJsonAdapter = moshi.adapter(SummaryListType);
     ParameterizedType StringListType = Types.newParameterizedType(List.class, String.class);
     this.stringListJsonAdapter = moshi.adapter(StringListType);
@@ -96,8 +97,10 @@ public class TradingServiceResponseAdapter {
     this.earliestTickTimeJsonAdapter = moshi.adapter(EarliestTickTime.class);
     ParameterizedType LastTradeListType = Types.newParameterizedType(List.class, LastTrade.class);
     this.lastTradeListJsonAdapter = moshi.adapter(LastTradeListType);
-    this.dailyTickerJsonAdapter = moshi.adapter(DailyTicker.class);
-
+    ParameterizedType StringTicketMapType = Types.newParameterizedType(Map.class, String.class, InstrumentTicker.class);
+    this.dailyTickerJsonAdapter = moshi.adapter(StringTicketMapType);
+    ParameterizedType EnumClassListType = Types.newParameterizedType(List.class, EnumClass.class);
+    this.enumClassAdapter = moshi.adapter(EnumClassListType);
     this.orderBookRawJsonAdapter = moshi.adapter(OrderBookRaw.class);
     this.orderJsonAdapter = moshi.adapter(Order.class);
     this.sendOrderJsonAdapter = moshi.adapter(SendOrderResponse.class);
@@ -105,7 +108,6 @@ public class TradingServiceResponseAdapter {
     this.cancelReplaceOrderResponseJsonAdapter = moshi.adapter(CancelReplaceOrderResponse.class);
     this.sendCancelListResponseJsonAdapter = moshi.adapter(SendCancelListResponse.class);
     this.sendCancelReplaceListResponseJsonAdapter = moshi.adapter(SendCancelReplaceListResponse.class);
-    this.modifyOrderResponseJsonAdapter = moshi.adapter(ModifyOrderResponse.class);
     this.cancelAllOrdersResponseJsonAdapter = moshi.adapter(CancelAllOrdersResponse.class);
   }
 
@@ -207,7 +209,7 @@ public class TradingServiceResponseAdapter {
     return handle(jsonStr, lastTradeListJsonAdapter);
   }
 
-  public Either<NotbankException, DailyTicker> toDailyTicker(String jsonStr) {
+  public Either<NotbankException, Map<String, InstrumentTicker>> toDailyTicker(String jsonStr) {
     return handle(jsonStr, dailyTickerJsonAdapter);
   }
 
@@ -244,11 +246,11 @@ public class TradingServiceResponseAdapter {
     return handle(jsonStr, sendCancelReplaceListResponseJsonAdapter);
   }
 
-  public Either<NotbankException, ModifyOrderResponse> toModifyOrderResponse(String jsonStr) {
-    return handle(jsonStr, modifyOrderResponseJsonAdapter);
-  }
-
   public Either<NotbankException, CancelAllOrdersResponse> toCancelAllOrdersResponse(String jsonStr) {
     return handle(jsonStr, cancelAllOrdersResponseJsonAdapter);
+  }
+
+  public Either<NotbankException, List<EnumClass>> toEnumClassList(String jsonStr) {
+    return handle(jsonStr, enumClassAdapter);
   }
 }

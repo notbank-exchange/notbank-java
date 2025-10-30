@@ -17,6 +17,6 @@ public class WithdrawFee {
 
   @Override
   public String toString() {
-    return "WithdrawFee [feeAmount=" + feeAmount + ", ticketAmount=" + ticketAmount + "]";
+    return "WithdrawFee [feeAmount=" + feeAmount.stripTrailingZeros().toPlainString() + ", ticketAmount=" + ticketAmount.stripTrailingZeros().toPlainString() + "]";
   }
 }

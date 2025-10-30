@@ -5,12 +5,13 @@ import java.util.Map;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
+import exchange.notbank.wallet.constants.BankAccountKind;
 
 public class AddClientBankAccountParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
 
-  public AddClientBankAccountParamBuilder(String country, String bank, String number, String kind) {
+  public AddClientBankAccountParamBuilder(String country, String bank, String number, BankAccountKind kind) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.params.put("country", country);

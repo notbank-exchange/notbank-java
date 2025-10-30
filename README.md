@@ -117,8 +117,8 @@ public class ExampleClass {
           accountId,
           TimeInForce.GTC,
           OrderSide.BUY,
-          OrderType.LIMIT,
-          orderQuantity)
+          OrderType.LIMIT)
+          .quantity(orderQuantity)
           .limitPrice(orderPrice);
       var orderResult = client.getTradingService().sendOrder(orderParamBuilder).get();
 
@@ -133,9 +133,7 @@ public class ExampleClass {
       System.out.println(orderResult.orderId);
       // cancel order
       client.getTradingService()
-          .cancelOrder(new CancelOrderParamBuilder()
-              .accountId(accountId)
-              .orderId(orderResult.orderId))
+          .cancelOrder(new CancelOrderParamBuilder(accountId, orderResult.orderId))
           .get();
       return Optional.of(orderResult.orderId);
 

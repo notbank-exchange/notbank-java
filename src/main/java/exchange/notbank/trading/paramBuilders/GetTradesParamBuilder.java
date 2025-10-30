@@ -7,13 +7,14 @@ import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
 
-public class SummaryParamBuilder implements ParamBuilder {
+public class GetTradesParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public SummaryParamBuilder() {
+  public GetTradesParamBuilder(String marketPair) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
+    this.params.put("market_pair", marketPair);
   }
 
   public Map<String, Object> getParams() {
@@ -24,9 +25,8 @@ public class SummaryParamBuilder implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public SummaryParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public GetTradesParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }
 }
-  

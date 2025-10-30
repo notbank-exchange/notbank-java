@@ -53,8 +53,8 @@ public class Transaction implements AccountEvent {
   @Override
   public String toString() {
     return "Transaction [transactionId=" + transactionId + ", referenceId=" + referenceId + ", omsId=" + omsId
-        + ", accountId=" + accountId + ", cr=" + cr.toPlainString() + ", dr=" + dr.toPlainString() + ", counterparty=" + counterparty
+        + ", accountId=" + accountId + ", cr=" + cr.stripTrailingZeros().toPlainString() + ", dr=" + dr.stripTrailingZeros().toPlainString() + ", counterparty=" + counterparty
         + ", transactionType=" + transactionType + ", referenceType=" + referenceType + ", productId=" + productId
-        + ", balance=" + balance.toPlainString() + ", timeStamp=" + timeStamp + "]";
+        + ", balance=" + balance.stripTrailingZeros().toPlainString() + ", timeStamp=" + timeStamp + "]";
   }
 }

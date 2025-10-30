@@ -55,7 +55,7 @@ public class Product {
   public String toString() {
     return "Product [omsId=" + omsId + ", productId=" + productId + ", product=" + product + ", productFullName="
         + productFullName + ", masterDataUniqueProductSymbol=" + masterDataUniqueProductSymbol + ", productType="
-        + productType + ", decimalPlaces=" + decimalPlaces + ", tickSize=" + tickSize.toPlainString()
+        + productType + ", decimalPlaces=" + decimalPlaces + ", tickSize=" + tickSize.stripTrailingZeros().toPlainString()
         + ", depositEnabled="
         + depositEnabled + ", withdrawEnabled=" + withdrawEnabled + ", noFees=" + noFees + ", isDisabled=" + isDisabled
         + ", marginEnabled=" + marginEnabled + "]";

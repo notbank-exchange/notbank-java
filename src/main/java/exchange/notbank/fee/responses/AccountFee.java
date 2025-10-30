@@ -55,9 +55,9 @@ public class AccountFee {
   @Override
   public String toString() {
     return "OmsFee [feeId=" + feeId + ", omsId=" + omsId + ", feeTier=" + feeTier + ", accountId=" + accountId
-        + ", feeAmount=" + feeAmount.toPlainString() + ", feeCalcType=" + feeCalcType + ", feeType=" + feeType
+        + ", feeAmount=" + feeAmount.stripTrailingZeros().toPlainString() + ", feeCalcType=" + feeCalcType + ", feeType=" + feeType
         + ", ladderThreshold="
-        + ladderThreshold.toPlainString() + ", ladderSeconds=" + ladderSeconds + ", isActive=" + isActive
+        + ladderThreshold.stripTrailingZeros().toPlainString() + ", ladderSeconds=" + ladderSeconds + ", isActive=" + isActive
         + ", instrumentId="
         + instrumentId + ", orderType=" + orderType + ", peggedProductId=" + peggedProductId + "]";
   }

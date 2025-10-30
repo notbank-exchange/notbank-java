@@ -10,7 +10,8 @@ import exchange.notbank.CredentialsLoader.UserCredentials;
 import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
 import exchange.notbank.WebSocketChecker;
-import exchange.notbank.users.paramBuilders.GetUserInfoParamBuilder;
+import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
+import exchange.notbank.users.paramBuilders.GetUserDevicesParamBuilder;
 
 public class UserServiceTest {
   private static UserService userService;
@@ -33,16 +34,14 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getUserById() {
-    var params = new GetUserInfoParamBuilder().userId(credentials.userId);
-    var futureResponse = userService.getUserInfo(params);
+  public void getUserAccounts() {
+    var futureResponse = userService.getUserAccounts(new GetUserAccountsParamBuilder(credentials.userId));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
-  public void getUserByEmail() {
-    var params = new GetUserInfoParamBuilder().email("nino+5@dysopsis.com");
-    var futureResponse = userService.getUserInfo(params);
-    TestHelper.checkRightOrErrorCode(futureResponse, 104);
+  public void getUserDevices() {
+    var futureResponse = userService.getUserDevices(new GetUserDevicesParamBuilder(credentials.userId));
+    TestHelper.checkNoError(futureResponse);
   }
 }

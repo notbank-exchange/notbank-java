@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 import exchange.notbank.account.AccountService;
 import exchange.notbank.core.NotbankConnection;
 import exchange.notbank.core.NotbankConnectionAuthenticator;
+import exchange.notbank.core.WebAuthenticateResponse;
+import exchange.notbank.core.WebAuthenticateUserParamBuilder;
 import exchange.notbank.fee.FeeService;
 import exchange.notbank.instrument.InstrumentService;
 import exchange.notbank.product.ProductService;
@@ -63,6 +65,11 @@ public class NotbankClient {
 
   public CompletableFuture<Void> authenticate(Integer userId, String userApiKey, String userSecretKey) {
     return authenticate(userId.toString(), userApiKey, userSecretKey);
+  }
+
+  public CompletableFuture<WebAuthenticateResponse> webAuthenticateUser(
+      WebAuthenticateUserParamBuilder paramBuilder) {
+    return connectionSupplier.get().webAuthenticateUser(paramBuilder);
   }
 
   public CompletableFuture<Void> logOut() {

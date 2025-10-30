@@ -23,6 +23,8 @@ public class InstrumentVerificationLevelConfig {
 
   @Override
   public String toString() {
-    return "InstrumentVerificationLevelConfig [level=" + level + ", levelName=" + levelName + ", omsId=" + omsId + "]";
+    return "InstrumentVerificationLevelConfig [level=" + level + ", levelName=" + levelName + ", omsId=" + omsId
+        + ", instruments=" + instruments + "]";
   }
+
 }

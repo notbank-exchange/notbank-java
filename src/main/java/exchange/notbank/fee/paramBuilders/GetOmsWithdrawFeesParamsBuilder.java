@@ -7,6 +7,7 @@ import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
 
 public class GetOmsWithdrawFeesParamsBuilder implements ParamBuilder {
+  public static final String TestHelper = null;
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 

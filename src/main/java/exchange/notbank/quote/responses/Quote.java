@@ -6,13 +6,13 @@ import java.util.UUID;
 import com.squareup.moshi.Json;
 
 import exchange.notbank.quote.constants.QuoteState;
-import exchange.notbank.quote.constants.QuoteType;
+import exchange.notbank.quote.constants.QuoteOperation;
 
 public class Quote {
   public final UUID id;
   @Json(name = "is_inverse")
   public final Boolean isInverse;
-  public final QuoteType type;
+  public final QuoteOperation type;
   public final QuoteState state;
   @Json(name = "currency_in")
   public final String currencyIn;
@@ -29,7 +29,7 @@ public class Quote {
   @Json(name = "fee_detail")
   public final String feeDetail;
 
-  public Quote(UUID id, Boolean isInverse, QuoteType type, QuoteState state, String currencyIn, String currencyOut,
+  public Quote(UUID id, Boolean isInverse, QuoteOperation type, QuoteState state, String currencyIn, String currencyOut,
       BigDecimal amountIn, BigDecimal amountOut, BigDecimal amountUsdtOut, BigDecimal feeAmount, String feeDetail) {
     this.id = id;
     this.isInverse = isInverse;

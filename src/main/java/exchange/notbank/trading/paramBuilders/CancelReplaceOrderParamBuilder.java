@@ -75,6 +75,11 @@ public class CancelReplaceOrderParamBuilder implements ParamBuilder {
     return this;
   }
 
+  public CancelReplaceOrderParamBuilder value(BigDecimal value) {
+    this.params.put("Value", value);
+    return this;
+  }
+
   public Map<String, Object> getParams() {
     return params;
   }

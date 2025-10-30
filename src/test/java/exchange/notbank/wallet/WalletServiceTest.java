@@ -9,21 +9,22 @@ import org.junit.jupiter.api.Test;
 
 import exchange.notbank.CredentialsLoader.UserCredentials;
 import exchange.notbank.TestHelper;
+import exchange.notbank.wallet.constants.BankAccountKind;
 import exchange.notbank.wallet.constants.DepositPaymentMethod;
-import exchange.notbank.wallet.constants.WithdrawAction;
+import exchange.notbank.wallet.constants.UpdateOneStepWithdrawAction;
+import exchange.notbank.wallet.paramBuilders.AddClientBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.AddWhitelistedAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ConfirmFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ConfirmWhitelistedAddressesParamBuilder;
-import exchange.notbank.wallet.paramBuilders.AddClientBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateCryptoWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateDepositAddressParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateFiatDepositParamBuilder;
 import exchange.notbank.wallet.paramBuilders.CreateFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.DeleteClientBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.DeleteWhitelistedAddressesParamBuilder;
+import exchange.notbank.wallet.paramBuilders.GetBanksParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetClientBankAccountParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetClientBankAccountsParamBuilder;
-import exchange.notbank.wallet.paramBuilders.GetBanksParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetDepositAddressesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetOwnersFiatWithdrawParamBuilder;
 import exchange.notbank.wallet.paramBuilders.GetTransactionsParamBuilder;
@@ -31,7 +32,7 @@ import exchange.notbank.wallet.paramBuilders.GetWhitelistedAddressesParamBuilder
 import exchange.notbank.wallet.paramBuilders.GetnetworksTemplatesParamBuilder;
 import exchange.notbank.wallet.paramBuilders.ResendVerificationCodeWhitelistedAddresParamBuilder;
 import exchange.notbank.wallet.paramBuilders.TransferFundsParamBuilder;
-import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdraw;
+import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdrawParamBuilder;
 
 public class WalletServiceTest {
   private static WalletService service;
@@ -42,8 +43,6 @@ public class WalletServiceTest {
     var client = TestHelper.newRestClient();
     credentials = TestHelper.getUserCredentials();
     client.authenticate(credentials.userId, credentials.apiPublicKey, credentials.apiSecretKey).get();
-    service = client.getWalletService();
-
   }
 
   @Test
@@ -54,7 +53,11 @@ public class WalletServiceTest {
 
   @Test
   public void createBankAccount() {
-    var futureResponse = service.addClientBankAccount(new AddClientBankAccountParamBuilder("CL", "11", "222", "kind"));
+    var futureResponse = service.addClientBankAccount(new AddClientBankAccountParamBuilder(
+        "CL",
+        "11",
+        "222",
+        BankAccountKind.VISTA));
     TestHelper.checkNoError(futureResponse);
   }
 
@@ -109,8 +112,11 @@ public class WalletServiceTest {
   @Test
   public void addWhitelistedAddress() {
     var futureResponse = service.addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
-        credentials.accountId, "BTC", "BTC_TEST",
-        "tb1q8e7md5kg4m5j8lmgyp9caqfhx62mvv6pvd5dqj", "a label",
+        credentials.accountId,
+        "BTC",
+        "BTC_TEST",
+        "tb1q8e7md5kg4m5j8lmgyp9caqfhx62mvv6pvd5dqj",
+        "a label",
         "135866"));
     //3d9c928f-f40a-4793-898b-111feb4ff46e
     TestHelper.checkNoError(futureResponse);
@@ -148,7 +154,7 @@ public class WalletServiceTest {
   @Test
   public void updateOneStepWithdraw() {
     var futureResponse = service.updateOneStepWithdraw(
-        new UpdateOneStepWithdraw(credentials.accountId, WithdrawAction.ENABLE, "444429"));
+        new UpdateOneStepWithdrawParamBuilder(credentials.accountId, UpdateOneStepWithdrawAction.ENABLE, "444429"));
     TestHelper.checkNoError(futureResponse);
   }
 
@@ -181,26 +187,25 @@ public class WalletServiceTest {
 
   @Test
   public void createFiatWithdraw() {
-    var futureResponse = service.createFiatWithdraw(
-        new CreateFiatWithdrawParamBuilder(
-            credentials.accountId,
-            DepositPaymentMethod.BANK_TRANSFER,
-            "CLP",
-            new BigDecimal("20000"))
-            .bankAccountId("72d3e264-2473-41fb-b3ca-a08231de05e2"));
+    var futureResponse = service.createFiatWithdraw(new CreateFiatWithdrawParamBuilder(
+        credentials.accountId,
+        DepositPaymentMethod.BANK_TRANSFER,
+        "CLP",
+        new BigDecimal("20000"))
+        .bankAccountId("72d3e264-2473-41fb-b3ca-a08231de05e2"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void confirmFiatWithdraw() {
-    var futureResponse = service.confirmFiatWithdraw(new ConfirmFiatWithdrawParamBuilder(UUID.randomUUID(), "1"));
+    var futureResponse = service.confirmFiatWithdraw(
+        new ConfirmFiatWithdrawParamBuilder(UUID.fromString("32347216-4a4c-49ee-b0a5-1ad993fe522b"), "123456"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getTransactions() throws InterruptedException, ExecutionException {
-    var futureResponse = service.getTransactions(
-        new GetTransactionsParamBuilder());
+    var futureResponse = service.getTransactions(new GetTransactionsParamBuilder());
     System.out.println(futureResponse.get());
     // TestHelper.checkNoError(futureResponse);
   }
@@ -210,7 +215,17 @@ public class WalletServiceTest {
     var futureResponse = service.transferFunds(new TransferFundsParamBuilder(
         credentials.accountId,
         13,
-        "USDT", new BigDecimal("1")));
+        "USDT",
+        new BigDecimal("1"))
+        .notes("transfer detail")
+        .otp("123456"));
+    TestHelper.checkNoError(futureResponse);
+  }
+
+  @Test
+  public void deleteClientBankAccount() {
+    var futureResponse = service
+        .deleteClientBankAccount(new DeleteClientBankAccountParamBuilder("72d3e264-2473-41fb-b3ca-a08231de05e2"));
     TestHelper.checkNoError(futureResponse);
   }
 }
