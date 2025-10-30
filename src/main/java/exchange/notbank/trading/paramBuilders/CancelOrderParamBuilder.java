@@ -10,25 +10,12 @@ public class CancelOrderParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public CancelOrderParamBuilder() {
+  public CancelOrderParamBuilder(Integer accountId, Long orderId) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("OMSId", 1);
-  }
-
-  public CancelOrderParamBuilder accountId(Integer value) {
-    this.params.put("AccountId", value);
-    return this;
-  }
-
-  public CancelOrderParamBuilder orderId(Long value) {
-    this.params.put("OrderId", value);
-    return this;
-  }
-
-  public CancelOrderParamBuilder clientOrderId(Long value) {
-    this.params.put("ClOrderId", value);
-    return this;
+    this.params.put("AccountId", accountId);
+    this.params.put("OrderId", orderId);
   }
 
   public Map<String, Object> getParams() {

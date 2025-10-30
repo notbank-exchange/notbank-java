@@ -1,5 +1,6 @@
 package exchange.notbank.fee.paramBuilders;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,8 +17,18 @@ public class GetOmsDepositFeesParamsBuilder implements ParamBuilder {
     this.params.put("OMSId", 1);
   }
 
+  public GetOmsDepositFeesParamsBuilder accountId(Integer value) {
+    this.params.put("AccountId", value);
+    return this;
+  }
+
   public GetOmsDepositFeesParamsBuilder productId(Integer value) {
     this.params.put("ProductId", value);
+    return this;
+  }
+
+  public GetOmsDepositFeesParamsBuilder amount(BigDecimal value) {
+    this.params.put("Amount", value.toPlainString());
     return this;
   }
 

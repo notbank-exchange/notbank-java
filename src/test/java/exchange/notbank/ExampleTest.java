@@ -94,9 +94,7 @@ public class ExampleTest {
       System.out.println(orderResult.orderId);
       // cancel order
       client.getTradingService()
-          .cancelOrder(new CancelOrderParamBuilder()
-              .accountId(accountId)
-              .orderId(orderResult.orderId))
+          .cancelOrder(new CancelOrderParamBuilder(accountId, orderResult.orderId))
           .get();
       return Optional.of(orderResult.orderId);
 

@@ -316,7 +316,7 @@ public class TradingServiceTest {
   @Test
   public void cancelOrder() throws Exception {
     var futureResponse = client.getTradingService()
-        .cancelOrder(new CancelOrderParamBuilder().accountId(credentials.accountId).orderId(10L));
+        .cancelOrder(new CancelOrderParamBuilder(credentials.accountId, 10L));
     TestHelper.checkNoError(futureResponse);
   }
 
