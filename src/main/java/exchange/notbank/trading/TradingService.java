@@ -220,8 +220,8 @@ public class TradingService {
   /**
    * https://apidoc.notbank.exchange/#sendorderlist
    */
-  public CompletableFuture<SendOrderListResponse> sendOrderList(SendOrderListParamBuilder paramBuilder) {
-    return requestPostWithParamList(Endpoints.SEND_ORDER_LIST, paramBuilder, responseAdapter::toSendOrderListResponse);
+  public CompletableFuture<Void> sendOrderList(SendOrderListParamBuilder paramBuilder) {
+    return requestPostWithParamList(Endpoints.SEND_ORDER_LIST, paramBuilder, responseAdapter::toNone);
   }
 
   /**

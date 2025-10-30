@@ -22,6 +22,7 @@ public class StandardApResponseHandler {
     public static StandardApResponseHandler create(Moshi moshi) {
       return new StandardApResponseHandler(moshi.adapter(StandardResponse.class));
     }
+
   }
 
   public Either<NotbankException, String> handle(String jsonStr) {
@@ -40,6 +41,9 @@ public class StandardApResponseHandler {
           && errorResponse.result == false
           && errorResponse.errorCode != null
           && errorResponse.errorCode != 0) {
+        if (errorResponse.errorCode.equals(107) && errorResponse.errorMessage.equals("Operation In Process")) {
+          return Optional.empty();
+        }
         return Optional.of(errorResponse);
       }
     } catch (IOException | JsonDataException e) {
