@@ -1,13 +1,13 @@
 package exchange.notbank.quote.constants;
 
-public enum QuoteType {
+public enum QuoteOperation {
   BUY(1),
   SELL(2),
   CONVERSION(3);
 
   public final Integer value;
 
-  QuoteType(Integer value) {
+  QuoteOperation(Integer value) {
     this.value = value;
   }
 }

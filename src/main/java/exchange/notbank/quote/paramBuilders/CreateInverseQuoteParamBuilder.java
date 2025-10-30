@@ -11,8 +11,8 @@ public class CreateInverseQuoteParamBuilder implements ParamBuilder {
   private final Map<String, Object> params;
   private HttpConfiguration httpConfiguration;
 
-  public CreateInverseQuoteParamBuilder(Integer accountId, String fromCurrency, String toCurrency,
-      BigDecimal toAmount) {
+  public CreateInverseQuoteParamBuilder(Integer accountId, String fromCurrency, BigDecimal toAmount,
+      String toCurrency) {
     this.httpConfiguration = HttpConfiguration.empty();
     this.params = new HashMap<>();
     this.params.put("account_id", accountId);

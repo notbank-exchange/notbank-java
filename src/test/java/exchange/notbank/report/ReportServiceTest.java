@@ -124,7 +124,8 @@ public class ReportServiceTest {
   @Test
   public void getUserReportTicketsByStatus() {
     var futureResponse = client.getReportService().getUserReportTicketsByStatus(
-        new GetUserReportTicketsByStatusParamBuilder(List.of(ReportRequestStatus.IN_PROGRESS, ReportRequestStatus.SCHEDULED)));
+        new GetUserReportTicketsByStatusParamBuilder(
+            List.of(ReportRequestStatus.IN_PROGRESS, ReportRequestStatus.SCHEDULED)));
     TestHelper.checkNoError(futureResponse);
   }
 
@@ -169,8 +170,8 @@ public class ReportServiceTest {
   public void downloadDocumentSlice() throws InterruptedException, ExecutionException {
     var documentDescriptor = client.getReportService().downloadDocument(
         new DownloadDocumentParamBuilder(UUID.fromString("3108e502-ba32-f2b0-73b3-ffb0bd997390")));
-    var futureResponse = client.getReportService()
-        .downloadDocumentSlice(new DownloadDocumentSliceParamBuilder(documentDescriptor.get().descriptorId));
+    var futureResponse = client.getReportService().downloadDocumentSlice(
+        new DownloadDocumentSliceParamBuilder(documentDescriptor.get().descriptorId).sliceNum(0));
     TestHelper.checkNoError(futureResponse);
   }
 }

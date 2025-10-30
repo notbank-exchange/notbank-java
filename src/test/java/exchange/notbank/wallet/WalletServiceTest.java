@@ -43,8 +43,6 @@ public class WalletServiceTest {
     var client = TestHelper.newRestClient();
     credentials = TestHelper.getUserCredentials();
     client.authenticate(credentials.userId, credentials.apiPublicKey, credentials.apiSecretKey).get();
-    service = client.getWalletService();
-
   }
 
   @Test
