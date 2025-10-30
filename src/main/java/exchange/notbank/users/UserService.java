@@ -12,11 +12,7 @@ import exchange.notbank.core.ParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.users.constants.Endpoints;
 import exchange.notbank.users.paramBuilders.GetUserDevicesParamBuilder;
-import exchange.notbank.users.paramBuilders.GetUserInfoParamBuilder;
-import exchange.notbank.users.paramBuilders.GetUserPermissionsParamBuilder;
 import exchange.notbank.users.responses.Device;
-import exchange.notbank.users.responses.UserInfo;
-
 import io.vavr.control.Either;
 
 public class UserService {
@@ -37,13 +33,6 @@ public class UserService {
   }
 
   /**
-   * https://apidoc.notbank.exchange/#getuserinfo
-   */
-  public CompletableFuture<UserInfo> getUserInfo(GetUserInfoParamBuilder paramBuilder) {
-    return requestPost(Endpoints.GET_USER_INFO, paramBuilder, responseAdapter::toUserInfo);
-  }
-
-  /**
    * https://apidoc.notbank.exchange/#getuseraccounts
    */
   public CompletableFuture<List<Integer>> getUserAccounts(GetUserAccountsParamBuilder paramBuilder) {
@@ -57,10 +46,4 @@ public class UserService {
     return requestPost(Endpoints.GET_USER_DEVICES, paramBuilder, responseAdapter::toDeviceList);
   }
 
-  /** 
-   * https://apidoc.notbank.exchange/#getuserpermissions
-   */
-  public CompletableFuture<List<String>> getUserPermissions(GetUserPermissionsParamBuilder paramBuilder) {
-    return requestPost(Endpoints.GET_USER_DEVICES, paramBuilder, responseAdapter::toStringList);
-  }
 }

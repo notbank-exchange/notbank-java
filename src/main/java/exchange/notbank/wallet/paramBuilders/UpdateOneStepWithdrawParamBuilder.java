@@ -5,13 +5,13 @@ import java.util.Map;
 
 import exchange.notbank.core.HttpConfiguration;
 import exchange.notbank.core.ParamBuilder;
-import exchange.notbank.wallet.constants.WithdrawAction;
+import exchange.notbank.wallet.constants.UpdateOneStepWithdrawAction;
 
-public class UpdateOneStepWithdraw implements ParamBuilder {
+public class UpdateOneStepWithdrawParamBuilder implements ParamBuilder {
   protected final Map<String, Object> params;
   protected HttpConfiguration httpConfiguration;
 
-  public UpdateOneStepWithdraw(Integer accountId, WithdrawAction action, String otp) {
+  public UpdateOneStepWithdrawParamBuilder(Integer accountId, UpdateOneStepWithdrawAction action, String otp) {
     this.httpConfiguration = new HttpConfiguration();
     this.params = new HashMap<>();
     this.params.put("account_id", accountId);
@@ -27,7 +27,7 @@ public class UpdateOneStepWithdraw implements ParamBuilder {
     return httpConfiguration;
   }
 
-  public UpdateOneStepWithdraw setHttpConfiguration(HttpConfiguration httpConfiguration) {
+  public UpdateOneStepWithdrawParamBuilder setHttpConfiguration(HttpConfiguration httpConfiguration) {
     this.httpConfiguration = httpConfiguration;
     return this;
   }

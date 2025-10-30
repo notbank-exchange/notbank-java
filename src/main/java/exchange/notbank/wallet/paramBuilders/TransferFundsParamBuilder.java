@@ -21,6 +21,11 @@ public class TransferFundsParamBuilder implements ParamBuilder {
     this.params.put("amount", amount);
   }
 
+  public TransferFundsParamBuilder notes(String value) {
+    this.params.put("notes", value);
+    return this;
+  }
+
   public TransferFundsParamBuilder otp(String value) {
     this.params.put("otp", value);
     return this;
