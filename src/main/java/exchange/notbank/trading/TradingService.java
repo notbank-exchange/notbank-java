@@ -53,7 +53,6 @@ import exchange.notbank.trading.responses.OrderBook;
 import exchange.notbank.trading.responses.PublicTrade;
 import exchange.notbank.trading.responses.SendCancelListResponse;
 import exchange.notbank.trading.responses.SendCancelReplaceListResponse;
-import exchange.notbank.trading.responses.SendOrderListResponse;
 import exchange.notbank.trading.responses.SendOrderResponse;
 import exchange.notbank.trading.responses.SimpleUserAccounts;
 import exchange.notbank.trading.responses.Summary;
