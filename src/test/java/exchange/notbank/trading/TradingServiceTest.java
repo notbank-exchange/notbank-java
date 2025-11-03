@@ -43,7 +43,6 @@ import exchange.notbank.trading.paramBuilders.GetSummaryParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTickerHistoryParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTickerParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTradesHistoryParamBuilder;
-import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.trading.paramBuilders.ModifyOrderParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelParamBuilder;
@@ -51,6 +50,7 @@ import exchange.notbank.trading.paramBuilders.SendCancelReplaceListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelReplaceParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendOrderListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendOrderParamBuilder;
+import exchange.notbank.users.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTradesParamBuilder;
 
 public class TradingServiceTest {

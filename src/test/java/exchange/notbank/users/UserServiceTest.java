@@ -10,20 +10,20 @@ import exchange.notbank.CredentialsLoader.UserCredentials;
 import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
 import exchange.notbank.WebSocketChecker;
-import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
+import exchange.notbank.users.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.users.paramBuilders.GetUserDevicesParamBuilder;
 
 public class UserServiceTest {
-  private static UserService userService;
   private static UserCredentials credentials;
   private static WebSocketChecker webSocketChecker;
   private static NotbankClient websocketServiceFactory;
+  private static NotbankClient client;
 
   @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException {
-    var serviceFactory = TestHelper.newRestClient();
-    userService = serviceFactory.getUserService();
+    client = TestHelper.newRestClient();
     credentials = TestHelper.getUserCredentials();
+    client.authenticate(credentials.userId, credentials.apiPublicKey, credentials.apiSecretKey).get();
     webSocketChecker = new WebSocketChecker();
     websocketServiceFactory = TestHelper.newWebsocketClient(webSocketChecker::fromThrowable);
   }
@@ -35,13 +35,13 @@ public class UserServiceTest {
 
   @Test
   public void getUserAccounts() {
-    var futureResponse = userService.getUserAccounts(new GetUserAccountsParamBuilder(credentials.userId));
+    var futureResponse = client.getUserService().getUserAccounts(new GetUserAccountsParamBuilder(credentials.userId));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getUserDevices() {
-    var futureResponse = userService.getUserDevices(new GetUserDevicesParamBuilder(credentials.userId));
+    var futureResponse = client.getUserService().getUserDevices(new GetUserDevicesParamBuilder(credentials.userId));
     TestHelper.checkNoError(futureResponse);
   }
 }

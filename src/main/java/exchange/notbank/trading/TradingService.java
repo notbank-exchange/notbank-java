@@ -35,13 +35,11 @@ import exchange.notbank.trading.paramBuilders.GetTickerHistoryParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTickerParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTradesHistoryParamBuilder;
 import exchange.notbank.trading.paramBuilders.GetTradesParamBuilder;
-import exchange.notbank.trading.paramBuilders.GetUserAccountsParamBuilder;
 import exchange.notbank.trading.paramBuilders.ModifyOrderParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendCancelReplaceListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendOrderListParamBuilder;
 import exchange.notbank.trading.paramBuilders.SendOrderParamBuilder;
-import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
 import exchange.notbank.trading.responses.EnumClass;
 import exchange.notbank.trading.responses.InstrumentTicker;
@@ -51,14 +49,13 @@ import exchange.notbank.trading.responses.Level2Snapshot;
 import exchange.notbank.trading.responses.Order;
 import exchange.notbank.trading.responses.OrderBook;
 import exchange.notbank.trading.responses.PublicTrade;
-import exchange.notbank.trading.responses.SendCancelListResponse;
-import exchange.notbank.trading.responses.SendCancelReplaceListResponse;
 import exchange.notbank.trading.responses.SendOrderResponse;
 import exchange.notbank.trading.responses.SimpleUserAccounts;
 import exchange.notbank.trading.responses.Summary;
 import exchange.notbank.trading.responses.SummaryMin;
 import exchange.notbank.trading.responses.Ticker;
 import exchange.notbank.trading.responses.Trade;
+import exchange.notbank.users.paramBuilders.GetUserAccountsParamBuilder;
 import io.vavr.control.Either;
 
 public class TradingService {
@@ -240,18 +237,16 @@ public class TradingService {
   /**
    * https://apidoc.notbank.exchange/#sendcancellist
    */
-  public CompletableFuture<SendCancelListResponse> sendCancelList(SendCancelListParamBuilder paramBuilder) {
-    return requestPostWithParamList(Endpoints.SEND_CANCEL_LIST, paramBuilder,
-        responseAdapter::toSendCancelListResponse);
+  public CompletableFuture<Void> sendCancelList(SendCancelListParamBuilder paramBuilder) {
+    return requestPostWithParamList(Endpoints.SEND_CANCEL_LIST, paramBuilder, responseAdapter::toNone);
   }
 
   /**
    * https://apidoc.notbank.exchange/#sendcancelreplacelist
    */
-  public CompletableFuture<SendCancelReplaceListResponse> sendCancelReplaceList(
+  public CompletableFuture<Void> sendCancelReplaceList(
       SendCancelReplaceListParamBuilder paramBuilder) {
-    return requestPostWithParamList(Endpoints.SEND_CANCEL_REPLACE_LIST, paramBuilder,
-        responseAdapter::toSendCancelReplaceListResponse);
+    return requestPostWithParamList(Endpoints.SEND_CANCEL_REPLACE_LIST, paramBuilder, responseAdapter::toNone);
   }
 
   /**
@@ -264,8 +259,8 @@ public class TradingService {
   /**
    * https://apidoc.notbank.exchange/#cancelallorders
    */
-  public CompletableFuture<CancelAllOrdersResponse> cancelAllOrders(CancelAllOrdersParamBuilder paramBuilder) {
-    return requestPost(Endpoints.CANCEL_ALL_ORDERS, paramBuilder, responseAdapter::toCancelAllOrdersResponse);
+  public CompletableFuture<Void> cancelAllOrders(CancelAllOrdersParamBuilder paramBuilder) {
+    return requestPost(Endpoints.CANCEL_ALL_ORDERS, paramBuilder, responseAdapter::toNone);
   }
 
   /**

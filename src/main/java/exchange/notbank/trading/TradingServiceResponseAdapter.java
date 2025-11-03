@@ -12,7 +12,6 @@ import com.squareup.moshi.Types;
 import exchange.notbank.core.ErrorHandler;
 import exchange.notbank.core.NotbankException;
 import exchange.notbank.trading.responses.Balance;
-import exchange.notbank.trading.responses.CancelAllOrdersResponse;
 import exchange.notbank.trading.responses.CancelReplaceOrderResponse;
 import exchange.notbank.trading.responses.EarliestTickTime;
 import exchange.notbank.trading.responses.EnumClass;
@@ -26,9 +25,6 @@ import exchange.notbank.trading.responses.Order;
 import exchange.notbank.trading.responses.OrderBook;
 import exchange.notbank.trading.responses.OrderBookRaw;
 import exchange.notbank.trading.responses.PublicTrade;
-import exchange.notbank.trading.responses.SendCancelListResponse;
-import exchange.notbank.trading.responses.SendCancelReplaceListResponse;
-import exchange.notbank.trading.responses.SendOrderListResponse;
 import exchange.notbank.trading.responses.SendOrderResponse;
 import exchange.notbank.trading.responses.SimpleUserAccounts;
 import exchange.notbank.trading.responses.Summary;
@@ -60,11 +56,7 @@ public class TradingServiceResponseAdapter {
   private final JsonAdapter<OrderBookRaw> orderBookRawJsonAdapter;
   private final JsonAdapter<Order> orderJsonAdapter;
   private final JsonAdapter<SendOrderResponse> sendOrderJsonAdapter;
-  private final JsonAdapter<SendOrderListResponse> sendOrderListJsonAdapter;
   private final JsonAdapter<CancelReplaceOrderResponse> cancelReplaceOrderResponseJsonAdapter;
-  private final JsonAdapter<SendCancelListResponse> sendCancelListResponseJsonAdapter;
-  private final JsonAdapter<SendCancelReplaceListResponse> sendCancelReplaceListResponseJsonAdapter;
-  private final JsonAdapter<CancelAllOrdersResponse> cancelAllOrdersResponseJsonAdapter;
   private final JsonAdapter<List<EnumClass>> enumClassAdapter;
 
   public TradingServiceResponseAdapter(Moshi moshi) {
@@ -104,11 +96,8 @@ public class TradingServiceResponseAdapter {
     this.orderBookRawJsonAdapter = moshi.adapter(OrderBookRaw.class);
     this.orderJsonAdapter = moshi.adapter(Order.class);
     this.sendOrderJsonAdapter = moshi.adapter(SendOrderResponse.class);
-    this.sendOrderListJsonAdapter = moshi.adapter(SendOrderListResponse.class);
     this.cancelReplaceOrderResponseJsonAdapter = moshi.adapter(CancelReplaceOrderResponse.class);
-    this.sendCancelListResponseJsonAdapter = moshi.adapter(SendCancelListResponse.class);
-    this.sendCancelReplaceListResponseJsonAdapter = moshi.adapter(SendCancelReplaceListResponse.class);
-    this.cancelAllOrdersResponseJsonAdapter = moshi.adapter(CancelAllOrdersResponse.class);
+
   }
 
   public Either<NotbankException, Void> toNone(String jsonStr) {
@@ -230,24 +219,8 @@ public class TradingServiceResponseAdapter {
     return handle(jsonStr, sendOrderJsonAdapter);
   }
 
-  public Either<NotbankException, SendOrderListResponse> toSendOrderListResponse(String jsonStr) {
-    return handle(jsonStr, sendOrderListJsonAdapter);
-  }
-
   public Either<NotbankException, CancelReplaceOrderResponse> toCancelReplaceOrderResponse(String jsonStr) {
     return handle(jsonStr, cancelReplaceOrderResponseJsonAdapter);
-  }
-
-  public Either<NotbankException, SendCancelListResponse> toSendCancelListResponse(String jsonStr) {
-    return handle(jsonStr, sendCancelListResponseJsonAdapter);
-  }
-
-  public Either<NotbankException, SendCancelReplaceListResponse> toSendCancelReplaceListResponse(String jsonStr) {
-    return handle(jsonStr, sendCancelReplaceListResponseJsonAdapter);
-  }
-
-  public Either<NotbankException, CancelAllOrdersResponse> toCancelAllOrdersResponse(String jsonStr) {
-    return handle(jsonStr, cancelAllOrdersResponseJsonAdapter);
   }
 
   public Either<NotbankException, List<EnumClass>> toEnumClassList(String jsonStr) {
