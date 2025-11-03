@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import exchange.notbank.CredentialsLoader.UserCredentials;
+import exchange.notbank.NotbankClient;
 import exchange.notbank.TestHelper;
 import exchange.notbank.wallet.constants.BankAccountKind;
 import exchange.notbank.wallet.constants.DepositPaymentMethod;
@@ -35,25 +36,25 @@ import exchange.notbank.wallet.paramBuilders.TransferFundsParamBuilder;
 import exchange.notbank.wallet.paramBuilders.UpdateOneStepWithdrawParamBuilder;
 
 public class WalletServiceTest {
-  private static WalletService service;
   private static UserCredentials credentials;
+  private static NotbankClient client;
 
   @BeforeAll
   public static void beforeAll() throws InterruptedException, ExecutionException {
-    var client = TestHelper.newRestClient();
+    client = TestHelper.newRestClient();
     credentials = TestHelper.getUserCredentials();
     client.authenticate(credentials.userId, credentials.apiPublicKey, credentials.apiSecretKey).get();
   }
 
   @Test
   public void getBanks() {
-    var futureResponse = service.getBanks(new GetBanksParamBuilder("CL"));
+    var futureResponse = client.getWalletService().getBanks(new GetBanksParamBuilder("CL"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void createBankAccount() {
-    var futureResponse = service.addClientBankAccount(new AddClientBankAccountParamBuilder(
+    var futureResponse = client.getWalletService().addClientBankAccount(new AddClientBankAccountParamBuilder(
         "CL",
         "11",
         "222",
@@ -63,55 +64,55 @@ public class WalletServiceTest {
 
   @Test
   public void getBankAccount() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .getClientBankAccount(new GetClientBankAccountParamBuilder("5feba948-e7e3-472d-b78a-e3134293ab31"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getBankAccounts() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .getClientBankAccounts(new GetClientBankAccountsParamBuilder());
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void bankAccountFlow() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .deleteClientBankAccount(new DeleteClientBankAccountParamBuilder("5feba948-e7e3-472d-b78a-e3134293ab31"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getNetworkTemplates() {
-    var networkTemplates = service.getNetworksTemplates(new GetnetworksTemplatesParamBuilder("USDT"));
+    var networkTemplates = client.getWalletService().getNetworksTemplates(new GetnetworksTemplatesParamBuilder("USDT"));
     TestHelper.checkNoError(networkTemplates);
   }
 
   @Test
   public void createDepositAddress() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .createDepositAddress(new CreateDepositAddressParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getDepositAddress() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .getDepositAddresses(new GetDepositAddressesParamBuilder(credentials.accountId, "BTC", "BTC_TEST"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getWhitelistedAddresses() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .getWhitelistedAddresses(new GetWhitelistedAddressesParamBuilder(credentials.accountId).search("BTC"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void addWhitelistedAddress() {
-    var futureResponse = service.addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
+    var futureResponse = client.getWalletService().addWhitelistedAddress(new AddWhitelistedAddressesParamBuilder(
         credentials.accountId,
         "BTC",
         "BTC_TEST",
@@ -124,7 +125,7 @@ public class WalletServiceTest {
 
   @Test
   public void confirmWhitelistedAddress() {
-    var futureResponse = service.confirmWhitelistedAddress(
+    var futureResponse = client.getWalletService().confirmWhitelistedAddress(
         new ConfirmWhitelistedAddressesParamBuilder(
             credentials.accountId,
             "33401503-0c7b-4765-90b2-4ca00253241b",
@@ -134,7 +135,7 @@ public class WalletServiceTest {
 
   @Test
   public void resendVerificationCodeWhitelistedAddress() {
-    var futureResponse = service.resendVerificationCodeWhitelistedAddress(
+    var futureResponse = client.getWalletService().resendVerificationCodeWhitelistedAddress(
         new ResendVerificationCodeWhitelistedAddresParamBuilder(credentials.accountId,
             UUID.fromString("067023f5-a522-46a8-abf1-026198b71314")));
     TestHelper.checkNoError(futureResponse);
@@ -142,7 +143,7 @@ public class WalletServiceTest {
 
   @Test
   public void deleteWhitelistedAddress() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .deleteWhitelistedAddress(
             new DeleteWhitelistedAddressesParamBuilder(
                 credentials.accountId,
@@ -153,14 +154,14 @@ public class WalletServiceTest {
 
   @Test
   public void updateOneStepWithdraw() {
-    var futureResponse = service.updateOneStepWithdraw(
+    var futureResponse = client.getWalletService().updateOneStepWithdraw(
         new UpdateOneStepWithdrawParamBuilder(credentials.accountId, UpdateOneStepWithdrawAction.ENABLE, "444429"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void createCryptoWithdraw() {
-    var futureResponse = service.createCryptoWithdraw(
+    var futureResponse = client.getWalletService().createCryptoWithdraw(
         new CreateCryptoWithdrawParamBuilder(credentials.accountId, "USDT", "USDT_BSC_TEST",
             "6a36bdf4-cf21-42ce-9945-6008b0485969",
             new BigDecimal("0.1")).otp("526627"));
@@ -169,7 +170,7 @@ public class WalletServiceTest {
 
   @Test
   public void createFiatDeposit() {
-    var futureResponse = service.createFiatDeposit(
+    var futureResponse = client.getWalletService().createFiatDeposit(
         new CreateFiatDepositParamBuilder(
             credentials.accountId,
             DepositPaymentMethod.BANK_TRANSFER,
@@ -181,13 +182,14 @@ public class WalletServiceTest {
 
   @Test
   public void getOwnersFiatWithdraw() {
-    var futureResponse = service.getOwnersFiatWithdraw(new GetOwnersFiatWithdrawParamBuilder("1231231231231231231231"));
+    var futureResponse = client.getWalletService()
+        .getOwnersFiatWithdraw(new GetOwnersFiatWithdrawParamBuilder("1231231231231231231231"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void createFiatWithdraw() {
-    var futureResponse = service.createFiatWithdraw(new CreateFiatWithdrawParamBuilder(
+    var futureResponse = client.getWalletService().createFiatWithdraw(new CreateFiatWithdrawParamBuilder(
         credentials.accountId,
         DepositPaymentMethod.BANK_TRANSFER,
         "CLP",
@@ -198,21 +200,21 @@ public class WalletServiceTest {
 
   @Test
   public void confirmFiatWithdraw() {
-    var futureResponse = service.confirmFiatWithdraw(
+    var futureResponse = client.getWalletService().confirmFiatWithdraw(
         new ConfirmFiatWithdrawParamBuilder(UUID.fromString("32347216-4a4c-49ee-b0a5-1ad993fe522b"), "123456"));
     TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void getTransactions() throws InterruptedException, ExecutionException {
-    var futureResponse = service.getTransactions(new GetTransactionsParamBuilder());
+    var futureResponse = client.getWalletService().getTransactions(new GetTransactionsParamBuilder());
     System.out.println(futureResponse.get());
     // TestHelper.checkNoError(futureResponse);
   }
 
   @Test
   public void transferFunds() {
-    var futureResponse = service.transferFunds(new TransferFundsParamBuilder(
+    var futureResponse = client.getWalletService().transferFunds(new TransferFundsParamBuilder(
         credentials.accountId,
         13,
         "USDT",
@@ -224,7 +226,7 @@ public class WalletServiceTest {
 
   @Test
   public void deleteClientBankAccount() {
-    var futureResponse = service
+    var futureResponse = client.getWalletService()
         .deleteClientBankAccount(new DeleteClientBankAccountParamBuilder("72d3e264-2473-41fb-b3ca-a08231de05e2"));
     TestHelper.checkNoError(futureResponse);
   }
